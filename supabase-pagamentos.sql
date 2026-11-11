@@ -57,6 +57,7 @@ grant select, update on public.store_payment_proofs to authenticated;
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 values
  ('store-assets', 'store-assets', true, 5242880, array['image/jpeg','image/png','image/webp']),
+ ('store-free-files', 'store-free-files', true, 52428800, array['application/pdf']),
  ('store-files', 'store-files', false, 52428800, array['application/pdf']),
  ('payment-proofs', 'payment-proofs', false, 5242880, array['image/jpeg','image/png','image/webp','application/pdf'])
 on conflict (id) do nothing;
@@ -65,7 +66,7 @@ drop policy if exists "Admins upload store assets" on storage.objects;
 create policy "Admins upload store assets"
 on storage.objects for insert to authenticated
 with check (
- bucket_id in ('store-assets','store-files')
+ bucket_id in ('store-assets','store-files','store-free-files')
  and exists (select 1 from public.site_admins a where a.user_id = auth.uid())
 );
 
