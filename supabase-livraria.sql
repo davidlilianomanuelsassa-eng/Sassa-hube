@@ -40,3 +40,22 @@ grant select on public.store_products to anon,authenticated;
 grant insert on public.store_orders to anon,authenticated;
 grant select,update on public.store_orders to authenticated;
 grant insert,update,delete on public.store_products to authenticated;
+
+-- O servidor define título, formato, preço e moeda a partir do produto activo.
+create or replace function public.set_store_order_product_details()
+returns trigger language plpgsql security definer set search_path=public as $$
+declare p public.store_products%rowtype;
+begin
+ select * into p from public.store_products where id=new.product_id and active=true;
+ if not found then raise exception 'Livro indisponível.'; end if;
+ new.product_title:=p.title;
+ new.format:=p.format;
+ new.price:=p.price;
+ new.currency:=p.currency;
+ new.status:='pending';
+ return new;
+end;
+$$;
+drop trigger if exists set_store_order_product_details on public.store_orders;
+create trigger set_store_order_product_details before insert on public.store_orders
+for each row execute function public.set_store_order_product_details();
