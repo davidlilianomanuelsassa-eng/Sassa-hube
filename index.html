@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="pt">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Sassa Hube — trabalhos, documentos e recursos digitais.">
+  <title>Sassa Hube | Trabalhos e Recursos Digitais</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="#"><span class="brand-mark">SH</span><span>Sassa <b>Hube</b><small>TRABALHOS & RECURSOS DIGITAIS</small></span></a>
+  <nav><a href="#trabalhos">Trabalhos</a><a href="#sobre">Sobre</a><button id="adminOpen" class="btn btn-outline">Administração</button></nav>
+</header>
+<main>
+  <section class="hero">
+    <div class="hero-copy"><span class="eyebrow">BIBLIOTECA DIGITAL</span><h1>Ideias, conhecimento<br><em>e trabalhos num só lugar.</em></h1>
+      <p>Consulta publicações, documentos, apresentações e outros recursos digitais disponíveis no Sassa Hube.</p>
+      <a class="btn btn-primary" href="#trabalhos">Explorar trabalhos <span>→</span></a>
+    </div>
+    <div class="hero-art" aria-hidden="true"><div class="art-card card-back">▤<small>DOCUMENTOS</small></div><div class="art-card card-front"><div class="art-icon">✦</div><b>SASSA<br>HUBE</b><small>O TEU ESPAÇO DIGITAL</small></div><div class="art-dot"></div></div>
+  </section>
+  <section class="section" id="trabalhos">
+    <div class="section-head"><div><span class="eyebrow">ACERVO DIGITAL</span><h2>Trabalhos publicados</h2><p>Encontra aqui os conteúdos disponibilizados.</p></div>
+      <input id="search" class="search" type="search" placeholder="Pesquisar trabalhos...">
+    </div>
+    <div class="filters" id="filters">
+      <button class="filter active" data-cat="Todos">Todos</button><button class="filter" data-cat="PDF e Word">PDF e Word</button><button class="filter" data-cat="PowerPoint">PowerPoint</button><button class="filter" data-cat="Imagens e cartazes">Imagens e cartazes</button><button class="filter" data-cat="Vídeos">Vídeos</button><button class="filter" data-cat="Outros ficheiros">Outros ficheiros</button>
+    </div>
+    <div id="status" class="status">A preparar a biblioteca...</div>
+    <div id="items" class="items"></div>
+  </section>
+  <section class="about" id="sobre"><span class="eyebrow">SOBRE A PLATAFORMA</span><h2>Um espaço. Muitos trabalhos.</h2><p>O Sassa Hube reúne recursos digitais num único lugar, com conteúdos organizados para facilitar a consulta e a partilha.</p></section>
+</main>
+<footer><span>© <span id="year"></span> Sassa Hube</span><span>Uma plataforma de partilha de conhecimento.</span></footer>
+
+<div class="modal hidden" id="loginModal">
+  <div class="modal-box">
+    <button class="close" data-close aria-label="Fechar">×</button>
+    <span class="eyebrow">ÁREA RESTRITA</span><h2>Entrar na administração</h2>
+    <p>Acede com a conta administrativa criada no Supabase.</p>
+    <form id="loginForm"><label>Email<input type="email" id="email" required autocomplete="username"></label><label>Palavra-passe<input type="password" id="password" required autocomplete="current-password"></label><button class="btn btn-primary full" type="submit">Entrar</button></form>
+    <div id="loginMsg" class="message"></div>
+  </div>
+</div>
+
+<div class="modal hidden" id="adminModal">
+  <div class="modal-box admin-box">
+    <button class="close" data-close aria-label="Fechar">×</button>
+    <div class="admin-heading"><div><span class="eyebrow">PAINEL PRIVADO</span><h2>Gerir publicações</h2></div><button id="logout" class="btn btn-outline">Terminar sessão</button></div>
+    <form id="uploadForm" class="upload-form">
+      <label>Título do trabalho<input id="title" required maxlength="100" placeholder="Ex.: Apresentação sobre redes sociais"></label>
+      <label>Descrição<textarea id="description" rows="2" maxlength="500" placeholder="Breve descrição do conteúdo"></textarea></label>
+      <label>Categoria<select id="category"><option>PDF e Word</option><option>PowerPoint</option><option>Imagens e cartazes</option><option>Vídeos</option><option>Outros ficheiros</option></select></label>
+      <label>Escolher ficheiro<input id="file" type="file" required></label>
+      <button class="btn btn-primary full" type="submit">Publicar trabalho</button>
+    </form>
+    <div id="adminMsg" class="message"></div><h3>Publicações existentes</h3><div id="adminItems" class="admin-items"></div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script><script src="app.js"></script>
+</body></html>
