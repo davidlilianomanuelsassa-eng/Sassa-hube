@@ -37,7 +37,7 @@ create policy "Public can view active store products" on public.store_products f
 drop policy if exists "Admins manage store products" on public.store_products;
 create policy "Admins manage store products" on public.store_products for all to authenticated using (exists(select 1 from public.site_admins where user_id=auth.uid())) with check (exists(select 1 from public.site_admins where user_id=auth.uid()));
 drop policy if exists "Visitors can place store orders" on public.store_orders;
-create policy "Visitors can place store orders" on public.store_orders for insert to anon,authenticated with check (status='pending' and char_length(buyer_name) between 2 and 120 and char_length(buyer_contact) between 5 and 160);
+create policy "Visitors can place store orders" on public.store_orders for insert to anon,authenticated with check ((status='pending' or (status='free_delivered' and price=0 and format='Digital')) and char_length(buyer_name) between 2 and 120 and char_length(buyer_contact) between 5 and 160);
 drop policy if exists "Admins can view store orders" on public.store_orders;
 create policy "Admins can view store orders" on public.store_orders for select to authenticated using (exists(select 1 from public.site_admins where user_id=auth.uid()));
 drop policy if exists "Admins can update store orders" on public.store_orders;
