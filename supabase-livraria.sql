@@ -21,10 +21,12 @@ create table if not exists public.store_orders (
  buyer_name text not null check (char_length(buyer_name) between 2 and 120),
  buyer_contact text not null check (char_length(buyer_contact) between 5 and 160),
  note text check (note is null or char_length(note)<=600),
+ access_code_hash text,
  status text not null default 'pending' check (status in ('pending','confirmed','delivered','free_delivered','cancelled')),
  created_at timestamptz not null default now()
 );
 -- Compatibilidade com instalações anteriores: acrescenta o estado de disponibilização gratuita.
+alter table public.store_orders add column if not exists access_code_hash text;
 alter table public.store_orders drop constraint if exists store_orders_status_check;
 alter table public.store_orders add constraint store_orders_status_check check (status in ('pending','confirmed','delivered','free_delivered','cancelled'));
 
@@ -56,7 +58,7 @@ begin
  new.format:=p.format;
  new.price:=p.price;
  new.currency:=p.currency;
- new.status:='pending';
+ if p.price=0 and p.format='Digital' then new.status:='free_delivered'; else new.status:='pending'; end if;
  return new;
 end;
 $$;
