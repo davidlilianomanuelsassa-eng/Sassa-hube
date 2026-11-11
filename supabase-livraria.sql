@@ -59,3 +59,25 @@ $$;
 drop trigger if exists set_store_order_product_details on public.store_orders;
 create trigger set_store_order_product_details before insert on public.store_orders
 for each row execute function public.set_store_order_product_details();
+
+ 
+-- Ficheiros PDF da Livraria: bucket privado, apenas administradores podem gerir/ler.
+alter table public.store_products add column if not exists digital_file_path text;
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values ('store-files', 'store-files', false, 52428800, array['application/pdf'])
+on conflict (id) do update set public=false, file_size_limit=52428800, allowed_mime_types=array['application/pdf'];
+
+drop policy if exists "Admins can upload store PDFs" on storage.objects;
+create policy "Admins can upload store PDFs" on storage.objects
+for insert to authenticated
+with check (bucket_id='store-files' and exists(select 1 from public.site_admins where user_id=auth.uid()));
+
+drop policy if exists "Admins can read store PDFs" on storage.objects;
+create policy "Admins can read store PDFs" on storage.objects
+for select to authenticated
+using (bucket_id='store-files' and exists(select 1 from public.site_admins where user_id=auth.uid()));
+
+drop policy if exists "Admins can delete store PDFs" on storage.objects;
+create policy "Admins can delete store PDFs" on storage.objects
+for delete to authenticated
+using (bucket_id='store-files' and exists(select 1 from public.site_admins where user_id=auth.uid()));
