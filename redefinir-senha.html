@@ -1,0 +1,126 @@
+
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Redefinir palavra-passe | Sassa Hube</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <style>
+    body {
+      margin: 0;
+      padding: 25px;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: #f1f5f9;
+      font-family: Arial, sans-serif;
+      color: #183047;
+    }
+    .painel {
+      background: white;
+      padding: 30px;
+      border-radius: 14px;
+      max-width: 420px;
+      width: 100%;
+      box-sizing: border-box;
+      box-shadow: 0 4px 18px #0002;
+    }
+    h1 { color: #123d68; }
+    input {
+      width: 100%;
+      padding: 13px;
+      margin: 10px 0 18px;
+      box-sizing: border-box;
+      border: 1px solid #ccd5df;
+      border-radius: 7px;
+    }
+    button {
+      width: 100%;
+      padding: 13px;
+      border: 0;
+      border-radius: 7px;
+      background: #087e8b;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    #mensagem { margin-top: 18px; }
+  </style>
+</head>
+<body>
+  <div class="painel">
+    <h1>Nova palavra-passe</h1>
+    <p>Define uma nova palavra-passe para a tua conta do Sassa Hube.</p>
+
+    <form id="formulario">
+      <label for="senha">Nova palavra-passe</label>
+      <input id="senha" type="password" minlength="12"
+        autocomplete="new-password" required>
+
+      <label for="confirmacao">Confirmar palavra-passe</label>
+      <input id="confirmacao" type="password" minlength="12"
+        autocomplete="new-password" required>
+
+      <button type="submit">Guardar palavra-passe</button>
+    </form>
+
+    <p id="mensagem" role="status"></p>
+    <p><a href="index.html">Voltar ao Sassa Hube</a></p>
+  </div>
+
+  <script>
+    const mensagem = document.getElementById("mensagem");
+    const formulario = document.getElementById("formulario");
+
+    let cliente;
+
+    try {
+      if (!window.supabase || !window.SUPABASE_URL ||
+          !window.SUPABASE_ANON_KEY) {
+        throw new Error("Configuração do Supabase não encontrada.");
+      }
+
+      cliente = window.supabase.createClient(
+        window.SUPABASE_URL,
+        window.SUPABASE_ANON_KEY
+      );
+    } catch (erro) {
+      mensagem.textContent =
+        "Não foi possível carregar a configuração do Supabase.";
+      formulario.hidden = true;
+    }
+
+    if (cliente) {
+      formulario.addEventListener("submit", async function(evento) {
+        evento.preventDefault();
+
+        const senha = document.getElementById("senha").value;
+        const confirmacao =
+          document.getElementById("confirmacao").value;
+
+        if (senha !== confirmacao) {
+          mensagem.textContent = "As palavras-passe não coincidem.";
+          return;
+        }
+
+        mensagem.textContent = "A guardar...";
+
+        const { error } = await cliente.auth.updateUser({
+          password: senha
+        });
+
+        if (error) {
+          mensagem.textContent =
+            "Não foi possível actualizar: " + error.message;
+        } else {
+          mensagem.textContent =
+            "Palavra-passe actualizada com sucesso! Já podes entrar.";
+          formulario.hidden = true;
+        }
+      });
+    }
+  </script>
+</body>
+</html>
