@@ -2,90 +2,201 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Administração | Sassa Hube</title>
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f1f5f9;
-      color: #183047;
-    }
-    header {
-      background: #123d68;
-      color: white;
-      padding: 22px;
-      text-align: center;
-    }
-    main {
-      max-width: 650px;
-      margin: 35px auto;
-      padding: 25px;
-    }
-    .painel {
-      background: white;
-      padding: 25px;
-      border-radius: 12px;
-      box-shadow: 0 3px 15px #0002;
-    }
-    input, textarea {
-      display: block;
-      width: 100%;
-      padding: 12px;
-      margin: 10px 0 18px;
-      border: 1px solid #ccd5df;
-      border-radius: 7px;
-      font: inherit;
-    }
-    button {
-      background: #087e8b;
-      color: white;
-      border: 0;
-      border-radius: 7px;
-      padding: 12px 20px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-    .aviso {
-      background: #fff3cd;
-      padding: 12px;
-      border-radius: 7px;
-      font-size: 14px;
-    }
-    a { color: #087e8b; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel Administrativo | Sassa Hube</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f1f5f9;color:#183047}
+header{background:#123d68;color:white;padding:25px;text-align:center}
+header h1{margin:0;letter-spacing:2px}
+header p{margin-bottom:0}
+.container{max-width:1100px;margin:25px auto;padding:15px}
+.welcome,.card{background:white;padding:22px;border-radius:12px;box-shadow:0 3px 14px #0001;margin-bottom:18px}
+.welcome{border-left:5px solid #087e8b}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:15px}
+.stat{background:white;padding:20px;border-radius:12px;box-shadow:0 2px 10px #0001}
+.stat strong{display:block;font-size:28px;color:#087e8b;margin-top:8px}
+nav{display:flex;flex-wrap:wrap;gap:8px;margin:20px 0}
+button{border:0;background:#087e8b;color:white;padding:12px 16px;border-radius:7px;cursor:pointer;font-weight:bold}
+button:hover{background:#075d68}
+nav button{background:#123d68}
+section{display:none}
+section.active{display:block}
+input,textarea,select{width:100%;padding:12px;margin:8px 0 15px;border:1px solid #ccd5df;border-radius:7px;font:inherit}
+textarea{min-height:110px}
+.item{padding:15px;border:1px solid #e0e7ef;border-radius:9px;margin:12px 0}
+.muted{color:#64748b;font-size:14px}
+.notice{background:#fff3cd;padding:13px;border-radius:8px;margin-top:15px;font-size:14px}
+footer{text-align:center;padding:25px;color:#64748b}
+a{color:#087e8b}
+@media(max-width:600px){header{padding:18px}.container{padding:10px}}
+</style>
 </head>
 <body>
-  <header>
-    <h1>SASSA HUBE</h1>
-    <p>Painel de Administração</p>
-  </header>
 
-  <main>
-    <div class="painel">
-      <h2>Área do Administrador</h2>
-      <p>Bem-vindo à área de gestão do Sassa Hube.</p>
+<header>
+<h1>SASSA HUBE</h1>
+<p>Painel de Administração</p>
+<p>Aprender a conhecer para transformar (2026, David Sassa)</p>
+</header>
 
-      <div class="aviso">
-        Esta é a estrutura inicial do painel. O acesso ainda não está protegido.
-        Não introduzas aqui uma palavra-passe verdadeira.
-      </div>
+<div class="container">
 
-      <h3>Gestão da plataforma</h3>
-      <p>As seguintes ferramentas serão ligadas nas próximas etapas:</p>
-      <ul>
-        <li>Publicar trabalhos e artigos;</li>
-        <li>Adicionar documentos e apresentações;</li>
-        <li>Gerir publicações;</li>
-        <li>Consultar mensagens dos visitantes;</li>
-        <li>Responder aos visitantes;</li>
-        <li>Actualizar os dados do site.</li>
-      </ul>
+<div class="welcome">
+<h2>Bem-vindo à área administrativa!</h2>
+<p>Este é o espaço de gestão do Sassa Hube. Aqui podes acompanhar as publicações, organizar conteúdos e preparar a comunicação com os visitantes.</p>
+<strong>O conhecimento partilhado transforma o futuro.</strong>
+</div>
 
-      <p><a href="index.html">Voltar à página inicial</a></p>
-    </div>
-  </main>
+<div class="grid">
+<div class="stat">Publicações<strong id="totalPosts">0</strong></div>
+<div class="stat">Conversas<strong>0</strong></div>
+<div class="stat">Perguntas<strong>0</strong></div>
+<div class="stat">Reacções<strong>0</strong></div>
+</div>
+
+<nav>
+<button onclick="mostrar('inicio')">Início</button>
+<button onclick="mostrar('publicar')">Publicações</button>
+<button onclick="mostrar('conversas')">Conversas</button>
+<button onclick="mostrar('perguntas')">Perguntas</button>
+<button onclick="mostrar('reacoes')">Gostos e reacções</button>
+<button onclick="mostrar('actividades')">Actividades</button>
+</nav>
+
+<section id="inicio" class="active">
+<div class="card">
+<h2>Visão geral do projecto</h2>
+<p>O Sassa Hube é uma plataforma dedicada à partilha de conhecimentos, trabalhos académicos, documentos e recursos educativos.</p>
+<h3>Missão</h3>
+<p>Facilitar o acesso à informação, incentivar a aprendizagem e promover a partilha de conhecimentos.</p>
+<h3>Mensagem aos visitantes</h3>
+<p>Seja bem-vindo ao Sassa Hube! Explore os nossos conteúdos, aprenda, participe e partilhe conhecimento.</p>
+</div>
+</section>
+
+<section id="publicar">
+<div class="card">
+<h2>Adicionar publicação</h2>
+<label>Título da publicação</label>
+<input id="titulo" placeholder="Ex.: A importância da educação">
+<label>Categoria</label>
+<select id="categoria">
+<option>Trabalhos académicos</option>
+<option>Educação</option>
+<option>Tecnologia</option>
+<option>Documentos</option>
+<option>Apresentações</option>
+<option>Artigos</option>
+</select>
+<label>Descrição</label>
+<textarea id="descricao" placeholder="Escreve uma apresentação do conteúdo..."></textarea>
+<button onclick="prepararPublicacao()">Preparar publicação</button>
+<p class="muted" id="resultado"></p>
+</div>
+<div class="card">
+<h3>Publicações preparadas nesta sessão</h3>
+<div id="listaPublicacoes">Ainda não existem publicações nesta demonstração.</div>
+</div>
+</section>
+
+<section id="conversas">
+<div class="card">
+<h2>Centro de conversas</h2>
+<p>Este espaço será utilizado para consultar mensagens dos visitantes e responder às suas dúvidas.</p>
+<div class="item">
+<strong>Caixa de entrada</strong>
+<p class="muted">As mensagens reais aparecerão aqui quando a comunicação estiver ligada à base de dados.</p>
+</div>
+<textarea placeholder="Escreve uma resposta (demonstração)" disabled></textarea>
+<button disabled>Enviar resposta</button>
+</div>
+</section>
+
+<section id="perguntas">
+<div class="card">
+<h2>Perguntas e respostas</h2>
+<p>Espaço destinado às perguntas dos visitantes sobre os conteúdos e actividades do Sassa Hube.</p>
+<div class="item">
+<strong>Exemplo de pergunta:</strong>
+<p>Como posso encontrar trabalhos e materiais educativos?</p>
+<strong>Resposta:</strong>
+<p>Consulta a área de publicações e escolhe a categoria pretendida.</p>
+</div>
+<p class="muted">As perguntas dos visitantes serão ligadas ao sistema de mensagens numa próxima etapa.</p>
+</div>
+</section>
+
+<section id="reacoes">
+<div class="card">
+<h2>Gostos e reacções</h2>
+<p>Os visitantes poderão demonstrar o que acharam das publicações através de reacções.</p>
+<div class="item">
+<strong>Exemplo de reacções</strong>
+<p>👍 Gostei &nbsp; ❤️ Adorei &nbsp; 💡 Interessante</p>
+<p class="muted">As reacções reais serão contabilizadas quando esta função estiver ligada à base de dados.</p>
+</div>
+</div>
+</section>
+
+<section id="actividades">
+<div class="card">
+<h2>Actividades recentes</h2>
+<div class="item">
+<strong>Projecto Sassa Hube</strong>
+<p>Estrutura do painel administrativo em desenvolvimento.</p>
+<span class="muted">Actualização inicial — 2026</span>
+</div>
+<div class="item">
+<strong>Objectivo</strong>
+<p>Construir uma plataforma de partilha de conhecimento e recursos digitais.</p>
+</div>
+</div>
+</section>
+
+<div class="notice">
+<strong>Nota de desenvolvimento:</strong> este painel é uma versão de apresentação. As publicações, conversas, perguntas e reacções ainda precisam de ligação à base de dados para serem partilhadas com todos os visitantes. O acesso administrativo também ainda não está protegido.
+</div>
+
+<p><a href="index.html">← Voltar à página inicial</a></p>
+</div>
+
+<footer>
+Sassa Hube © 2026 — Aprender a conhecer para transformar.
+</footer>
+
+<script>
+function mostrar(id){
+document.querySelectorAll("section").forEach(s=>s.classList.remove("active"));
+document.getElementById(id).classList.add("active");
+}
+let total=0;
+function prepararPublicacao(){
+const titulo=document.getElementById("titulo").value.trim();
+const descricao=document.getElementById("descricao").value.trim();
+const categoria=document.getElementById("categoria").value;
+const resultado=document.getElementById("resultado");
+if(!titulo||!descricao){
+resultado.textContent="Preenche o título e a descrição.";
+return;
+}
+const item=document.createElement("div");
+item.className="item";
+const h=document.createElement("strong");
+h.textContent=titulo;
+const p=document.createElement("p");
+p.textContent=descricao;
+const small=document.createElement("small");
+small.textContent="Categoria: "+categoria;
+item.append(h,p,small);
+document.getElementById("listaPublicacoes").prepend(item);
+total++;
+document.getElementById("totalPosts").textContent=total;
+resultado.textContent="Pré-visualização criada nesta sessão. Ainda não foi publicada no site.";
+document.getElementById("titulo").value="";
+document.getElementById("descricao").value="";
+}
+</script>
 </body>
 </html>
