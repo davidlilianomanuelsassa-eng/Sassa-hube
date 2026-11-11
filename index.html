@@ -8,10 +8,18 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<header class="topbar">
-<a class="brand" href="#inicio"><span class="brand-mark">SH</span><span>SASSA HUBE<small>CONHECIMENTO • EDUCAÇÃO • INVESTIGAÇÃO</small></span></a>
-<nav aria-label="Navegação principal"><a href="#inicio">Início</a><a href="#biblioteca">Biblioteca</a><a href="#academia">Academia</a><a href="#investigacao">Investigação</a><a href="#sobre">Sobre</a></nav>
-<a class="btn btn-primary" href="#biblioteca">Explorar conteúdos <span>↗</span></a>
+
+<header>
+  <div class="logo">SASSA HUBE</div>
+  <nav>
+    <a href="#inicio">Início</a>
+    <a href="#sobre">Sobre</a>
+    <a href="#publicacoes">Publicações</a>
+    <a href="biblioteca.html">Biblioteca Digital</a>
+    <a href="#trabalhos">Trabalhos</a>
+    <a href="#recursos">Recursos</a>
+    <a href="#contactos">Contactos</a>
+  </nav>
 </header>
 <main id="inicio">
 <section class="hero">
@@ -22,26 +30,111 @@
 <p class="motto">“Aprender a conhecer para transformar” <strong>(2026, David Sassa)</strong></p></div>
 <div class="hero-art" aria-hidden="true"><div class="art-card card-back"><span>✦</span><small>IDEIAS QUE INSPIRAM</small></div><div class="art-card card-front"><span class="art-icon">▤</span><b>Conhecimento<br>sem fronteiras.</b><small>SASSA HUBE · 2026</small></div><span class="art-dot"></span></div>
 </section>
-<section class="section" id="biblioteca">
-<div class="section-head"><div><span class="eyebrow">CONSULTA LIVRE</span><h2>Biblioteca digital</h2><p>Publicações, livros, documentos e recursos partilhados pela comunidade.</p></div><input class="search" id="search" type="search" placeholder="Pesquisar publicações..." aria-label="Pesquisar publicações"></div>
-<div class="filters" role="group" aria-label="Filtrar por categoria">
-<button class="filter active" data-cat="Todos">Todos</button><button class="filter" data-cat="PDF e Word">PDF e Word</button><button class="filter" data-cat="PowerPoint">PowerPoint</button><button class="filter" data-cat="Imagens e cartazes">Imagens</button><button class="filter" data-cat="Vídeos">Vídeos</button><button class="filter" data-cat="Outros ficheiros">Outros ficheiros</button>
-</div>
-<div class="items" id="items" aria-live="polite"></div><p class="status" id="status">A carregar publicações...</p>
-<p class="public-note">A consulta das publicações é livre. Não precisas de responder a perguntas nem de criar uma conta para ler os conteúdos públicos.</p>
-</section>
-<section class="feature-band">
-<div><span class="eyebrow">APRENDER • PARTILHAR • CRESCER</span><h2>O conhecimento ganha valor quando é partilhado.</h2><p>Encontra materiais de apoio, acompanha novas publicações e participa na construção de uma comunidade de aprendizagem.</p></div>
-<a class="btn btn-outline" href="https://wa.me/?text=Conhece%20o%20Sassa%20Hube%20-%20Aprender%20a%20conhecer%20para%20transformar" target="_blank" rel="noopener">Partilhar por WhatsApp ↗</a>
-</section>
-<section class="section feature-grid" id="academia">
-<div class="section-head"><div><span class="eyebrow">FORMAÇÃO CONTÍNUA</span><h2>Academia Sassa Hube</h2><p>Um espaço dedicado à aprendizagem, ao desenvolvimento pessoal e à partilha de experiências formativas.</p></div></div>
-<div class="feature-cards"><article><span>01</span><h3>Aprendizagem</h3><p>Conteúdos educativos para apoiar o estudo autónomo e a formação.</p></article><article><span>02</span><h3>Desenvolvimento pessoal</h3><p>Ideias e actividades para fortalecer disciplina, responsabilidade e iniciativa.</p></article><article><span>03</span><h3>Recursos de estudo</h3><p>Materiais de consulta para estudantes, professores e investigadores.</p></article></div>
-</section>
-<section class="about" id="investigacao"><span class="eyebrow">CONHECIMENTO COM PROPÓSITO</span><h2>Centro de Investigação</h2><p>Um espaço orientado para a divulgação de pesquisas, artigos, reflexões e trabalhos científicos. A investigação aproxima perguntas relevantes de respostas fundamentadas.</p></section>
-<section class="section about-author" id="sobre"><div class="author-mark">SH</div><div><span class="eyebrow">A PLATAFORMA</span><h2>Sobre o Sassa Hube</h2><p>O Sassa Hube é uma iniciativa digital de partilha de conhecimentos, materiais educativos, trabalhos académicos e recursos. Pretende incentivar a leitura, a investigação, a criatividade e a aprendizagem ao longo da vida.</p><p class="author-name">Uma iniciativa de <strong>David Sassa</strong></p></div></section>
+
+<main>
+
+  <section class="author">
+    <div class="photo">
+      <span>ESPAÇO RESERVADO<br>À FOTOGRAFIA<br>DO AUTOR</span>
+    </div>
+    <div class="author-info">
+      <h2>Apresentação do Autor</h2>
+      <h3>David Sassa</h3>
+      <p>
+        Bem-vindo ao meu espaço digital. O Sassa Hube é uma plataforma
+        dedicada à partilha de conhecimentos, trabalhos académicos,
+        documentos e recursos educativos.
+      </p>
+    </div>
+  </section>
+
+  <section id="sobre">
+    <h2>Sobre o Sassa Hube</h2>
+    <p>
+      O Sassa Hube é uma plataforma digital criada para promover
+      a aprendizagem, a investigação, a partilha de ideias e o acesso
+      ao conhecimento. Pretende aproximar pessoas, estudantes,
+      professores e todos os interessados em aprender.
+    </p>
+  </section>
+
+  <section id="publicacoes">
+    <h2>Publicações</h2>
+    <div class="cards">
+      <div class="card">
+        <h3>Artigos</h3>
+        <p>Espaço destinado à publicação de artigos e reflexões.</p>
+      </div>
+      <div class="card">
+        <h3>Documentos</h3>
+        <p>Consulta de documentos e materiais partilhados.</p>
+      </div>
+      <div class="card">
+        <h3>Pesquisas</h3>
+        <p>Trabalhos de investigação e conteúdos científicos.</p>
+      </div>
+    </div>
+    <p id="homeLibraryStatus">A carregar as publicações mais recentes...</p>
+    <div class="cards" id="homeLibraryItems"></div>
+    <p><a href="biblioteca.html">Abrir Biblioteca Digital e consultar todas as publicações</a></p>
+  </section>
+
+  <section id="trabalhos">
+    <h2>Trabalhos Académicos</h2>
+    <p>
+      Área dedicada a trabalhos escolares, universitários,
+      relatórios, apresentações e pesquisas académicas.
+    </p>
+  </section>
+
+  <section id="recursos">
+    <h2>Recursos Digitais</h2>
+    <div class="cards">
+      <div class="card">
+        <h3>Livros e PDFs</h3>
+        <p>Materiais de leitura e estudo.</p>
+      </div>
+      <div class="card">
+        <h3>Apresentações</h3>
+        <p>Ficheiros e apresentações educativas.</p>
+      </div>
+      <div class="card">
+        <h3>Materiais de apoio</h3>
+        <p>Recursos para apoiar o processo de aprendizagem.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="access">
+    <h2>Espaço de participação</h2>
+    <p>
+      Podes consultar as publicações sem responder a perguntas.
+      A participação é opcional.
+    </p>
+    <label for="pergunta">Deixa uma pergunta ou comentário (opcional):</label>
+    <textarea id="pergunta" rows="3" placeholder="Escreve aqui, se desejares..."></textarea>
+    <button type="button" onclick="alert('Obrigado pela participação!')">
+      Enviar comentário
+    </button>
+  </section>
+
+  <section id="contactos" class="contact">
+    <h2>Contactos</h2>
+    <p>Para informações e colaboração, entra em contacto:</p>
+    <p><strong>WhatsApp:</strong> 941887878</p>
+    <p><strong>E-mail:</strong> davidlilianomanuelsassa@gmail.com</p>
+  </section>
+
 </main>
-<footer><div><strong>SASSA HUBE</strong><p>Aprender a conhecer para transformar (2026, David Sassa)</p></div><div><a href="#inicio">Voltar ao topo ↑</a><a href="admin.html">Painel de administração</a></div><small>© <span id="year"></span> Sassa Hube. Todos os direitos reservados.</small></footer>
+
+<footer>
+  <p>Sassa Hube © 2026 - Todos os direitos reservados.</p>
+  <p>Aprender a conhecer para transformar — David Sassa</p>
+  <a class="admin-link" href="admin.html">Área do Administrador</a>
+</footer>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="config.js"></script><script src="app.js"></script>
-</body></html>
+<script src="config.js"></script>
+<script src="home.js"></script>
+</body>
+</html>

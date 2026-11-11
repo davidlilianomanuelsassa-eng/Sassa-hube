@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Biblioteca Digital do Sassa Hube: trabalhos, documentos e recursos para aprender e investigar.">
+<title>Biblioteca Digital | Sassa Hube</title>
+<link rel="stylesheet" href="style.css">
+<style>
+.library-hero{background:linear-gradient(120deg,#123d68,#087e8b);color:#fff;padding:48px 7%;text-align:center}
+.library-hero h1{margin:0 0 10px;font-size:clamp(28px,5vw,42px)}
+.library-wrap{max-width:1100px;margin:30px auto;padding:0 20px}
+.library-tools{display:grid;grid-template-columns:1fr 220px;gap:12px;margin:22px 0}
+.library-tools input,.library-tools select{width:100%;padding:13px;border:1px solid #ccd5df;border-radius:8px;font:inherit;background:#fff}
+.library-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px}
+.library-item{background:#fff;border:1px solid #e3e9f1;border-radius:12px;padding:19px;display:flex;flex-direction:column;gap:9px}
+.library-item h3{margin:0;color:#123d68;overflow-wrap:anywhere}
+.library-item p{margin:0;color:#536477;font-size:14px;line-height:1.55}
+.library-meta{font-size:12px;color:#68778b}
+.library-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:auto;padding-top:8px}
+.library-actions a,.library-actions button{font:700 12px Arial;text-decoration:none;border:0;border-radius:7px;padding:10px 12px;cursor:pointer}
+.open-file{background:#087e8b;color:white}.share-file{background:#eaf2f7;color:#123d68}
+.library-state{padding:18px;background:#fff;border-radius:10px;color:#536477}
+@media(max-width:620px){.library-tools{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+<div class="logo">SASSA HUBE</div>
+<nav><a href="index.html">Início</a><a href="index.html#publicacoes">Publicações</a><a href="index.html#contactos">Contactos</a></nav>
+</header>
+<section class="library-hero">
+<h1>Biblioteca Digital</h1>
+<p>Conhecimento, aprendizagem e investigação num só lugar.</p>
+<p><strong>Aprender a conhecer para transformar</strong> — (2026, David Sassa)</p>
+</section>
+<main class="library-wrap">
+<h2>Explorar publicações</h2>
+<p>Consulta os materiais disponíveis. Não é necessário responder a perguntas nem iniciar sessão para consultar publicações públicas.</p>
+<div class="library-tools">
+<input id="librarySearch" type="search" placeholder="Pesquisar por título, descrição ou palavra-chave..." aria-label="Pesquisar publicações">
+<select id="libraryCategory" aria-label="Filtrar por categoria"><option value="">Todas as categorias</option></select>
+</div>
+<p id="libraryStatus" class="library-state" role="status">A carregar a biblioteca...</p>
+<div id="libraryItems" class="library-grid"></div>
+</main>
+<footer><p>Sassa Hube © 2026</p><p>Aprender a conhecer para transformar — David Sassa</p></footer>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script src="biblioteca.js"></script>
+</body>
+</html>
