@@ -32,3 +32,14 @@ body{color:var(--ink);background:#fff;font-family:'DM Sans',sans-serif}
 /* Livraria Sassa Hube */
 .bookstore-page{min-height:65vh}.bookstore-page .section-head h1{font:800 38px Manrope;color:var(--navy);margin:12px 0}.bookstore-filters{display:flex;gap:9px;flex-wrap:wrap;margin:26px 0}.bookstore-items{align-items:stretch}.store-card{display:flex;flex-direction:column;align-items:flex-start;gap:12px}.store-card>img{width:100%;height:230px;object-fit:contain;background:#f5f6f8;border-radius:9px}.store-card h3{margin:0}.store-format{font-size:11px;color:#9b712e;font-weight:800}.store-price{font:800 20px Manrope;color:var(--navy);margin-top:auto}.store-card .btn{margin-top:5px}.store-order{max-width:650px;margin:55px auto 20px;padding:28px;border:1px solid var(--line);border-radius:15px;background:#fbfcfe}.store-order h2{font:800 24px Manrope;color:var(--navy)}.store-order form{display:grid;gap:10px}.store-order label{font-size:12px;font-weight:700;color:#40516a;margin-top:7px}.store-order input,.store-order textarea{width:100%;border:1px solid #dce2eb;border-radius:9px;padding:13px 14px;font:14px 'DM Sans';background:#fff}.store-order .btn{justify-self:start}.store-order-row select{border:1px solid #dce2eb;border-radius:8px;padding:9px;background:#fff;color:var(--navy);max-width:180px}
 @media(max-width:650px){.bookstore-page .section-head h1{font-size:30px}.store-order{padding:20px}.store-order-row{align-items:flex-start;flex-direction:column}}
+
+
+/* Livros em destaque na página inicial */
+.featured-store{padding-top:64px;padding-bottom:70px;background:linear-gradient(180deg,#fbfcfe,#fff)}
+.featured-book-card{display:flex;flex-direction:column;align-items:flex-start;gap:12px}
+.featured-book-card>img{width:100%;height:245px;object-fit:contain;background:#f4f6f9;border-radius:10px}
+.featured-book-placeholder{width:100%;height:245px;border-radius:10px;background:linear-gradient(145deg,#102b50,#24558a);display:grid;place-items:center;color:#f0d6a4;font:800 24px Manrope;letter-spacing:3px}
+.featured-book-card h3{margin:0}
+.featured-book-card .store-price{margin-top:auto}
+.featured-book-card .btn{margin-top:5px;text-decoration:none;text-align:center}
+@media(max-width:650px){.featured-store{padding-top:48px;padding-bottom:50px}.featured-book-card>img,.featured-book-placeholder{height:220px}}
