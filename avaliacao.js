@@ -1,0 +1,8 @@
+const ratingClient=window.supabase?.createClient(window.SUPABASE_URL,window.SUPABASE_ANON_KEY);
+const voteKey="sassa_hube_visitor_rating_v1";
+const voteLike=document.getElementById("voteLike"),voteDislike=document.getElementById("voteDislike");
+const voteMessage=document.getElementById("voteMessage");
+function visitorKey(){let key=localStorage.getItem(voteKey);if(!key){key=crypto.randomUUID();localStorage.setItem(voteKey,key);}return key;}
+async function refreshRatings(){if(!ratingClient)return;const {data,error}=await ratingClient.from("site_ratings").select("vote");if(error)return;document.getElementById("likesCount").textContent=data.filter(x=>x.vote==="like").length;document.getElementById("dislikesCount").textContent=data.filter(x=>x.vote==="dislike").length;}
+async function sendVote(vote){if(!ratingClient){voteMessage.textContent="A avaliação ainda não está disponível.";return;}if(localStorage.getItem(voteKey+"_done")){voteMessage.textContent="Já registaste a tua avaliação neste navegador. Obrigado!";return;}voteLike.disabled=true;voteDislike.disabled=true;const {error}=await ratingClient.from("site_ratings").insert({vote,visitor_key:visitorKey()});if(error){voteMessage.textContent=error.code==="23505"?"Já registaste uma avaliação. Obrigado!":"Não foi possível registar. Tenta novamente mais tarde.";voteLike.disabled=false;voteDislike.disabled=false;return;}localStorage.setItem(voteKey+"_done","1");voteMessage.textContent="Obrigado pela tua opinião!";(vote==="like"?voteLike:voteDislike).classList.add("selected");await refreshRatings();}
+voteLike?.addEventListener("click",()=>sendVote("like"));voteDislike?.addEventListener("click",()=>sendVote("dislike"));refreshRatings();
