@@ -21,6 +21,8 @@ async function loadStore(){
  const {data,error}=await db.from("store_products").select("id,title,description,price,currency,format,cover_url").eq("active",true).order("created_at",{ascending:false});
  if(error){$("storeStatus").textContent="Não foi possível carregar os livros. Executa o ficheiro supabase-livraria.sql no Supabase.";return;}
  products=data||[];renderStore();
+ const requested=new URLSearchParams(location.search).get("produto");
+ if(requested){const match=products.find(p=>p.id===requested);if(match){const priceText=Number(match.price)===0?"Gratuito":new Intl.NumberFormat("pt-AO",{style:"currency",currency:match.currency||"AOA"}).format(Number(match.price));$("productId").value=match.id;$("selectedBook").textContent=match.title+" — "+priceText;$("orderPanel").classList.remove("hidden");$("orderPanel").scrollIntoView({behavior:"smooth",block:"start"});}}
 }
 document.querySelectorAll("[data-format]").forEach(b=>b.addEventListener("click",()=>{formatFilter=b.dataset.format;document.querySelectorAll("[data-format]").forEach(x=>x.classList.toggle("active",x===b));renderStore();}));
 $("storeOrderForm").addEventListener("submit",async e=>{

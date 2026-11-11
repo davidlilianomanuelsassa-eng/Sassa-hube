@@ -14,7 +14,7 @@
 <body>
 <header class="topbar">
   <a class="brand" href="#inicio"><span class="brand-mark">SH</span><span>SASSA HUBE<small>CONHECIMENTO · EDUCAÇÃO · INVESTIGAÇÃO</small></span></a>
-  <nav aria-label="Navegação principal"><a href="#inicio">Início</a><a href="#biblioteca">Biblioteca</a><a href="#academia">Academia</a><a href="#investigacao">Investigação</a><a href="livraria.html">Livraria</a><a href="#fundador">Fundador</a></nav>
+  <nav aria-label="Navegação principal"><a href="#inicio">Início</a><a href="#livraria-destaques">Livraria</a><a href="#biblioteca">Biblioteca</a><a href="#academia">Academia</a><a href="#investigacao">Investigação</a><a href="livraria.html">Livraria</a><a href="#fundador">Fundador</a></nav>
   <a class="btn btn-primary nav-cta" href="livraria.html">Comprar livros <span>↗</span></a><a class="btn btn-primary nav-cta" href="#biblioteca">Explorar conteúdos <span>↗</span></a>
 </header>
 <main id="inicio">
@@ -33,6 +33,12 @@
   </div>
 </section>
 <section class="trust-strip"><span>Uma plataforma de partilha</span><i></i><span>Consulta livre</span><i></i><span>Aprendizagem contínua</span><i></i><span>Investigação</span></section>
+
+<section class="section home-store-section" id="livraria-destaques">
+  <div class="section-head"><div><span class="eyebrow">LIVRARIA SASSA HUBE</span><h2>Livros em destaque</h2><p>Conhece as obras disponíveis, consulta os preços e compra ou solicita o teu exemplar.</p></div><a class="text-link" href="livraria.html">Ver todos os livros e comprar ↗</a></div>
+  <div class="items home-store-items" id="homeStoreItems" aria-live="polite"></div>
+  <p class="status" id="homeStoreStatus">A carregar livros disponíveis...</p>
+</section>
 
 <section class="section" id="biblioteca">
   <div class="section-head"><div><span class="eyebrow">CONSULTA LIVRE</span><h2>Biblioteca Digital</h2><p>Publicações, livros, documentos e recursos para aprender, ensinar e investigar.</p></div><a class="text-link" href="biblioteca.html">Abrir biblioteca completa ↗</a></div>
@@ -58,6 +64,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="config.js"></script>
 <script src="app.js"></script>
+<script src="home-livraria.js"></script>
 <script src="avaliacao.js"></script>
 <script src="perguntas.js"></script>
 </body>
