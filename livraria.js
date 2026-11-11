@@ -11,16 +11,26 @@ function renderStore(){
   const title=document.createElement("h3");title.textContent=p.title;
   const desc=document.createElement("p");desc.textContent=p.description||"Sem descrição adicional.";
   const price=document.createElement("strong");price.className="store-price";price.textContent=Number(p.price)===0?"Gratuito":new Intl.NumberFormat("pt-AO",{style:"currency",currency:p.currency||"AOA"}).format(Number(p.price));
-  const btn=document.createElement("button");btn.className="btn btn-primary";btn.textContent=Number(p.price)===0?"Obter gratuitamente":"Encomendar";btn.addEventListener("click",()=>{ $("productId").value=p.id;$("selectedBook").textContent=p.title+" — "+price.textContent;$("orderPanel").classList.remove("hidden");$("orderMessage").textContent="";$("orderPanel").scrollIntoView({behavior:"smooth",block:"start"});});
+  const btn=document.createElement("button");btn.className="btn btn-primary";btn.textContent=Number(p.price)===0?"Obter gratuitamente":"Encomendar";btn.addEventListener("click",()=>openOrder(p));
   card.append(tag,title,desc,price,btn);$("storeItems").append(card);
  });
  $("storeStatus").textContent=list.length?list.length+" livro(s) disponível(is).":"Ainda não há livros disponíveis nesta categoria.";
+}
+function openOrder(p){
+ $("productId").value=p.id;
+ const priceText=Number(p.price)===0?"Gratuito":new Intl.NumberFormat("pt-AO",{style:"currency",currency:p.currency||"AOA"}).format(Number(p.price));
+ $("selectedBook").textContent=p.title+" — "+priceText;
+ $("orderPanel").classList.remove("hidden");
+ $("orderMessage").textContent="";
+ $("orderPanel").scrollIntoView({behavior:"smooth",block:"start"});
 }
 async function loadStore(){
  if(!db){$("storeStatus").textContent="A livraria precisa de ligação ao Supabase.";return;}
  const {data,error}=await db.from("store_products").select("id,title,description,price,currency,format,cover_url").eq("active",true).order("created_at",{ascending:false});
  if(error){$("storeStatus").textContent="Não foi possível carregar os livros. Executa o ficheiro supabase-livraria.sql no Supabase.";return;}
  products=data||[];renderStore();
+ const requestedProduct=new URLSearchParams(window.location.search).get("produto");
+ if(requestedProduct){const chosen=products.find(p=>String(p.id)===requestedProduct);if(chosen)openOrder(chosen);}
 }
 document.querySelectorAll("[data-format]").forEach(b=>b.addEventListener("click",()=>{formatFilter=b.dataset.format;document.querySelectorAll("[data-format]").forEach(x=>x.classList.toggle("active",x===b));renderStore();}));
 $("storeOrderForm").addEventListener("submit",async e=>{
