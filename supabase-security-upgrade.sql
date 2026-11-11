@@ -5,6 +5,9 @@
 drop policy if exists "Admin can insert works" on public.works;
 drop policy if exists "Admin can update works" on public.works;
 drop policy if exists "Admin can delete works" on public.works;
+drop policy if exists "Only site admins can insert works" on public.works;
+drop policy if exists "Only site admins can update works" on public.works;
+drop policy if exists "Only site admins can delete works" on public.works;
 
 create policy "Only site admins can insert works"
 on public.works for insert to authenticated
@@ -21,6 +24,8 @@ using (exists (select 1 from public.site_admins a where a.user_id = auth.uid()))
 
 drop policy if exists "Admin can upload work files" on storage.objects;
 drop policy if exists "Admin can delete work files" on storage.objects;
+drop policy if exists "Only site admins can upload work files" on storage.objects;
+drop policy if exists "Only site admins can delete work files" on storage.objects;
 
 create policy "Only site admins can upload work files"
 on storage.objects for insert to authenticated
