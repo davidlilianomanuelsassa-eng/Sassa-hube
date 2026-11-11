@@ -23,13 +23,20 @@ create index if not exists store_payment_proofs_status_idx
 
 alter table public.store_payment_proofs enable row level security;
 
+create or replace function public.store_order_exists(order_uuid uuid)
+returns boolean language sql security definer set search_path = public as $
+  select exists (select 1 from public.store_orders where id = order_uuid);
+$;
+revoke all on function public.store_order_exists(uuid) from public;
+grant execute on function public.store_order_exists(uuid) to anon, authenticated;
+
 drop policy if exists "Visitors submit payment proofs" on public.store_payment_proofs;
 create policy "Visitors submit payment proofs"
 on public.store_payment_proofs for insert to anon, authenticated
 with check (
   status = 'pending'
   and proof_path like order_id::text || '/%'
-  and exists (select 1 from public.store_orders o where o.id = order_id)
+  and public.store_order_exists(order_id)
 );
 
 drop policy if exists "Admins view payment proofs" on public.store_payment_proofs;
