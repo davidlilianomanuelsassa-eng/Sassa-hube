@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="pt">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Livraria Sassa Hube — livros digitais e impressos."><title>Livraria Sassa Hube</title><link rel="stylesheet" href="style.css"></head>
+<body>
+<header class="topbar"><a class="brand" href="index.html"><span class="brand-mark">SH</span><span>SASSA HUBE<small>LIVRARIA DIGITAL</small></span></a><nav><a href="index.html">Início</a><a href="index.html#biblioteca">Biblioteca</a></nav><a class="btn btn-outline" href="index.html">← Voltar ao site</a></header>
+<main class="section bookstore-page">
+ <div class="section-head"><div><span class="eyebrow">LIVRARIA SASSA HUBE</span><h1>Livros para aprender e transformar</h1><p>Descobre livros digitais e impressos. Escolhe uma obra e envia a tua encomenda.</p></div></div>
+ <div class="bookstore-filters"><button class="filter active" data-format="Todos">Todos</button><button class="filter" data-format="Digital">Livros digitais</button><button class="filter" data-format="Físico">Livros físicos</button></div>
+ <div id="storeItems" class="items bookstore-items" aria-live="polite"></div><p id="storeStatus" class="status">A carregar livros...</p>
+ <section class="store-order hidden" id="orderPanel"><h2>Encomendar livro</h2><p id="selectedBook"></p><form id="storeOrderForm"><input type="hidden" id="productId"><label for="buyerName">Nome completo</label><input id="buyerName" maxlength="120" required placeholder="O teu nome"><label for="buyerContact">Contacto (WhatsApp ou e-mail)</label><input id="buyerContact" maxlength="160" required placeholder="Número ou endereço de e-mail"><label for="buyerNote">Observações (opcional)</label><textarea id="buyerNote" rows="3" maxlength="600" placeholder="Indica alguma informação importante"></textarea><button class="btn btn-primary" type="submit">Enviar encomenda</button><p id="orderMessage" class="message" role="status"></p></form></section>
+ <p class="public-note">A encomenda será confirmada pela equipa Sassa Hube. O pagamento e a entrega serão combinados directamente com o comprador. Nos livros digitais, o ficheiro só será disponibilizado depois da confirmação do pagamento.</p>
+</main>
+<footer class="site-footer"><div class="footer-brand"><span class="brand-mark">SH</span><div><strong>SASSA HUBE</strong><p>Aprender a conhecer para transformar (2026, David Sassa)</p></div></div><div class="footer-links"><a href="index.html">Página inicial</a><a href="admin.html">Painel de administração</a></div><small>© 2026 Sassa Hube. Todos os direitos reservados.</small></footer>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="config.js"></script><script src="livraria.js"></script>
+</body></html>
