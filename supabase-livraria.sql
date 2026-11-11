@@ -24,7 +24,11 @@ create table if not exists public.store_orders (
  status text not null default 'pending' check (status in ('pending','confirmed','delivered','free_delivered','cancelled')),
  created_at timestamptz not null default now()
 );
--- Compatibilidade com instalações anteriores: acrescenta o estado de disponibilização gratuita.\nalter table public.store_orders drop constraint if exists store_orders_status_check;\nalter table public.store_orders add constraint store_orders_status_check check (status in ('pending','confirmed','delivered','free_delivered','cancelled'));\n\nalter table public.store_products enable row level security;
+-- Compatibilidade com instalações anteriores: acrescenta o estado de disponibilização gratuita.
+alter table public.store_orders drop constraint if exists store_orders_status_check;
+alter table public.store_orders add constraint store_orders_status_check check (status in ('pending','confirmed','delivered','free_delivered','cancelled'));
+
+alter table public.store_products enable row level security;
 alter table public.store_orders enable row level security;
 drop policy if exists "Public can view active store products" on public.store_products;
 create policy "Public can view active store products" on public.store_products for select to anon,authenticated using (active=true);
