@@ -72,6 +72,18 @@
 </main>
 <section class="visitor-rating" id="avaliacao"><span class="eyebrow">A TUA OPINIÃO CONTA</span><h2>Estás a gostar do Sassa Hube?</h2><p>A tua avaliação ajuda-nos a melhorar esta plataforma de conhecimento.</p><div class="rating-actions"><button type="button" class="rating-button like" id="voteLike" aria-label="Gostei do site">👍 Gostei</button><button type="button" class="rating-button dislike" id="voteDislike" aria-label="Não gostei do site">👎 Não gostei</button></div><p id="voteMessage" class="vote-message" role="status">Escolhe uma opção para avaliar o site.</p><div class="rating-results" aria-live="polite"><span>👍 <strong id="likesCount">—</strong> Gostaram</span><span>👎 <strong id="dislikesCount">—</strong> Não gostaram</span></div></section>
 <section class="visitor-questions" id="perguntas"><div class="section-head"><div><span class="eyebrow">DIÁLOGO E PARTILHA</span><h2>Perguntas e Respostas</h2><p>Tens alguma dúvida? Envia a tua pergunta. As respostas poderão ajudar outros visitantes.</p></div></div><form id="questionForm" class="question-form"><label for="questionName">O teu nome (opcional)</label><input id="questionName" maxlength="80" placeholder="Como te podemos chamar?"><label for="questionText">A tua pergunta</label><textarea id="questionText" rows="4" maxlength="1500" required placeholder="Escreve aqui a tua dúvida..."></textarea><button class="btn btn-primary" id="sendQuestion" type="submit">Enviar pergunta</button><p id="questionMessage" class="message" role="status"></p></form><div class="public-answers"><h3>Perguntas respondidas</h3><div id="publicQuestions" class="public-question-list">A carregar perguntas...</div></div></section>
+
+<!-- Chat público Sassa Hube -->
+<div class="visitor-chat" id="visitorChat">
+  <button class="chat-launcher" id="chatLauncher" type="button" aria-expanded="false" aria-controls="chatPanel"><span class="chat-launch-icon" aria-hidden="true">✉</span><span><strong>Converse connosco</strong><small>Tem uma dúvida ou sugestão?</small></span><span class="chat-launch-arrow" aria-hidden="true">↗</span></button>
+  <section class="chat-panel" id="chatPanel" aria-label="Chat com o Sassa Hube" hidden>
+    <header class="chat-header"><div><span class="chat-online-dot"></span><div><strong>Chat Sassa Hube</strong><small>Educação · Conhecimento · Partilha</small></div></div><button id="chatClose" class="chat-close" type="button" aria-label="Fechar chat">×</button></header>
+    <div class="chat-intro"><strong>Olá! Seja bem-vindo.</strong><p>Envie a sua dúvida, pergunta ou sugestão. A equipa do Sassa Hube responderá assim que possível.</p></div>
+    <div class="chat-messages" id="chatMessages" aria-live="polite"><p class="chat-empty">A carregar conversas...</p></div>
+    <form class="chat-form" id="visitorChatForm"><label for="chatVisitorName">O seu nome (opcional)</label><input id="chatVisitorName" maxlength="80" placeholder="Como devemos chamar-lhe?"><label for="chatVisitorMessage">A sua mensagem</label><textarea id="chatVisitorMessage" rows="3" maxlength="1500" required placeholder="Escreva a sua mensagem..."></textarea><button class="btn btn-primary" id="chatSend" type="submit">Enviar mensagem <span>→</span></button><p class="chat-notice" id="chatNotice" role="status"></p><small class="chat-privacy">Nota: as perguntas e respostas publicadas neste chat poderão ser visíveis a outros visitantes. Não envie dados pessoais ou informações confidenciais.</small></form>
+  </section>
+</div>
+
 <footer class="site-footer"><div class="footer-brand"><span class="brand-mark">SH</span><div><strong>SASSA HUBE</strong><p>Aprender a conhecer para transformar (2026, David Sassa)</p></div></div><div class="footer-links"><a href="#inicio">Voltar ao topo ↑</a><a href="admin.html">Painel de administração</a><a href="biblioteca.html">Biblioteca Digital</a></div><small>© <span id="year">2026</span> Sassa Hube. Todos os direitos reservados.</small></footer>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="config.js"></script>
@@ -79,5 +91,6 @@
 <script src="app.js"></script>
 <script src="avaliacao.js"></script>
 <script src="perguntas.js"></script>
+<script src="chat.js"></script>
 </body>
 </html>
