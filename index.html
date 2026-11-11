@@ -1,175 +1,12 @@
-
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Sassa Hube - Plataforma de conhecimento, aprendizagem, trabalhos académicos e recursos digitais.">
-  <title>Sassa Hube | Aprender para transformar</title>
-  <link rel="stylesheet" href="style.css">
-
-  <style>
-    :root {
-      --primary: #123d68;
-      --secondary: #087e8b;
-      --light: #f3f7fb;
-      --dark: #182b3a;
-      --white: #ffffff;
-    }
-
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      color: var(--dark);
-      background: var(--light);
-      line-height: 1.6;
-    }
-
-    header {
-      background: var(--primary);
-      color: white;
-      padding: 16px 6%;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 15px;
-    }
-
-    .logo { font-size: 27px; font-weight: bold; }
-
-    nav { display: flex; flex-wrap: wrap; gap: 16px; }
-
-    nav a {
-      color: white;
-      text-decoration: none;
-      font-weight: bold;
-    }
-
-    nav a:hover { color: #80e0e7; }
-
-    .hero {
-      background: linear-gradient(120deg, #123d68, #087e8b);
-      color: white;
-      padding: 65px 7%;
-      text-align: center;
-    }
-
-    .hero h1 { font-size: 42px; margin-bottom: 10px; }
-
-    .hero p { font-size: 19px; }
-
-    .author {
-      max-width: 1000px;
-      margin: 35px auto;
-      padding: 30px;
-      background: white;
-      border-radius: 15px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 35px;
-      flex-wrap: wrap;
-      box-shadow: 0 3px 15px #00000012;
-    }
-
-    .photo {
-      width: 210px;
-      height: 230px;
-      border: 3px dashed #087e8b;
-      border-radius: 15px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      color: #087e8b;
-      background: #f3f7fb;
-      overflow: hidden;
-    }
-
-    .photo img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .author-info { flex: 1; min-width: 220px; }
-
-    main { max-width: 1150px; margin: auto; padding: 20px; }
-
-    section { margin: 45px 0; }
-
-    h2 {
-      color: var(--primary);
-      border-bottom: 3px solid var(--secondary);
-      padding-bottom: 8px;
-    }
-
-    .cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 20px;
-    }
-
-    .card {
-      background: white;
-      padding: 23px;
-      border-radius: 12px;
-      box-shadow: 0 3px 12px #00000010;
-    }
-
-    .card h3 { color: var(--secondary); }
-
-    .access, .contact {
-      background: white;
-      padding: 28px;
-      border-radius: 12px;
-    }
-
-    input, textarea {
-      width: 100%;
-      padding: 12px;
-      margin: 8px 0 15px;
-      border: 1px solid #ccd5df;
-      border-radius: 7px;
-      font: inherit;
-    }
-
-    button {
-      background: var(--secondary);
-      color: white;
-      padding: 12px 20px;
-      border: none;
-      border-radius: 7px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-
-    button:hover { background: var(--primary); }
-
-    footer {
-      background: var(--primary);
-      color: white;
-      text-align: center;
-      padding: 25px;
-      margin-top: 50px;
-    }
-
-    .admin-link {
-      color: white;
-      text-decoration: underline;
-    }
-
-    @media(max-width: 600px) {
-      .hero h1 { font-size: 30px; }
-      header { justify-content: center; }
-      nav { justify-content: center; }
-    }
-  </style>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Sassa Hube — biblioteca digital, aprendizagem, investigação e partilha de conhecimento.">
+<meta name="theme-color" content="#173f78">
+<title>Sassa Hube | Aprender a conhecer para transformar</title>
+<link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
 <header>
@@ -184,12 +21,14 @@
     <a href="#contactos">Contactos</a>
   </nav>
 </header>
-
-<section class="hero" id="inicio">
-  <h1>Bem-vindo ao Sassa Hube</h1>
-  <p>Um espaço de conhecimento, aprendizagem, investigação e transformação.</p>
-  <h3>Aprender a conhecer para transformar</h3>
-  <p>(2026, David Sassa)</p>
+<main id="inicio">
+<section class="hero">
+<div class="hero-copy"><span class="eyebrow">UM ESPAÇO ABERTO AO CONHECIMENTO</span>
+<h1>Aprender hoje.<br><em>Transformar amanhã.</em></h1>
+<p>Uma plataforma para descobrir livros, consultar trabalhos académicos, partilhar ideias e desenvolver conhecimento.</p>
+<div class="hero-actions"><a class="btn btn-primary" href="#biblioteca">Explorar biblioteca <span>→</span></a><a class="btn btn-outline" href="#sobre">Conhecer o projecto</a></div>
+<p class="motto">“Aprender a conhecer para transformar” <strong>(2026, David Sassa)</strong></p></div>
+<div class="hero-art" aria-hidden="true"><div class="art-card card-back"><span>✦</span><small>IDEIAS QUE INSPIRAM</small></div><div class="art-card card-front"><span class="art-icon">▤</span><b>Conhecimento<br>sem fronteiras.</b><small>SASSA HUBE · 2026</small></div><span class="art-dot"></span></div>
 </section>
 
 <main>

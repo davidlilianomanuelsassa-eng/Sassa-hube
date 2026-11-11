@@ -1,3 +1,21 @@
-﻿window.SUPABASE_URL = "https://qcdgtglayifhgwbgsfyi.supabase.co";
+SASSA HUBE — ACTUALIZAÇÃO DA PLATAFORMA
 
-window.SUPABASE_ANON_KEY = "sb_publishable_tFhkx1NMcWO8ahH-FlVlQg_tFMl-sxl";
+Esta versão foi preparada na ramificação melhoria-painel-sassa-hube; a versão publicada na main não foi alterada.
+
+O que foi melhorado:
+- Página inicial renovada e adaptável a telemóveis.
+- Biblioteca pública ligada à tabela works do Supabase.
+- Pesquisa e filtros por categoria.
+- Painel administrativo com autenticação e verificação da tabela site_admins.
+- Publicação e remoção de ficheiros no bucket work-files.
+- Migração SQL para limitar alterações a administradores autorizados.
+
+PASSOS NECESSÁRIOS ANTES DA PUBLICAÇÃO:
+1. No Supabase, abrir SQL Editor.
+2. Abrir o ficheiro supabase-security-upgrade.sql deste repositório e executar o conteúdo uma única vez.
+3. Confirmar que a conta administrativa está registada em public.site_admins.
+4. Rever a alteração e integrá-la na branch main para publicar no GitHub Pages.
+
+A chave de configuração do navegador deve ser apenas a chave pública anon/publishable do Supabase. Nunca colocar service_role ou chaves secretas no site.
+
+Nota: conversas, fórum, certificados, notificações, perfis completos, convites geridos e assistente inteligente ainda não estão ligados a tabelas/serviços nesta entrega. Não devem ser tratados como funcionalidades activas.
