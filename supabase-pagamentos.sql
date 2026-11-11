@@ -74,7 +74,7 @@ drop policy if exists "Admins manage store assets" on storage.objects;
 create policy "Admins manage store assets"
 on storage.objects for all to authenticated
 using (
- bucket_id in ('store-assets','store-files')
+ bucket_id in ('store-assets','store-files','store-free-files')
  and exists (select 1 from public.site_admins a where a.user_id = auth.uid())
 )
 with check (
@@ -85,7 +85,28 @@ with check (
 drop policy if exists "Visitors upload payment proofs" on storage.objects;
 create policy "Visitors upload payment proofs"
 on storage.objects for insert to anon, authenticated
-with check (bucket_id = 'payment-proofs');
+with check (
+ bucket_id = 'payment-proofs'
+ and (storage.foldername(name))[1] ~* '^[0-9a-f-]{36}
+
+drop policy if exists "Admins read payment proofs" on storage.objects;
+create policy "Admins read payment proofs"
+on storage.objects for select to authenticated
+using (
+ bucket_id = 'payment-proofs'
+ and exists (select 1 from public.site_admins a where a.user_id = auth.uid())
+);
+
+drop policy if exists "Admins delete payment proofs" on storage.objects;
+create policy "Admins delete payment proofs"
+on storage.objects for delete to authenticated
+using (
+ bucket_id = 'payment-proofs'
+ and exists (select 1 from public.site_admins a where a.user_id = auth.uid())
+);
+
+ and public.store_order_exists(((storage.foldername(name))[1])::uuid)
+);
 
 drop policy if exists "Admins read payment proofs" on storage.objects;
 create policy "Admins read payment proofs"
