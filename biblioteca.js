@@ -58,16 +58,16 @@
       return;
     }
     const client = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
-    const { data, error } = await client.from("works")
-      .select("id,title,description,category,url,created_at")
-      .order("created_at", { ascending: false });
-
-    if (error) {
+    try {
+      const { data, error } = await client.from("works")
+        .select("id,title,description,category,url,created_at")
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      publications = data || [];
+    } catch (_) {
       status.textContent = "Não foi possível carregar as publicações. Confirma a ligação e as políticas de leitura pública do Supabase.";
       return;
     }
-
-    publications = data || [];
     const categories = [...new Set(publications.map((work) => work.category).filter(Boolean))].sort();
     categories.forEach((value) => category.add(new Option(value, value)));
     render();
