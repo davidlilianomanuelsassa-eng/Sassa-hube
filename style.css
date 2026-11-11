@@ -43,3 +43,49 @@ body{color:var(--ink);background:#fff;font-family:'DM Sans',sans-serif}
 .featured-book-card .store-price{margin-top:auto}
 .featured-book-card .btn{margin-top:5px;text-decoration:none;text-align:center}
 @media(max-width:650px){.featured-store{padding-top:48px;padding-bottom:50px}.featured-book-card>img,.featured-book-placeholder{height:220px}}
+
+
+/* Identidade institucional Sassa Hube — hierarquia, clareza e presença */
+:root{--navy:#081b34;--navy2:#12345a;--gold:#d5a84f;--gold-light:#f5ead2;--ink:#14243a;--muted:#66758a;--line:#e4e9f0}
+.topbar{height:82px;background:rgba(8,27,52,.97);box-shadow:0 8px 28px #07182d20;padding-left:max(calc((100% - 1180px)/2),5%);padding-right:max(calc((100% - 1180px)/2),5%)}
+.brand{color:#fff}.brand-mark{background:linear-gradient(145deg,#e2bd73,#a9772b);color:#102846}.brand small{color:#c8d4e3}
+.topbar nav a{color:#e5edf6}.topbar nav a:hover{color:#f1cd83}
+.topbar .nav-cta{background:#e0b65f;color:#10243d;box-shadow:none}
+.hero-premium{min-height:570px;padding-top:88px;padding-bottom:78px;background:radial-gradient(ellipse at 85% 48%,#1d4774 0,transparent 38%),linear-gradient(115deg,#081b34 0%,#102f52 64%,#0a203c 100%);position:relative}
+.hero-premium:after{content:"";position:absolute;right:-130px;top:-220px;width:580px;height:580px;border:1px solid #d8b66d55;border-radius:50%;pointer-events:none}
+.hero-copy{position:relative;z-index:2;max-width:700px}
+.hero-premium .eyebrow{color:#e6c47f}
+.hero h1{font-size:clamp(44px,5.7vw,72px);line-height:1.04;letter-spacing:-2.8px;color:#fff;margin:22px 0 24px}
+.hero h1 em{color:#e7bd69}
+.hero-copy>p:not(.motto){color:#d0dbea;font-size:17px;max-width:600px;line-height:1.8}
+.hero .btn-primary{background:#e2b95f;color:#122742;box-shadow:0 10px 28px #0003}
+.hero .btn-outline{color:#fff;border-color:#ffffff55;background:#ffffff08}
+.hero .motto{color:#d9e2ee!important;font-size:10px!important;letter-spacing:1.8px;font-weight:800;margin-top:32px!important}
+.hero .motto span{color:#e5bc69;padding:0 6px}
+.hero-visual{z-index:1}
+.hero-seal{background:linear-gradient(145deg,#163d68,#071a31);border:8px solid #e5c47f;outline:1px solid #fff6;box-shadow:0 25px 80px #0005}
+.hero-seal span{color:#f2d99f}
+.hero-seal small{color:#dce6f1}
+.hero-gold-line{border-color:#d9b66f88}
+.hero-caption{color:#d7e1ed}
+.trust-strip{background:#f3f6fa;color:#31445e;border-bottom:1px solid #e5eaf1;padding:18px 5%;font-weight:700}
+.trust-strip i{background:#c99b4b}
+.section{padding-top:78px;padding-bottom:82px}
+.section-head h2,.about-platform h2{font-size:clamp(28px,3vw,36px);letter-spacing:-1px}
+.areas-section{padding-top:76px;padding-bottom:60px}
+.areas-grid{grid-template-columns:repeat(4,minmax(0,1fr));margin-top:30px}
+.area-card{display:block;text-decoration:none;border:1px solid #e3e8ef;border-radius:15px;padding:25px 22px;background:linear-gradient(155deg,#fff,#f7f9fc);box-shadow:0 8px 24px #0b25400a;transition:transform .2s,border-color .2s,box-shadow .2s}
+.area-card:hover{transform:translateY(-5px);border-color:#d8b66f;box-shadow:0 18px 34px #0b254014}
+.area-number{display:grid;place-items:center;width:38px;height:38px;border-radius:11px;background:#f4ead5;color:#8d672d;font:800 12px Manrope}
+.area-card h3{font:800 17px Manrope;color:#102b50;margin:20px 0 10px}
+.area-card p{font-size:13px;line-height:1.7;color:#68778b;min-height:66px}
+.area-card b{font-size:11px;color:#9a712e;letter-spacing:.2px}
+.featured-store{background:#f5f7fa;border-top:1px solid #e8edf3;border-bottom:1px solid #e8edf3}
+.featured-store .section-head h2{font-size:30px}
+.featured-book-card{border:1px solid #e2e7ef;box-shadow:0 8px 24px #102b5009}
+.featured-book-card .btn-primary{background:#12345a;color:#fff}
+.founder-section{padding-top:90px;padding-bottom:90px}
+.about-platform{background:#f3f6fa}
+.site-footer{background:#081b34}
+@media(max-width:900px){.areas-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.hero-premium{padding-left:6%;padding-right:6%}}
+@media(max-width:650px){.topbar{background:#081b34}.hero-premium{padding:58px 7%;min-height:auto}.hero h1{font-size:43px;letter-spacing:-1.5px}.hero-visual{margin-top:28px}.areas-grid{grid-template-columns:1fr}.area-card p{min-height:0}.trust-strip{justify-content:flex-start}.section{padding-top:55px;padding-bottom:58px}}
