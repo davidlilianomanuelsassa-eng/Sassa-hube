@@ -27,6 +27,36 @@ function showDashboard(){ $("loginPanel").classList.add("hidden");$("dashboard")
 async function isAdmin(){const {data:{user}}=await db.auth.getUser();if(!user)return false;const {data,error}=await db.from("site_admins").select("user_id").eq("user_id",user.id).maybeSingle();return !error&&!!data;}
 async function loadAdminWorks(){const {data,error}=await db.from("works").select("*").order("created_at",{ascending:false});if(error){$("adminItems").textContent="Não foi possível carregar as publicações.";return;}$("totalPosts").textContent=(data||[]).length;$("adminItems").replaceChildren();(data||[]).forEach(w=>{const row=document.createElement("article");row.className="admin-row";const details=document.createElement("div");const name=document.createElement("strong");name.textContent=w.title;const meta=document.createElement("small");meta.textContent=" · "+w.category;details.append(name,meta);const del=document.createElement("button");del.className="delete";del.textContent="Apagar";del.addEventListener("click",()=>deleteWork(w));row.append(details,del);$("adminItems").append(row);});if(!data?.length)$("adminItems").textContent="Ainda não existem publicações.";}
 async function deleteWork(w){if(!confirm('Queres apagar "'+w.title+'"?'))return;const {error}=await db.from("works").delete().eq("id",w.id);if(error){notice("adminMsg","Não foi possível apagar. Confirma as políticas de segurança.");return;}if(w.file_path)await db.storage.from("work-files").remove([w.file_path]);notice("adminMsg","Publicação apagada.",false);await loadAdminWorks();}
+
+$("uploadForm").addEventListener("submit",async e=>{
+  e.preventDefault();
+  if(!db){notice("adminMsg","A ligação ao Supabase não está configurada.");return;}
+  const title=$("title").value.trim();
+  const description=$("description").value.trim();
+  const category=$("category").value;
+  const file=$("file").files[0];
+  if(!title||!file){notice("adminMsg","Preenche o título e escolhe um ficheiro.");return;}
+  if(file.size>50*1024*1024){notice("adminMsg","O ficheiro ultrapassa o limite de 50 MB.");return;}
+  const submit=e.submitter;
+  submit.disabled=true;submit.textContent="A publicar...";
+  const {data:{user}}=await db.auth.getUser();
+  if(!user||!await isAdmin()){notice("adminMsg","A sessão não tem autorização administrativa.");submit.disabled=false;submit.textContent="Publicar na biblioteca";return;}
+  const safeName=file.name.normalize("NFKD").replace(/[^a-zA-Z0-9._-]/g,"-");
+  const filePath=user.id+"/"+crypto.randomUUID()+"-"+safeName;
+  try{
+    const {error:uploadError}=await db.storage.from("work-files").upload(filePath,file,{upsert:false,contentType:file.type||"application/octet-stream"});
+    if(uploadError)throw uploadError;
+    const {data:publicData}=db.storage.from("work-files").getPublicUrl(filePath);
+    const {error:insertError}=await db.from("works").insert({title,description,category,file_path:filePath,url:publicData.publicUrl});
+    if(insertError){await db.storage.from("work-files").remove([filePath]);throw insertError;}
+    notice("adminMsg","Publicação enviada com sucesso para a biblioteca.",false);
+    $("uploadForm").reset();
+    await loadAdminWorks();
+  }catch(err){
+    console.error("Erro ao publicar:",err);
+    notice("adminMsg","Não foi possível publicar. Verifica o ficheiro, o bucket e as permissões do Supabase.");
+  }finally{submit.disabled=false;submit.textContent="Publicar na biblioteca";}
+});
 $("loginForm").addEventListener("submit",async e=>{e.preventDefault();if(!db){notice("loginMsg","A ligação ao Supabase não está configurada.");return;}notice("loginMsg","A verificar acesso...",false);const {error}=await db.auth.signInWithPassword({email:$("email").value,password:$("password").value});if(error){notice("loginMsg","Não foi possível entrar. Confirma os dados.");return;}if(!await isAdmin()){await db.auth.signOut();notice("loginMsg","Esta conta não tem autorização de administrador.");return;}showDashboard();await loadAdminWorks();});
 $("logout").addEventListener("click",async()=>{if(db)await db.auth.signOut();showLogin();});
 $("refresh").addEventListener("click",loadAdminWorks);
