@@ -36,28 +36,29 @@ document.querySelectorAll("[data-format]").forEach(b=>b.addEventListener("click"
 $("storeOrderForm").addEventListener("submit",async e=>{
  e.preventDefault();if(!db){$("orderMessage").textContent="A ligação à livraria não está disponível.";return;}
  const product=products.find(p=>p.id===$("productId").value);if(!product){$("orderMessage").textContent="Escolhe novamente o livro.";return;}
+ const orderId=crypto.randomUUID();
  const accessCode=Array.from(crypto.getRandomValues(new Uint8Array(32)),b=>b.toString(16).padStart(2,"0")).join("");
  const hashBuffer=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(accessCode));
  const accessCodeHash=Array.from(new Uint8Array(hashBuffer),b=>b.toString(16).padStart(2,"0")).join("");
- const payload={product_id:product.id,product_title:product.title,format:product.format,price:product.price,currency:product.currency||"AOA",buyer_name:$("buyerName").value.trim(),buyer_contact:$("buyerContact").value.trim(),note:$("buyerNote").value.trim()||null,access_code_hash:accessCodeHash};
+ const payload={id:orderId,product_id:product.id,product_title:product.title,format:product.format,price:product.price,currency:product.currency||"AOA",buyer_name:$("buyerName").value.trim(),buyer_contact:$("buyerContact").value.trim(),note:$("buyerNote").value.trim()||null,access_code_hash:accessCodeHash};
  const btn=e.submitter;btn.disabled=true;btn.textContent="A enviar...";
- const {data:createdOrder,error}=await db.from("store_orders").insert(payload).select("id").single();
+ const {error}=await db.from("store_orders").insert(payload);
  btn.disabled=false;btn.textContent="Enviar encomenda";
  if(error){$("orderMessage").textContent="Não foi possível enviar. Tenta novamente mais tarde.";return;}
  $("orderMessage").textContent=Number(product.price)===0?"Pedido do livro gratuito recebido. Guarda os dados de acesso abaixo.":"Encomenda enviada! Guarda a referência e o código abaixo. Depois da confirmação do pagamento, poderás descarregar o livro nesta página.";
  $("orderReceipt").classList.remove("hidden");
- $("createdOrderId").textContent=createdOrder.id;
+ $("createdOrderId").textContent=orderId;
  $("createdOrderCode").textContent=accessCode;
  e.target.reset();
 });
-const $createdOrderCode=$("createdOrderCode");
 $("downloadOrderForm").addEventListener("submit",async e=>{
  e.preventDefault();
  const btn=e.submitter;btn.disabled=true;btn.textContent="A verificar...";
+ const downloadWindow=window.open("about:blank","_blank");
  const {data,error}=await db.functions.invoke("download-book",{body:{order_id:$("downloadOrderId").value.trim(),access_code:$("downloadAccessCode").value.trim()}});
  btn.disabled=false;btn.textContent="Descarregar livro";
- if(error||!data?.download_url){$("downloadMessage").textContent=data?.error||"Não foi possível verificar a encomenda. Confirma os dados e tenta novamente.";return;}
+ if(error||!data?.download_url){if(downloadWindow)downloadWindow.close();$("downloadMessage").textContent=data?.error||"Não foi possível verificar a encomenda. Confirma os dados e tenta novamente.";return;}
  $("downloadMessage").textContent="Acesso autorizado. O link é válido durante 5 minutos.";
- window.open(data.download_url,"_blank","noopener");
+ if(downloadWindow)downloadWindow.location.href=data.download_url;else window.location.href=data.download_url;
 });
 loadStore();
