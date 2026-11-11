@@ -32,7 +32,7 @@ async function loadAdminQuestions(){const box=$("adminQuestions");box.textConten
 async function loadStoreProducts(){
  const box=$("storeProducts");if(!box)return;box.textContent="A carregar livros...";
  if(!db||!await isAdmin()){box.textContent="Acesso administrativo não confirmado.";return;}
- const {data,error}=await db.from("store_products").select("id,title,price,currency,format,active").order("created_at",{ascending:false});
+ const {data,error}=await db.from("store_products").select("id,title,price,currency,format,active,digital_file_path").order("created_at",{ascending:false});
  if(error){box.textContent="Não foi possível carregar os livros.";return;}
  box.replaceChildren();
  if(!data?.length){box.textContent="Ainda não existem livros publicados.";return;}
@@ -51,10 +51,39 @@ async function loadStoreProducts(){
    if(updateError){notice("storeAdminMsg","Não foi possível actualizar o preço.");return;}
    p.price=value;notice("storeAdminMsg",value===0?"Livro actualizado: agora é gratuito.":"Preço do livro actualizado.",false);
   });
-  controls.append(price,save);row.append(details,controls);box.append(row);
+  controls.append(price,save);
+  if(p.format==="Digital"){
+   const file=document.createElement("input");file.type="file";file.accept="application/pdf,.pdf";file.setAttribute("aria-label","Ficheiro PDF de "+p.title);file.style.maxWidth="190px";
+   const upload=document.createElement("button");upload.type="button";upload.className="btn btn-outline";upload.textContent="Carregar PDF";
+   const fileStatus=document.createElement("small");fileStatus.textContent=p.digital_file_path?"PDF privado carregado":"Sem PDF associado";
+   upload.addEventListener("click",async()=>{
+    const selected=file.files[0];if(!selected){fileStatus.textContent="Escolhe primeiro um ficheiro PDF.";return;}
+    if(selected.type!=="application/pdf"&&!selected.name.toLowerCase().endsWith(".pdf")){fileStatus.textContent="Só são aceites ficheiros PDF.";return;}
+    if(selected.size>50*1024*1024){fileStatus.textContent="O PDF ultrapassa 50 MB.";return;}
+    const {data:{user}}=await db.auth.getUser();if(!user||!await isAdmin()){fileStatus.textContent="Sessão administrativa não confirmada.";return;}
+    upload.disabled=true;upload.textContent="A carregar...";
+    const safe=selected.name.normalize("NFKD").replace(/[^a-zA-Z0-9._-]/g,"-");
+    const path=user.id+"/"+p.id+"/"+crypto.randomUUID()+"-"+safe;
+    const {error:upErr}=await db.storage.from("store-files").upload(path,selected,{upsert:false,contentType:"application/pdf"});
+    if(upErr){fileStatus.textContent="Falha no envio. Confirma o bucket privado e as políticas SQL.";upload.disabled=false;upload.textContent="Carregar PDF";return;}
+    const {error:saveErr}=await db.from("store_products").update({digital_file_path:path}).eq("id",p.id);
+    if(saveErr){await db.storage.from("store-files").remove([path]);fileStatus.textContent="PDF enviado, mas não foi possível associá-lo ao livro.";upload.disabled=false;upload.textContent="Carregar PDF";return;}
+    if(p.digital_file_path)await db.storage.from("store-files").remove([p.digital_file_path]);
+    p.digital_file_path=path;fileStatus.textContent="PDF privado guardado com sucesso.";upload.disabled=false;upload.textContent="Actualizar PDF";file.value="";
+   });
+   controls.append(file,upload,fileStatus);
+  }
+  row.append(details,controls);box.append(row);
  });
 }
-async function loadStoreOrders(){const box=$("storeOrders");box.textContent="A carregar...";const {data,error}=await db.from("store_orders").select("*").order("created_at",{ascending:false});if(error){box.textContent="Não foi possível carregar. Executa o SQL da Livraria no Supabase.";return;}box.replaceChildren();if(!data?.length){box.textContent="Ainda não há encomendas.";return;}data.forEach(o=>{const row=document.createElement("article");row.className="admin-row store-order-row";const details=document.createElement("div");const title=document.createElement("strong");title.textContent=o.product_title+" · "+o.format;const buyer=document.createElement("small");buyer.textContent=o.buyer_name+" · "+o.buyer_contact+" · "+(Number(o.price)===0?"Gratuito":new Intl.NumberFormat("pt-AO",{style:"currency",currency:o.currency||"AOA"}).format(Number(o.price)));const status=document.createElement("select");["pending","confirmed","delivered","free_delivered","cancelled"].forEach(v=>{const op=document.createElement("option");op.value=v;op.textContent=({pending:"Pendente",confirmed:"Pagamento confirmado",delivered:"Entregue",free_delivered:"Disponibilizado (gratuito)",cancelled:"Cancelada"})[v];status.append(op);});status.value=o.status;status.addEventListener("change",async()=>{const {error}=await db.from("store_orders").update({status:status.value}).eq("id",o.id);if(error){notice("storeAdminMsg","Não foi possível actualizar a encomenda.");status.value=o.status;}else{o.status=status.value;notice("storeAdminMsg","Estado da encomenda actualizado.",false);}});details.append(title,buyer);if(o.note){const note=document.createElement("small");note.textContent="Nota: "+o.note;details.append(note);}row.append(details,status);box.append(row);});}
+async function loadStoreOrders(){const box=$("storeOrders");box.textContent="A carregar...";const {data,error}=await db.from("store_orders").select("*,store_products(digital_file_path)").order("created_at",{ascending:false});if(error){box.textContent="Não foi possível carregar. Confirma o SQL actualizado da Livraria no Supabase.";return;}box.replaceChildren();if(!data?.length){box.textContent="Ainda não há encomendas.";return;}data.forEach(o=>{const row=document.createElement("article");row.className="admin-row store-order-row";const details=document.createElement("div");const title=document.createElement("strong");title.textContent=o.product_title+" · "+o.format;const buyer=document.createElement("small");buyer.textContent=o.buyer_name+" · "+o.buyer_contact+" · "+(Number(o.price)===0?"Gratuito":new Intl.NumberFormat("pt-AO",{style:"currency",currency:o.currency||"AOA"}).format(Number(o.price)));const status=document.createElement("select");["pending","confirmed","delivered","free_delivered","cancelled"].forEach(v=>{const op=document.createElement("option");op.value=v;op.textContent=({pending:"Pendente",confirmed:"Pagamento confirmado",delivered:"Entregue",free_delivered:"Disponibilizado (gratuito)",cancelled:"Cancelada"})[v];status.append(op);});status.value=o.status;status.addEventListener("change",async()=>{const {error}=await db.from("store_orders").update({status:status.value}).eq("id",o.id);if(error){notice("storeAdminMsg","Não foi possível actualizar a encomenda.");status.value=o.status;}else{o.status=status.value;notice("storeAdminMsg","Estado da encomenda actualizado.",false);await loadStoreOrders();}});details.append(title,buyer);if(o.note){const note=document.createElement("small");note.textContent="Nota: "+o.note;details.append(note);}row.append(details,status);
+ const filePath=o.store_products?.digital_file_path;
+ if(o.format==="Digital"&&filePath&&["confirmed","free_delivered","delivered"].includes(o.status)){
+  const access=document.createElement("button");access.type="button";access.className="btn btn-primary";access.textContent="Gerar link PDF (7 dias)";
+  access.addEventListener("click",async()=>{access.disabled=true;access.textContent="A gerar...";const {data:linkData,error:linkError}=await db.storage.from("store-files").createSignedUrl(filePath,7*24*60*60);access.disabled=false;access.textContent="Gerar link PDF (7 dias)";if(linkError){notice("storeAdminMsg","Não foi possível gerar o link. Confirma as permissões do bucket privado.");return;}const link=document.createElement("a");link.href=linkData.signedUrl;link.target="_blank";link.rel="noopener";link.textContent="Abrir PDF";link.className="btn btn-outline";const copy=document.createElement("button");copy.type="button";copy.className="btn btn-outline";copy.textContent="Copiar link";copy.addEventListener("click",async()=>{try{await navigator.clipboard.writeText(linkData.signedUrl);notice("storeAdminMsg","Link copiado. Envia-o ao comprador pelo contacto da encomenda.",false);}catch(e){notice("storeAdminMsg","Não foi possível copiar automaticamente. Abre o PDF e copia o endereço.");}});row.append(link,copy);notice("storeAdminMsg","Link temporário gerado. Só partilhes com o comprador.",false);});
+  row.append(access);
+ }else if(o.format==="Digital"&&["confirmed","free_delivered","delivered"].includes(o.status)&&!filePath){const missing=document.createElement("small");missing.textContent="Carrega primeiro o PDF deste livro na secção «Livros já publicados».";row.append(missing);}
+ box.append(row);});}
 $("storeProductForm").addEventListener("submit",async e=>{e.preventDefault();if(!db||!await isAdmin()){notice("storeAdminMsg","Acesso administrativo não confirmado.");return;}const btn=e.submitter;btn.disabled=true;const {error}=await db.from("store_products").insert({title:$("storeTitle").value.trim(),description:$("storeDescription").value.trim()||null,price:Number($("storePrice").value),currency:$("storeCurrency").value,format:$("storeFormat").value,cover_url:$("storeCover").value.trim()||null,active:true});btn.disabled=false;if(error){notice("storeAdminMsg","Não foi possível adicionar o livro. Confirma se executaste o SQL da Livraria.");return;}notice("storeAdminMsg","Livro adicionado ao catálogo público.",false);$("storeProductForm").reset();});
 $("refreshStoreOrders").addEventListener("click",loadStoreOrders);
 $("refreshStoreProducts").addEventListener("click",loadStoreProducts);
