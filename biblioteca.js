@@ -42,8 +42,8 @@
       const share = make("button", "share-file", "Partilhar no WhatsApp");
       share.type = "button";
       share.addEventListener("click", () => {
-        const pageUrl = window.location.href;
-        const message = (work.title || "Publicação do Sassa Hube") + " — " + pageUrl;
+        const fileUrl = work.url || window.location.href;
+        const message = (work.title || "Publicação do Sassa Hube") + " — " + fileUrl;
         window.open("https://wa.me/?text=" + encodeURIComponent(message), "_blank", "noopener,noreferrer");
       });
       actions.append(share);
