@@ -1,202 +1,35 @@
-
-<!DOCTYPE html>
-<html lang="pt">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Painel Administrativo | Sassa Hube</title>
-<style>
-*{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#f1f5f9;color:#183047}
-header{background:#123d68;color:white;padding:25px;text-align:center}
-header h1{margin:0;letter-spacing:2px}
-header p{margin-bottom:0}
-.container{max-width:1100px;margin:25px auto;padding:15px}
-.welcome,.card{background:white;padding:22px;border-radius:12px;box-shadow:0 3px 14px #0001;margin-bottom:18px}
-.welcome{border-left:5px solid #087e8b}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:15px}
-.stat{background:white;padding:20px;border-radius:12px;box-shadow:0 2px 10px #0001}
-.stat strong{display:block;font-size:28px;color:#087e8b;margin-top:8px}
-nav{display:flex;flex-wrap:wrap;gap:8px;margin:20px 0}
-button{border:0;background:#087e8b;color:white;padding:12px 16px;border-radius:7px;cursor:pointer;font-weight:bold}
-button:hover{background:#075d68}
-nav button{background:#123d68}
-section{display:none}
-section.active{display:block}
-input,textarea,select{width:100%;padding:12px;margin:8px 0 15px;border:1px solid #ccd5df;border-radius:7px;font:inherit}
-textarea{min-height:110px}
-.item{padding:15px;border:1px solid #e0e7ef;border-radius:9px;margin:12px 0}
-.muted{color:#64748b;font-size:14px}
-.notice{background:#fff3cd;padding:13px;border-radius:8px;margin-top:15px;font-size:14px}
-footer{text-align:center;padding:25px;color:#64748b}
-a{color:#087e8b}
-@media(max-width:600px){header{padding:18px}.container{padding:10px}}
-</style>
-</head>
-<body>
-
-<header>
-<h1>SASSA HUBE</h1>
-<p>Painel de Administração</p>
-<p>Aprender a conhecer para transformar (2026, David Sassa)</p>
-</header>
-
-<div class="container">
-
-<div class="welcome">
-<h2>Bem-vindo à área administrativa!</h2>
-<p>Este é o espaço de gestão do Sassa Hube. Aqui podes acompanhar as publicações, organizar conteúdos e preparar a comunicação com os visitantes.</p>
-<strong>O conhecimento partilhado transforma o futuro.</strong>
-</div>
-
-<div class="grid">
-<div class="stat">Publicações<strong id="totalPosts">0</strong></div>
-<div class="stat">Conversas<strong>0</strong></div>
-<div class="stat">Perguntas<strong>0</strong></div>
-<div class="stat">Reacções<strong>0</strong></div>
-</div>
-
-<nav>
-<button onclick="mostrar('inicio')">Início</button>
-<button onclick="mostrar('publicar')">Publicações</button>
-<button onclick="mostrar('conversas')">Conversas</button>
-<button onclick="mostrar('perguntas')">Perguntas</button>
-<button onclick="mostrar('reacoes')">Gostos e reacções</button>
-<button onclick="mostrar('actividades')">Actividades</button>
-</nav>
-
-<section id="inicio" class="active">
-<div class="card">
-<h2>Visão geral do projecto</h2>
-<p>O Sassa Hube é uma plataforma dedicada à partilha de conhecimentos, trabalhos académicos, documentos e recursos educativos.</p>
-<h3>Missão</h3>
-<p>Facilitar o acesso à informação, incentivar a aprendizagem e promover a partilha de conhecimentos.</p>
-<h3>Mensagem aos visitantes</h3>
-<p>Seja bem-vindo ao Sassa Hube! Explore os nossos conteúdos, aprenda, participe e partilhe conhecimento.</p>
-</div>
-</section>
-
-<section id="publicar">
-<div class="card">
-<h2>Adicionar publicação</h2>
-<label>Título da publicação</label>
-<input id="titulo" placeholder="Ex.: A importância da educação">
-<label>Categoria</label>
-<select id="categoria">
-<option>Trabalhos académicos</option>
-<option>Educação</option>
-<option>Tecnologia</option>
-<option>Documentos</option>
-<option>Apresentações</option>
-<option>Artigos</option>
-</select>
-<label>Descrição</label>
-<textarea id="descricao" placeholder="Escreve uma apresentação do conteúdo..."></textarea>
-<button onclick="prepararPublicacao()">Preparar publicação</button>
-<p class="muted" id="resultado"></p>
-</div>
-<div class="card">
-<h3>Publicações preparadas nesta sessão</h3>
-<div id="listaPublicacoes">Ainda não existem publicações nesta demonstração.</div>
-</div>
-</section>
-
-<section id="conversas">
-<div class="card">
-<h2>Centro de conversas</h2>
-<p>Este espaço será utilizado para consultar mensagens dos visitantes e responder às suas dúvidas.</p>
-<div class="item">
-<strong>Caixa de entrada</strong>
-<p class="muted">As mensagens reais aparecerão aqui quando a comunicação estiver ligada à base de dados.</p>
-</div>
-<textarea placeholder="Escreve uma resposta (demonstração)" disabled></textarea>
-<button disabled>Enviar resposta</button>
-</div>
-</section>
-
-<section id="perguntas">
-<div class="card">
-<h2>Perguntas e respostas</h2>
-<p>Espaço destinado às perguntas dos visitantes sobre os conteúdos e actividades do Sassa Hube.</p>
-<div class="item">
-<strong>Exemplo de pergunta:</strong>
-<p>Como posso encontrar trabalhos e materiais educativos?</p>
-<strong>Resposta:</strong>
-<p>Consulta a área de publicações e escolhe a categoria pretendida.</p>
-</div>
-<p class="muted">As perguntas dos visitantes serão ligadas ao sistema de mensagens numa próxima etapa.</p>
-</div>
-</section>
-
-<section id="reacoes">
-<div class="card">
-<h2>Gostos e reacções</h2>
-<p>Os visitantes poderão demonstrar o que acharam das publicações através de reacções.</p>
-<div class="item">
-<strong>Exemplo de reacções</strong>
-<p>👍 Gostei &nbsp; ❤️ Adorei &nbsp; 💡 Interessante</p>
-<p class="muted">As reacções reais serão contabilizadas quando esta função estiver ligada à base de dados.</p>
-</div>
-</div>
-</section>
-
-<section id="actividades">
-<div class="card">
-<h2>Actividades recentes</h2>
-<div class="item">
-<strong>Projecto Sassa Hube</strong>
-<p>Estrutura do painel administrativo em desenvolvimento.</p>
-<span class="muted">Actualização inicial — 2026</span>
-</div>
-<div class="item">
-<strong>Objectivo</strong>
-<p>Construir uma plataforma de partilha de conhecimento e recursos digitais.</p>
-</div>
-</div>
-</section>
-
-<div class="notice">
-<strong>Nota de desenvolvimento:</strong> este painel é uma versão de apresentação. As publicações, conversas, perguntas e reacções ainda precisam de ligação à base de dados para serem partilhadas com todos os visitantes. O acesso administrativo também ainda não está protegido.
-</div>
-
-<p><a href="index.html">← Voltar à página inicial</a></p>
-</div>
-
-<footer>
-Sassa Hube © 2026 — Aprender a conhecer para transformar.
-</footer>
-
+<!doctype html>
+<html lang="pt"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Administração | Sassa Hube</title><link rel="stylesheet" href="style.css"></head>
+<body class="admin-page">
+<header class="topbar"><a class="brand" href="index.html"><span class="brand-mark">SH</span><span>SASSA HUBE<small>PAINEL DE ADMINISTRAÇÃO</small></span></a><a class="btn btn-outline" href="index.html">← Ver o site</a></header>
+<main class="admin-main">
+<section id="loginPanel" class="login-panel"><span class="eyebrow">ÁREA RESTRITA</span><h1>Acesso administrativo</h1><p>Entra com a conta autorizada para gerir as publicações da plataforma.</p>
+<form id="loginForm"><label for="email">E-mail</label><input id="email" type="email" autocomplete="username" required><label for="password">Palavra-passe</label><input id="password" type="password" autocomplete="current-password" required><button class="btn btn-primary full" type="submit">Entrar no painel</button><p id="loginMsg" class="message" role="status"></p></form></section>
+<section id="dashboard" class="dashboard hidden">
+<div class="admin-welcome"><div><span class="eyebrow">GESTÃO DA PLATAFORMA</span><h1>Painel de administração</h1><p>Gere a biblioteca pública do Sassa Hube.</p></div><button id="logout" class="btn btn-outline">Terminar sessão</button></div>
+<div class="stat-grid"><article class="stat-card"><span>Publicações na biblioteca</span><strong id="totalPosts">0</strong></article><article class="stat-card"><span>Estado da conta</span><strong class="stat-word">Autorizado</strong></article><article class="stat-card"><span>Armazenamento</span><strong class="stat-word">Até 50 MB / ficheiro</strong></article></div>
+<div class="admin-layout"><aside class="admin-nav"><button class="admin-tab active" data-panel="publicacoes">▤ Publicações</button><button class="admin-tab" data-panel="recursos">▣ Tipos de ficheiro</button><button class="admin-tab" data-panel="seguranca">♧ Segurança</button></aside>
+<div class="admin-content"><section class="admin-panel active" id="panel-publicacoes"><h2>Adicionar publicação</h2><p class="muted">Os ficheiros publicados ficam disponíveis para consulta pública na biblioteca.</p>
+<form id="uploadForm" class="upload-form"><label for="title">Título</label><input id="title" maxlength="180" required placeholder="Ex.: A importância da educação"><label for="description">Descrição</label><textarea id="description" rows="3" maxlength="1000" placeholder="Apresenta brevemente o conteúdo"></textarea><label for="category">Categoria</label><select id="category" required><option>PDF e Word</option><option>PowerPoint</option><option>Imagens e cartazes</option><option>Vídeos</option><option>Outros ficheiros</option></select><label for="file">Escolher ficheiro (máximo 50 MB)</label><input id="file" type="file" required accept=".pdf,.doc,.docx,.ppt,.pptx,.jpg,.jpeg,.png,.webp,.mp4,.txt,.xlsx,.zip"><button class="btn btn-primary" type="submit">Publicar na biblioteca</button><p id="adminMsg" class="message" role="status"></p></form>
+<div class="list-heading"><h2>Publicações existentes</h2><button id="refresh" class="btn btn-outline">Actualizar lista</button></div><div id="adminItems" class="admin-list">A carregar...</div></section>
+<section class="admin-panel" id="panel-recursos"><h2>Formatos aceites</h2><p>PDF, Word, PowerPoint, imagens, vídeos e outros documentos. O limite actual é de 50 MB por ficheiro.</p><p class="muted">A biblioteca pública permite pesquisar e filtrar os conteúdos por categoria.</p></section>
+<section class="admin-panel" id="panel-seguranca"><h2>Segurança e permissões</h2><p>O painel confirma a sessão e verifica se a conta consta da tabela <code>site_admins</code>. As regras da base de dados também devem limitar operações de escrita a administradores.</p><p class="muted">Nunca coloques chaves secretas ou service_role no código do site. A chave pública anon/publishable é a única apropriada para o navegador.</p></section>
+</div></div>
+<p class="admin-back"><a href="index.html">← Voltar à página pública</a></p>
+</section></main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="config.js"></script>
 <script>
-function mostrar(id){
-document.querySelectorAll("section").forEach(s=>s.classList.remove("active"));
-document.getElementById(id).classList.add("active");
-}
-let total=0;
-function prepararPublicacao(){
-const titulo=document.getElementById("titulo").value.trim();
-const descricao=document.getElementById("descricao").value.trim();
-const categoria=document.getElementById("categoria").value;
-const resultado=document.getElementById("resultado");
-if(!titulo||!descricao){
-resultado.textContent="Preenche o título e a descrição.";
-return;
-}
-const item=document.createElement("div");
-item.className="item";
-const h=document.createElement("strong");
-h.textContent=titulo;
-const p=document.createElement("p");
-p.textContent=descricao;
-const small=document.createElement("small");
-small.textContent="Categoria: "+categoria;
-item.append(h,p,small);
-document.getElementById("listaPublicacoes").prepend(item);
-total++;
-document.getElementById("totalPosts").textContent=total;
-resultado.textContent="Pré-visualização criada nesta sessão. Ainda não foi publicada no site.";
-document.getElementById("titulo").value="";
-document.getElementById("descricao").value="";
-}
-</script>
-</body>
-</html>
+const $=id=>document.getElementById(id);let db=null;
+if(window.SUPABASE_URL&&window.SUPABASE_ANON_KEY&&window.supabase)db=window.supabase.createClient(window.SUPABASE_URL,window.SUPABASE_ANON_KEY);
+function notice(id,text,error=true){$(id).textContent=text;$(id).style.color=error?"#b42318":"#16804a";}
+function showLogin(){ $("loginPanel").classList.remove("hidden");$("dashboard").classList.add("hidden");}
+function showDashboard(){ $("loginPanel").classList.add("hidden");$("dashboard").classList.remove("hidden");}
+async function isAdmin(){const {data:{user}}=await db.auth.getUser();if(!user)return false;const {data,error}=await db.from("site_admins").select("user_id").eq("user_id",user.id).maybeSingle();return !error&&!!data;}
+async function loadAdminWorks(){const {data,error}=await db.from("works").select("*").order("created_at",{ascending:false});if(error){$("adminItems").textContent="Não foi possível carregar as publicações.";return;}$("totalPosts").textContent=(data||[]).length;$("adminItems").replaceChildren();(data||[]).forEach(w=>{const row=document.createElement("article");row.className="admin-row";const details=document.createElement("div");const name=document.createElement("strong");name.textContent=w.title;const meta=document.createElement("small");meta.textContent=" · "+w.category;details.append(name,meta);const del=document.createElement("button");del.className="delete";del.textContent="Apagar";del.addEventListener("click",()=>deleteWork(w));row.append(details,del);$("adminItems").append(row);});if(!data?.length)$("adminItems").textContent="Ainda não existem publicações.";}
+async function deleteWork(w){if(!confirm('Queres apagar "'+w.title+'"?'))return;const {error}=await db.from("works").delete().eq("id",w.id);if(error){notice("adminMsg","Não foi possível apagar. Confirma as políticas de segurança.");return;}if(w.file_path)await db.storage.from("work-files").remove([w.file_path]);notice("adminMsg","Publicação apagada.",false);await loadAdminWorks();}
+$("loginForm").addEventListener("submit",async e=>{e.preventDefault();if(!db){notice("loginMsg","A ligação ao Supabase não está configurada.");return;}notice("loginMsg","A verificar acesso...",false);const {error}=await db.auth.signInWithPassword({email:$("email").value,password:$("password").value});if(error){notice("loginMsg","Não foi possível entrar. Confirma os dados.");return;}if(!await isAdmin()){await db.auth.signOut();notice("loginMsg","Esta conta não tem autorização de administrador.");return;}showDashboard();await loadAdminWorks();});
+$("logout").addEventListener("click",async()=>{if(db)await db.auth.signOut();showLogin();});
+$("refresh").addEventListener("click",loadAdminWorks);
+document.querySelectorAll(".admin-tab").forEach(b=>b.addEventListener("click",()=>{document.querySelectorAll(".admin-tab").forEach(x=>x.classList.toggle("active",x===b));document.querySelectorAll(".admin-panel").forEach(x=>x.classList.toggle("active",x.id==="panel-"+b.dataset.panel));}));
+(async()=>{if(!db){notice("loginMsg","Não foi possível ligar ao Supabase. Verifica config.js.");return;}const {data:{session}}=await db.auth.getSession();if(session){if(await isAdmin()){showDashboard();await loadAdminWorks();}else{await db.auth.signOut();showLogin();}}})();
+</script></body></html>
