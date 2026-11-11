@@ -32,7 +32,7 @@ async function loadAdminQuestions(){const box=$("adminQuestions");box.textConten
 async function loadStoreProducts(){
  const box=$("storeProducts");if(!box)return;box.textContent="A carregar livros...";
  if(!db||!await isAdmin()){box.textContent="Acesso administrativo não confirmado.";return;}
- const {data,error}=await db.from("store_products").select("id,title,price,currency,format,active").order("created_at",{ascending:false});
+ const {data,error}=await db.from("store_products").select("id,title,price,currency,format,active,digital_file_path").order("created_at",{ascending:false});
  if(error){box.textContent="Não foi possível carregar os livros.";return;}
  box.replaceChildren();
  if(!data?.length){box.textContent="Ainda não existem livros publicados.";return;}
