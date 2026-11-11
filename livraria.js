@@ -38,10 +38,20 @@ $("storeOrderForm").addEventListener("submit",async e=>{
  const product=products.find(p=>p.id===$("productId").value);if(!product){$("orderMessage").textContent="Escolhe novamente o livro.";return;}
  const payload={product_id:product.id,product_title:product.title,format:product.format,price:product.price,currency:product.currency||"AOA",buyer_name:$("buyerName").value.trim(),buyer_contact:$("buyerContact").value.trim(),note:$("buyerNote").value.trim()||null};
  const btn=e.submitter;btn.disabled=true;btn.textContent="A enviar...";
- const {error}=await db.from("store_orders").insert(payload);
+ const {data:createdOrder,error}=await db.from("store_orders").insert(payload).select("id").single();
  btn.disabled=false;btn.textContent="Enviar encomenda";
  if(error){$("orderMessage").textContent="Não foi possível enviar. Tenta novamente mais tarde.";return;}
  $("orderMessage").textContent=Number(product.price)===0?"Pedido do livro gratuito recebido! A equipa Sassa Hube irá disponibilizar a obra e enviar as instruções de acesso.":"Encomenda enviada! A equipa Sassa Hube entrará em contacto para confirmar o pagamento e a entrega.";
  e.target.reset();
+});
+const $createdOrderCode=$("createdOrderCode");
+$("downloadOrderForm").addEventListener("submit",async e=>{
+ e.preventDefault();
+ const btn=e.submitter;btn.disabled=true;btn.textContent="A verificar...";
+ const {data,error}=await db.functions.invoke("download-book",{body:{order_id:$("downloadOrderId").value.trim(),access_code:$("downloadAccessCode").value.trim()}});
+ btn.disabled=false;btn.textContent="Descarregar livro";
+ if(error||!data?.download_url){$("downloadMessage").textContent=data?.error||"Não foi possível verificar a encomenda. Confirma os dados e tenta novamente.";return;}
+ $("downloadMessage").textContent="Acesso autorizado. O link é válido durante 5 minutos.";
+ window.open(data.download_url,"_blank","noopener");
 });
 loadStore();
