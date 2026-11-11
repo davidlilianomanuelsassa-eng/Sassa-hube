@@ -26,12 +26,17 @@ document.querySelectorAll("[data-format]").forEach(b=>b.addEventListener("click"
 $("storeOrderForm").addEventListener("submit",async e=>{
  e.preventDefault();if(!db){$("orderMessage").textContent="A ligação à livraria não está disponível.";return;}
  const product=products.find(p=>p.id===$("productId").value);if(!product){$("orderMessage").textContent="Escolhe novamente o livro.";return;}
- const payload={product_id:product.id,product_title:product.title,format:product.format,price:product.price,currency:product.currency||"AOA",buyer_name:$("buyerName").value.trim(),buyer_contact:$("buyerContact").value.trim(),note:$("buyerNote").value.trim()||null};
+ const proof=$("buyerProof").files[0];if(!proof){$("orderMessage").textContent="Anexa o comprovativo da transferência.";return;}if(proof.size>5*1024*1024){$("orderMessage").textContent="O comprovativo deve ter no máximo 5 MB.";return;}const orderId=crypto.randomUUID();const payload={id:orderId,product_id:product.id,product_title:product.title,format:product.format,price:product.price,currency:product.currency||"AOA",buyer_name:$("buyerName").value.trim(),buyer_contact:$("buyerContact").value.trim(),note:$("buyerNote").value.trim()||null};
  const btn=e.submitter;btn.disabled=true;btn.textContent="A enviar...";
  const {error}=await db.from("store_orders").insert(payload);
- btn.disabled=false;btn.textContent="Enviar encomenda";
- if(error){$("orderMessage").textContent="Não foi possível enviar. Tenta novamente mais tarde.";return;}
- $("orderMessage").textContent="Encomenda enviada! A equipa Sassa Hube entrará em contacto para confirmar o pagamento e a entrega.";
+ if(error){btn.disabled=false;btn.textContent="Enviar encomenda e comprovativo";$("orderMessage").textContent="Não foi possível registar a encomenda. Tenta novamente mais tarde.";return;}
+ const ext=(proof.name.split(".").pop()||"pdf").toLowerCase().replace(/[^a-z0-9]/g,"");const proofPath=orderId+"/"+crypto.randomUUID()+"."+ext;
+ const {error:uploadError}=await db.storage.from("payment-proofs").upload(proofPath,proof,{upsert:false,contentType:proof.type||"application/octet-stream"});
+ if(uploadError){btn.disabled=false;btn.textContent="Enviar encomenda e comprovativo";$("orderMessage").textContent="A encomenda foi registada, mas o comprovativo não foi enviado. Contacta a equipa e indica a referência "+orderId+".";return;}
+ const {error:proofError}=await db.from("store_payment_proofs").insert({order_id:orderId,proof_path:proofPath});
+ btn.disabled=false;btn.textContent="Enviar encomenda e comprovativo";
+ if(proofError){$("orderMessage").textContent="A encomenda foi registada, mas não foi possível associar o comprovativo. Contacta a equipa e indica a referência "+orderId+".";return;}
+ $("orderMessage").textContent="Encomenda e comprovativo enviados! A equipa Sassa Hube irá verificar a transferência antes de confirmar o pagamento.";
  e.target.reset();
 });
 loadStore();
