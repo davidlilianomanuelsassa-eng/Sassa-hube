@@ -10,8 +10,8 @@ function renderStore(){
   const tag=document.createElement("span");tag.className="store-format";tag.textContent=p.format==="Digital"?"📘 Livro digital · PDF":"📚 Livro físico";
   const title=document.createElement("h3");title.textContent=p.title;
   const desc=document.createElement("p");desc.textContent=p.description||"Sem descrição adicional.";
-  const price=document.createElement("strong");price.className="store-price";price.textContent=new Intl.NumberFormat("pt-AO",{style:"currency",currency:p.currency||"AOA"}).format(Number(p.price));
-  const btn=document.createElement("button");btn.className="btn btn-primary";btn.textContent="Encomendar";btn.addEventListener("click",()=>{ $("productId").value=p.id;$("selectedBook").textContent=p.title+" — "+price.textContent;$("orderPanel").classList.remove("hidden");$("orderMessage").textContent="";$("orderPanel").scrollIntoView({behavior:"smooth",block:"start"});});
+  const price=document.createElement("strong");price.className="store-price";price.textContent=Number(p.price)===0?"Gratuito":new Intl.NumberFormat("pt-AO",{style:"currency",currency:p.currency||"AOA"}).format(Number(p.price));
+  const btn=document.createElement("button");btn.className="btn btn-primary";btn.textContent=Number(p.price)===0?"Obter gratuitamente":"Encomendar";btn.addEventListener("click",()=>{ $("productId").value=p.id;$("selectedBook").textContent=p.title+" — "+price.textContent;$("orderPanel").classList.remove("hidden");$("orderMessage").textContent="";$("orderPanel").scrollIntoView({behavior:"smooth",block:"start"});});
   card.append(tag,title,desc,price,btn);$("storeItems").append(card);
  });
  $("storeStatus").textContent=list.length?list.length+" livro(s) disponível(is).":"Ainda não há livros disponíveis nesta categoria.";
@@ -31,7 +31,7 @@ $("storeOrderForm").addEventListener("submit",async e=>{
  const {error}=await db.from("store_orders").insert(payload);
  btn.disabled=false;btn.textContent="Enviar encomenda";
  if(error){$("orderMessage").textContent="Não foi possível enviar. Tenta novamente mais tarde.";return;}
- $("orderMessage").textContent="Encomenda enviada! A equipa Sassa Hube entrará em contacto para confirmar o pagamento e a entrega.";
+ $("orderMessage").textContent=Number(product.price)===0?"Pedido do livro gratuito recebido! A equipa Sassa Hube irá disponibilizar a obra e enviar as instruções de acesso.":"Encomenda enviada! A equipa Sassa Hube entrará em contacto para confirmar o pagamento e a entrega.";
  e.target.reset();
 });
 loadStore();
