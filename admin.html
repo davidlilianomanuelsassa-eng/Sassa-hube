@@ -442,11 +442,12 @@ async function loadStoreProducts() {
 
     controls.append(price, save);
 
-    if (p.title.trim().toLowerCase() === "livro de teste-sassahube") {
+    const normalizedTitle = (p.title || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[–—]/g, "-").replace(/\s+/g, " ").trim();
+    if (normalizedTitle.includes("livro de teste") && normalizedTitle.includes("sassahube")) {
       const remove = document.createElement("button");
       remove.type = "button";
-      remove.className = "btn btn-outline";
-      remove.textContent = "Retirar da livraria";
+      remove.className = "btn btn-primary";
+      remove.textContent = "RETIRAR LIVRO DE TESTE";
       remove.addEventListener("click", async () => {
         if (!confirm('Retirar "' + p.title + '" da livraria pública? O histórico de encomendas será preservado.')) return;
         remove.disabled = true;
