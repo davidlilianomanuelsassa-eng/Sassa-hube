@@ -9,6 +9,7 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
 <header class="topbar">
 <a class="brand" href="index.html">
 <span class="brand-mark">SH</span>
@@ -22,6 +23,7 @@
 </header>
 
 <main class="section bookstore-page">
+
 <div class="section-head">
 <div>
 <span class="eyebrow">LIVRARIA SASSA HUBE</span>
@@ -42,6 +44,7 @@
 <section class="store-order hidden" id="orderPanel">
 <h2>Encomendar livro</h2>
 <p id="selectedBook"></p>
+
 <form id="storeOrderForm">
 <input type="hidden" id="productId">
 
@@ -53,6 +56,13 @@
 
 <label for="buyerEmail">Endereço de e-mail</label>
 <input id="buyerEmail" type="email" maxlength="254" required placeholder="O teu e-mail">
+
+<label for="paymentProof">Comprovativo de pagamento</label>
+<input
+id="paymentProof"
+type="file"
+accept=".pdf,.jpg,.jpeg,.png,.webp">
+<small>Formatos aceites: PDF, JPG, PNG e WEBP. Limite: 10 MB.</small>
 
 <label for="buyerNote">Observações (opcional)</label>
 <textarea id="buyerNote" rows="3" maxlength="600" placeholder="Indica alguma informação importante"></textarea>
@@ -72,6 +82,7 @@
 <section class="store-order" id="downloadPanel">
 <h2>Consultar encomenda e descarregar livro</h2>
 <p>Introduz a referência e o código que recebeste ao fazer a encomenda.</p>
+
 <form id="downloadOrderForm">
 <label for="downloadOrderId">Referência da encomenda</label>
 <input id="downloadOrderId" required autocomplete="off">
@@ -87,6 +98,7 @@
 <p class="public-note">
 A encomenda será confirmada pela equipa Sassa Hube. O pagamento e a entrega serão combinados directamente com o comprador. Nos livros digitais, o ficheiro só será disponibilizado depois da confirmação do pagamento.
 </p>
+
 </main>
 
 <footer class="site-footer">
@@ -97,15 +109,18 @@ A encomenda será confirmada pela equipa Sassa Hube. O pagamento e a entrega ser
 <p>Aprender a conhecer para transformar (2026, David Sassa)</p>
 </div>
 </div>
+
 <div class="footer-links">
 <a href="index.html">Página inicial</a>
 <a href="admin.html">Painel de administração</a>
 </div>
+
 <small>© 2026 Sassa Hube. Todos os direitos reservados.</small>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="config.js"></script>
 <script src="livraria.js"></script>
+
 </body>
 </html>
