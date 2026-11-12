@@ -1,12 +1,29 @@
 <!doctype html>
-<html lang="pt"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Administração | Sassa Hube</title><link rel="stylesheet" href="style.css"></head>
+<html lang="pt"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Administração | Sassa Hube</title><link rel="stylesheet" href="style.css"><style>
+/* Perfil do administrador */
+.admin-welcome-profile{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.admin-profile{display:flex;align-items:center;gap:18px;min-width:0}
+.admin-profile-photo{width:104px;height:104px;object-fit:cover;object-position:center 22%;border-radius:50%;border:4px solid #fff;box-shadow:0 5px 18px rgba(0,0,0,.16);background:#e8e8e8}
+.admin-profile-info h1{margin:5px 0}
+.admin-profile-info p{margin:0 0 4px;font-weight:600}
+.admin-profile-info small{color:#64748b}
+.admin-panel{display:none!important}
+.admin-panel.active{display:block!important}
+@media(max-width:600px){.admin-profile-photo{width:78px;height:78px}.admin-profile{gap:12px}.admin-welcome-profile{align-items:flex-start}}
+</style></head>
 <body class="admin-page">
 <header class="topbar"><a class="brand" href="index.html"><span class="brand-mark">SH</span><span>SASSA HUBE<small>PAINEL DE ADMINISTRAÇÃO</small></span></a><a class="btn btn-outline" href="index.html">← Ver o site</a></header>
 <main class="admin-main">
 <section id="loginPanel" class="login-panel"><span class="eyebrow">ÁREA RESTRITA</span><h1>Acesso administrativo</h1><p>Entra com a conta autorizada para gerir as publicações da plataforma.</p>
 <form id="loginForm"><label for="email">E-mail</label><input id="email" type="email" autocomplete="username" required><label for="password">Palavra-passe</label><input id="password" type="password" autocomplete="current-password" required><button class="btn btn-primary full" type="submit">Entrar no painel</button><p id="loginMsg" class="message" role="status"></p></form></section>
 <section id="dashboard" class="dashboard hidden">
-<div class="admin-welcome"><div><span class="eyebrow">GESTÃO DA PLATAFORMA</span><h1>Painel de administração</h1><p>Gere a biblioteca pública do Sassa Hube.</p></div><button id="logout" class="btn btn-outline">Terminar sessão</button></div>
+<div class="admin-welcome admin-welcome-profile">
+<div class="admin-profile">
+<img class="admin-profile-photo" src="IMG-20260521-WA0061%7E2.jpg" alt="Fotografia de David Sassa">
+<div class="admin-profile-info"><span class="eyebrow">GESTÃO DA PLATAFORMA</span><h1>David Sassa</h1><p>Administrador da Sassa Hube</p><small>Painel de administração</small></div>
+</div>
+<button id="logout" class="btn btn-outline">Terminar sessão</button>
+</div>
 <div class="stat-grid"><article class="stat-card"><span>Publicações na biblioteca</span><strong id="totalPosts">0</strong></article><article class="stat-card"><span>Estado da conta</span><strong class="stat-word">Autorizado</strong></article><article class="stat-card"><span>Armazenamento</span><strong class="stat-word">Até 50 MB / ficheiro</strong></article><article class="stat-card"><span>👍 Gostaram</span><strong id="adminLikes">—</strong></article><article class="stat-card"><span>👎 Não gostaram</span><strong id="adminDislikes">—</strong></article></div>
 <div class="admin-layout"><aside class="admin-nav"><button class="admin-tab active" data-panel="publicacoes">▤ Publicações</button><button class="admin-tab" data-panel="recursos">▣ Tipos de ficheiro</button><button class="admin-tab" data-panel="perguntas">✉ Perguntas</button><button class="admin-tab" data-panel="avaliacoes">♡ Avaliações</button><button class="admin-tab" data-panel="livraria">▣ Livraria</button><button class="admin-tab" data-panel="seguranca">♧ Segurança</button></aside>
 <div class="admin-content"><section class="admin-panel active" id="panel-publicacoes"><h2>Adicionar publicação</h2><p class="muted">Os ficheiros publicados ficam disponíveis para consulta pública na biblioteca.</p>
