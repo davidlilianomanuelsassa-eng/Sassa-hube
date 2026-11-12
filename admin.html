@@ -372,6 +372,40 @@ async function loadStoreProducts() {
     return;
   }
 
+  // Correcções solicitadas: actualizar o título antigo e retirar o livro de teste.
+  // A desactivação preserva o registo e o histórico de encomendas.
+  for (const product of (data || [])) {
+    const normalized = (product.title || "")
+      .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase().replace(/[–—]/g, "-").replace(/\s+/g, " ").trim();
+
+    if (normalized === "aprender a desaprender") {
+      const { error: renameError } = await db
+        .from("store_products")
+        .update({ title: "REDES SOCIAIS E SAÚDE MENTAL: CONEXÃO E ISOLAMENTO" })
+        .eq("id", product.id);
+
+      if (!renameError) {
+        product.title = "REDES SOCIAIS E SAÚDE MENTAL: CONEXÃO E ISOLAMENTO";
+      } else {
+        notice("storeAdminMsg", "Não foi possível actualizar o título automaticamente. Verifica as permissões no Supabase.");
+      }
+    }
+
+    if (normalized.includes("livro de teste") && normalized.includes("sassahube") && product.active) {
+      const { error: deactivateError } = await db
+        .from("store_products")
+        .update({ active: false })
+        .eq("id", product.id);
+
+      if (!deactivateError) {
+        product.active = false;
+      } else {
+        notice("storeAdminMsg", "Não foi possível retirar o livro de teste. Verifica as permissões no Supabase.");
+      }
+    }
+  }
+
   box.replaceChildren();
 
   if (!data?.length) {
