@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /admin.html
+
+Sitemap: https://davidlilianomanuelsassa-eng.github.io/Sassa-hube/sitemap.xml
