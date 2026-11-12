@@ -27,11 +27,15 @@ function makeGeneratedCover(product){
   format.className="generated-cover-format";
   format.textContent=product.format==="Digital"?"EDIÇÃO DIGITAL":"EDIÇÃO IMPRESSA";
 
+  const author=document.createElement("span");
+  author.className="generated-cover-author";
+  author.textContent="AUTOR: DAVID SASSA";
+
   const seal=document.createElement("span");
   seal.className="generated-cover-seal";
   seal.textContent="SH";
 
-  cover.append(brand,line,title,format,seal);
+  cover.append(brand,line,title,author,format,seal);
   return cover;
 }
 
@@ -42,12 +46,18 @@ function renderFeaturedBooks(products){
     card.className="work-card featured-book-card";
 
     if(p.cover_url){
+      const coverWrap=document.createElement("div");
+      coverWrap.className="book-cover-wrap";
       const img=document.createElement("img");
       img.src=p.cover_url;
-      img.alt="Capa de "+p.title;
+      img.alt="Capa de "+p.title+" — Autor: David Sassa";
       img.loading="lazy";
-      img.onerror=()=>img.replaceWith(makeGeneratedCover(p));
-      card.append(img);
+      img.onerror=()=>coverWrap.replaceWith(makeGeneratedCover(p));
+      const author=document.createElement("span");
+      author.className="book-cover-author";
+      author.textContent="AUTOR: DAVID SASSA";
+      coverWrap.append(img,author);
+      card.append(coverWrap);
     }else{
       card.append(makeGeneratedCover(p));
     }
