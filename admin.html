@@ -442,6 +442,29 @@ async function loadStoreProducts() {
 
     controls.append(price, save);
 
+    if (p.title.trim().toLowerCase() === "livro de teste-sassahube") {
+      const remove = document.createElement("button");
+      remove.type = "button";
+      remove.className = "btn btn-outline";
+      remove.textContent = "Retirar da livraria";
+      remove.addEventListener("click", async () => {
+        if (!confirm('Retirar "' + p.title + '" da livraria pública? O histórico de encomendas será preservado.')) return;
+        remove.disabled = true;
+        const { error: deactivateError } = await db
+          .from("store_products")
+          .update({ active: false })
+          .eq("id", p.id);
+        if (deactivateError) {
+          notice("storeAdminMsg", "Não foi possível retirar o livro. Verifica as permissões no Supabase.");
+          remove.disabled = false;
+          return;
+        }
+        notice("storeAdminMsg", "Livro de teste retirado da livraria pública. O histórico foi preservado.", false);
+        await loadStoreProducts();
+      });
+      controls.append(remove);
+    }
+
     if (p.format === "Digital") {
       const file = document.createElement("input");
       file.type = "file";
