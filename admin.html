@@ -384,8 +384,60 @@ async function loadStoreProducts() {
     row.className = "admin-row store-order-row";
 
     const details = document.createElement("div");
+    details.style.display = "grid";
+    details.style.gap = "7px";
+
     const title = document.createElement("strong");
     title.textContent = p.title;
+
+    const titleEditor = document.createElement("input");
+    titleEditor.type = "text";
+    titleEditor.maxLength = 180;
+    titleEditor.value = p.title || "";
+    titleEditor.placeholder = "Título do livro";
+    titleEditor.setAttribute("aria-label", "Editar título de " + p.title);
+    titleEditor.style.width = "min(100%, 420px)";
+
+    const saveTitle = document.createElement("button");
+    saveTitle.type = "button";
+    saveTitle.className = "btn btn-outline";
+    saveTitle.textContent = "Guardar título";
+
+    saveTitle.addEventListener("click", async () => {
+      const nextTitle = titleEditor.value.trim();
+
+      if (!nextTitle) {
+        notice("storeAdminMsg", "O título não pode ficar vazio.");
+        return;
+      }
+
+      if (nextTitle === p.title) {
+        notice("storeAdminMsg", "O título não sofreu alterações.", false);
+        return;
+      }
+
+      if (!confirm('Actualizar o título de "' + p.title + '" para "' + nextTitle + '"?')) return;
+
+      saveTitle.disabled = true;
+      const { error: titleError } = await db
+        .from("store_products")
+        .update({ title: nextTitle })
+        .eq("id", p.id);
+      saveTitle.disabled = false;
+
+      if (titleError) {
+        notice("storeAdminMsg", "Não foi possível actualizar o título. Verifica as permissões no Supabase.");
+        return;
+      }
+
+      p.title = nextTitle;
+      title.textContent = nextTitle;
+      titleEditor.value = nextTitle;
+      titleEditor.setAttribute("aria-label", "Editar título de " + nextTitle);
+      price.setAttribute("aria-label", "Preço de " + nextTitle);
+      notice("storeAdminMsg", "Título do livro actualizado com sucesso.", false);
+      await loadStoreProducts();
+    });
 
     const meta = document.createElement("small");
     meta.textContent = p.format + " · " + (p.active ? "Publicado" : "Inactivo");
@@ -441,6 +493,7 @@ async function loadStoreProducts() {
     });
 
     controls.append(price, save);
+    details.append(title, titleEditor, saveTitle);
 
     const normalizedTitle = (p.title || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[–—]/g, "-").replace(/\s+/g, " ").trim();
     if (normalizedTitle.includes("livro de teste") && normalizedTitle.includes("sassahube")) {
