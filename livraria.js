@@ -101,6 +101,13 @@ function openOrder(p) {
 
   $("selectedBook").textContent = p.title + " — " + priceText;
 
+  // Mostra apenas os campos de pagamento aplicáveis ao tipo de livro.
+  const isPaid = Number(p.price) > 0;
+  $("paymentProofGroup").classList.toggle("hidden", !isPaid);
+  $("freeOrderNotice").classList.toggle("hidden", isPaid);
+  $("paymentProof").required = isPaid;
+  $("paymentProof").value = "";
+
   $("orderPanel").classList.remove("hidden");
   $("orderMessage").textContent = "";
   $("orderReceipt").classList.add("hidden");
@@ -283,8 +290,8 @@ $("storeOrderForm").addEventListener("submit", async event => {
     }
 
     $("orderMessage").textContent = proofPath
-      ? "Encomenda e comprovativo enviados com sucesso. Aguarda a verificação da equipa Sassa Hube."
-      : "Pedido do livro gratuito recebido.";
+      ? "Pedido enviado com o comprovativo. A equipa Sassa Hube irá verificar o pagamento e contactar-te."
+      : "Pedido do livro gratuito recebido. A equipa Sassa Hube irá contactar-te para confirmar a disponibilização.";
 
     $("orderReceipt").classList.remove("hidden");
     $("createdOrderId").textContent = orderId;
