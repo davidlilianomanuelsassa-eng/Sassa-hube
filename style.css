@@ -2280,3 +2280,129 @@ select:focus-visible {
     transition-duration: .01ms !important;
   }
 }
+
+
+/* =====================================================
+   REFINAMENTO DE LANÇAMENTO — SASSA HUBE 2026
+   Elementos de apresentação pública e capas editoriais
+===================================================== */
+
+.platform-live{
+  display:inline-flex;
+  align-items:center;
+  gap:9px;
+  margin-top:18px;
+  padding:9px 13px;
+  border:1px solid rgba(229,196,127,.38);
+  border-radius:999px;
+  background:rgba(255,255,255,.07);
+  color:#f2dfb8;
+  font-size:10px;
+  font-weight:800;
+  letter-spacing:1.15px;
+}
+.platform-live-dot{
+  width:8px;height:8px;border-radius:50%;
+  background:#65d69a;
+  box-shadow:0 0 0 4px rgba(101,214,154,.13);
+}
+.hero-visual-note{
+  position:absolute;
+  left:-22px;
+  bottom:34px;
+  z-index:4;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:13px 16px;
+  border:1px solid rgba(229,196,127,.35);
+  border-radius:12px;
+  background:rgba(8,27,52,.88);
+  box-shadow:0 15px 35px #0003;
+  backdrop-filter:blur(12px);
+}
+.hero-visual-note>span{
+  display:grid;place-items:center;
+  width:34px;height:34px;border-radius:10px;
+  background:#d5a84f;color:#102b50;font-size:18px;
+}
+.hero-visual-note strong,.hero-visual-note small{display:block}
+.hero-visual-note strong{color:#fff;font:700 11px Manrope}
+.hero-visual-note small{margin-top:4px;color:#c6d3e3;font-size:9px}
+.hero-visual-tag{
+  position:absolute;right:-3px;top:23px;
+  padding:8px 11px;border:1px solid #e5c47f88;
+  border-radius:7px;color:#f3dfb6;
+  background:#102b50;font-size:9px;font-weight:800;letter-spacing:1.4px;
+}
+.hero-visual-tag b{margin-left:7px;color:#fff;font-weight:600}
+.featured-book-card{
+  display:flex;flex-direction:column;align-items:flex-start;
+  padding:15px;gap:10px;
+}
+.featured-book-card>img,
+.featured-book-card>.generated-book-cover,
+.featured-book-placeholder{
+  width:100%;height:255px;object-fit:contain;
+  border-radius:10px;background:#f0f2f6;
+}
+.featured-book-card>img{
+  object-fit:contain;
+  background:linear-gradient(145deg,#f5f7fa,#e9edf3);
+}
+.generated-book-cover{
+  position:relative;isolation:isolate;overflow:hidden;
+  display:flex;flex-direction:column;align-items:flex-start;justify-content:space-between;
+  padding:25px 23px;
+  color:#fff;
+  text-align:left;
+  background:
+    radial-gradient(circle at 90% 12%,rgba(213,168,79,.34),transparent 30%),
+    linear-gradient(145deg,#081b34 0%,#173f68 68%,#0b2544 100%);
+  border:1px solid #d5a84f;
+  box-shadow:inset 0 0 0 6px rgba(255,255,255,.035);
+}
+.generated-book-cover::before{
+  content:"";position:absolute;z-index:-1;
+  width:190px;height:190px;right:-90px;bottom:-80px;
+  border:1px solid rgba(229,196,127,.45);border-radius:50%;
+  box-shadow:0 0 0 17px rgba(229,196,127,.04),0 0 0 36px rgba(229,196,127,.035);
+}
+.generated-cover-brand{
+  color:#efd69f;font:800 9px Manrope;letter-spacing:2.2px;
+}
+.generated-cover-line{
+  width:42px;height:2px;background:#d5a84f;margin-top:12px;
+}
+.generated-cover-title{
+  display:block;max-width:95%;
+  color:#fff;font:800 clamp(17px,2vw,23px)/1.25 Manrope;
+  overflow-wrap:anywhere;
+}
+.generated-cover-format{
+  color:#d9c08f;font-size:8px;font-weight:800;letter-spacing:1.6px;
+}
+.generated-cover-seal{
+  position:absolute;right:18px;bottom:17px;
+  display:grid;place-items:center;width:37px;height:37px;
+  border:1px solid #d5a84f;border-radius:50%;
+  color:#f2d99f;font:800 11px Manrope;
+}
+.featured-book-card .store-format{
+  margin-top:4px;color:#9b742f;font-size:10px;font-weight:800;
+}
+.featured-book-card h3{
+  margin:2px 0;color:#102b50;font:800 17px/1.35 Manrope;
+}
+.featured-book-card p{
+  flex:1;margin:0;color:#68788e;font-size:12px;line-height:1.7;
+}
+.featured-book-card .store-price{
+  color:#102b50;font:800 17px Manrope;
+}
+.featured-book-card .btn{margin-top:4px}
+@media(max-width:700px){
+  .hero-visual-note{left:0;bottom:12px;transform:scale(.9);transform-origin:left bottom}
+  .hero-visual-tag{right:0;top:5px}
+  .featured-book-card>img,.featured-book-card>.generated-book-cover,.featured-book-placeholder{height:245px}
+}
