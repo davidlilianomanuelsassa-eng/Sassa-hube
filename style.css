@@ -2952,3 +2952,72 @@ select:focus-visible {
 .privacy-consent{display:flex;align-items:flex-start;gap:10px;margin:14px 0;color:var(--muted,#68778b);font-size:13px;line-height:1.5}
 .privacy-consent input{width:auto;flex:0 0 auto;margin-top:3px}
 .privacy-consent a{color:var(--navy,#102b50);font-weight:700;text-decoration:underline}
+
+
+/* ================= LIVRARIA — EXPERIÊNCIA DE COMPRA ================= */
+.store-intro{
+  display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);
+  gap:35px;align-items:center;margin:28px 0 42px;padding:30px;
+  border:1px solid #e5eaf1;border-radius:18px;
+  background:linear-gradient(125deg,#f7f9fc 0%,#fff 65%,#f7f1e5 100%);
+}
+.store-intro-copy h2,.store-catalog-heading h2{
+  margin:10px 0;color:#102b50;font:800 clamp(23px,3vw,32px) Manrope,sans-serif;
+  letter-spacing:-.8px
+}
+.store-intro-copy p{max-width:460px;color:#68788e;font-size:13px;line-height:1.8}
+.store-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.store-steps article{
+  min-height:135px;padding:17px 14px;border:1px solid #e5eaf1;
+  border-radius:12px;background:#fff;display:flex;flex-direction:column;gap:8px
+}
+.store-steps article span{color:#b18438;font:900 11px Manrope;letter-spacing:1px}
+.store-steps article strong{color:#102b50;font:800 12px Manrope}
+.store-steps article small{color:#718096;font-size:10px;line-height:1.6}
+.store-catalog-heading{
+  display:flex;align-items:flex-end;justify-content:space-between;
+  gap:18px;margin:0 0 20px
+}
+.store-catalog-heading h2{font-size:25px;margin-bottom:0}
+.store-catalog-heading>p{margin:0;color:#718096;font-size:11px}
+.bookstore-filters{display:flex;flex-wrap:wrap;gap:9px;margin:18px 0 22px}
+.bookstore-filters .filter{
+  padding:10px 16px;border:1px solid #dce3ec;border-radius:30px;
+  background:#fff;color:#53647c;font-size:11px;font-weight:800;cursor:pointer
+}
+.bookstore-filters .filter.active,.bookstore-filters .filter:hover{
+  border-color:#102b50;background:#102b50;color:#fff
+}
+.bookstore-items .store-card{
+  overflow:hidden;border:1px solid #e5eaf1;border-radius:15px;
+  box-shadow:0 10px 28px rgba(8,27,52,.055);transition:transform .2s,box-shadow .2s
+}
+.bookstore-items .store-card:hover{transform:translateY(-4px);box-shadow:0 18px 36px rgba(8,27,52,.11)}
+.store-format{
+  display:inline-flex;align-items:center;padding:7px 10px;border-radius:30px;
+  background:#f5ead2;color:#8d672d;font-size:10px;font-weight:900
+}
+.store-price{display:block;margin:13px 0;color:#102b50;font:900 19px Manrope}
+.store-card .btn{width:100%;justify-content:center}
+.store-order{
+  margin-top:28px;padding:clamp(20px,4vw,34px);
+  border:1px solid #e1e7ef;border-radius:16px;background:#f8fafc
+}
+.store-order h2{color:#102b50}
+.store-order form{max-width:680px}
+.store-order input:not([type=checkbox]):not([type=file]),
+.store-order textarea{width:100%;margin:6px 0 15px}
+.store-order input[type=file]{display:block;margin:8px 0}
+.store-order .btn{margin-top:10px}
+.public-note{
+  margin:25px 0;padding:17px 19px;border-left:3px solid #d5a84f;
+  background:#f8fafc;color:#64748b;font-size:12px;line-height:1.8
+}
+@media(max-width:800px){
+  .store-intro{grid-template-columns:1fr;gap:20px;padding:23px}
+}
+@media(max-width:560px){
+  .store-steps{grid-template-columns:1fr}
+  .store-steps article{min-height:0}
+  .store-catalog-heading{align-items:flex-start;flex-direction:column;gap:7px}
+}
