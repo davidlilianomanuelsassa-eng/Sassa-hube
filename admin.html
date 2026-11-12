@@ -442,7 +442,7 @@ async function loadStoreProducts() {
     const meta = document.createElement("small");
     meta.textContent = p.format + " · " + (p.active ? "Publicado" : "Inactivo");
 
-    details.append(title, meta);
+    details.append(title, titleEditor, saveTitle, meta);
 
     const controls = document.createElement("div");
     controls.style.display = "flex";
@@ -493,7 +493,6 @@ async function loadStoreProducts() {
     });
 
     controls.append(price, save);
-    details.append(title, titleEditor, saveTitle);
 
     const normalizedTitle = (p.title || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[–—]/g, "-").replace(/\s+/g, " ").trim();
     if (normalizedTitle.includes("livro de teste") && normalizedTitle.includes("sassahube")) {
