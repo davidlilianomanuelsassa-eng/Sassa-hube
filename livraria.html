@@ -57,12 +57,18 @@
 <label for="buyerEmail">Endereço de e-mail</label>
 <input id="buyerEmail" type="email" maxlength="254" required placeholder="O teu e-mail">
 
+<div id="paymentProofGroup" class="hidden">
 <label for="paymentProof">Comprovativo de pagamento</label>
 <input
 id="paymentProof"
 type="file"
 accept=".pdf,.jpg,.jpeg,.png,.webp">
 <small>Formatos aceites: PDF, JPG, PNG e WEBP. Limite: 10 MB.</small>
+</div>
+
+<p id="freeOrderNotice" class="message hidden">
+Este livro é gratuito. Não precisas de enviar comprovativo de pagamento.
+</p>
 
 <label for="buyerNote">Observações (opcional)</label>
 <textarea id="buyerNote" rows="3" maxlength="600" placeholder="Indica alguma informação importante"></textarea>
