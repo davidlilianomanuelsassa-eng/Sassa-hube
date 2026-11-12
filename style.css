@@ -2406,3 +2406,94 @@ select:focus-visible {
   .hero-visual-tag{right:0;top:5px}
   .featured-book-card>img,.featured-book-card>.generated-book-cover,.featured-book-placeholder{height:245px}
 }
+
+
+/* ================= ACESSO RÁPIDO — PÁGINA INICIAL ================= */
+.quick-access{
+  padding-top:72px;
+  padding-bottom:76px;
+  background:linear-gradient(180deg,#f7f9fc 0%,#fff 100%);
+}
+.quick-access-heading{
+  max-width:680px;
+  margin:0 auto 30px;
+  text-align:center;
+}
+.quick-access-heading h2{
+  margin:12px 0;
+  color:var(--navy);
+  font:800 clamp(25px,3.4vw,36px)/1.2 Manrope,sans-serif;
+  letter-spacing:-.8px;
+}
+.quick-access-heading p{
+  margin:0;
+  color:var(--muted);
+  font-size:14px;
+  line-height:1.8;
+}
+.quick-access-grid{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:16px;
+}
+.quick-access-card{
+  min-height:225px;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  padding:23px 21px;
+  border:1px solid #e4e9f0;
+  border-radius:15px;
+  background:#fff;
+  text-decoration:none;
+  box-shadow:0 8px 24px rgba(8,27,52,.045);
+  transition:transform .25s,border-color .25s,box-shadow .25s;
+}
+.quick-access-card:hover{
+  transform:translateY(-5px);
+  border-color:#d5a84f;
+  box-shadow:0 16px 35px rgba(8,27,52,.10);
+}
+.quick-access-icon{
+  width:42px;height:42px;
+  display:grid;place-items:center;
+  margin-bottom:20px;
+  border-radius:12px;
+  background:#f5ead2;
+  color:#9b712e;
+  font:700 22px Manrope;
+}
+.quick-access-number{
+  color:#a27a39;
+  font-size:9px;
+  font-weight:900;
+  letter-spacing:1.5px;
+}
+.quick-access-card strong{
+  margin-top:8px;
+  color:var(--navy);
+  font:800 16px Manrope;
+}
+.quick-access-card small{
+  margin-top:7px;
+  color:var(--muted);
+  font-size:11px;
+  line-height:1.6;
+}
+.quick-access-card b{
+  margin-top:auto;
+  padding-top:18px;
+  color:#9b712e;
+  font-size:11px;
+}
+@media(max-width:900px){
+  .quick-access-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:700px){
+  .quick-access{padding-top:48px;padding-bottom:52px}
+  .quick-access-heading{text-align:left}
+  .quick-access-grid{grid-template-columns:1fr 1fr;gap:10px}
+  .quick-access-card{min-height:205px;padding:17px 14px}
+  .quick-access-card strong{font-size:14px}
+  .quick-access-card small{font-size:10px}
+}
