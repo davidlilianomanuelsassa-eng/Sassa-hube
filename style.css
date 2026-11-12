@@ -987,10 +987,11 @@ button {
 .founder-signature small {
   display: block;
   margin-top: 7px;
-  color: #8a95a5;
-  font: 600 10px 'DM Sans';
+  color: #a9772b;
+  font: 800 11px 'DM Sans';
   font-style: normal;
-  letter-spacing: 1px;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
 }
 
 /* ================= SOBRE A PLATAFORMA ================= */
