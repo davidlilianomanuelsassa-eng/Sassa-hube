@@ -2582,3 +2582,27 @@ select:focus-visible {
   margin-bottom:9px;
 }
 .book-cover-wrap + .store-format{margin-top:4px}
+
+/* ================= PÁGINA INICIAL — ORGANIZAÇÃO REFINADA ================= */
+@media (min-width: 901px) {
+  .quick-access-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    max-width: 1080px;
+    margin: 0 auto;
+  }
+}
+.quick-access-card {
+  min-height: 218px;
+}
+.quick-access-card:focus-visible {
+  outline: 3px solid var(--gold);
+  outline-offset: 4px;
+}
+.quick-access-heading {
+  scroll-margin-top: 110px;
+}
+@media (max-width: 700px) {
+  .quick-access-card {
+    min-height: 210px;
+  }
+}
