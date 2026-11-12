@@ -2946,3 +2946,9 @@ select:focus-visible {
   .related-site-card h3{font-size:16px}
   .related-site-card p{font-size:11px}
 }
+
+
+/* Consentimento de privacidade no formulário da livraria */
+.privacy-consent{display:flex;align-items:flex-start;gap:10px;margin:14px 0;color:var(--muted,#68778b);font-size:13px;line-height:1.5}
+.privacy-consent input{width:auto;flex:0 0 auto;margin-top:3px}
+.privacy-consent a{color:var(--navy,#102b50);font-weight:700;text-decoration:underline}
