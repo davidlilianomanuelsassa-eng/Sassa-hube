@@ -2751,3 +2751,99 @@ select:focus-visible {
   .quick-access-card small{font-size:10px}
   .first-publication{padding-top:58px;padding-bottom:60px}
 }
+
+
+/* =====================================================
+   HERO CINEMATOGRÁFICO — SASSA HUBE
+   Direcção visual inspirada em plataformas educativas premium
+===================================================== */
+.hero-masterclass{
+  position:relative;isolation:isolate;display:flex;align-items:center;
+  min-height:min(760px,calc(100vh - 78px));width:100%;max-width:none;
+  overflow:hidden;padding:100px max(calc((100% - 1240px)/2),7%);
+  background:#07182d;color:#fff;
+}
+.hero-masterclass-image,.hero-masterclass-shade{
+  position:absolute;inset:0;width:100%;height:100%;
+}
+.hero-masterclass-image{z-index:-3;object-fit:cover;object-position:center 48%;animation:shHeroImage 22s ease-in-out infinite alternate}
+.hero-masterclass-shade{
+  z-index:-2;
+  background:
+    linear-gradient(90deg,rgba(4,16,31,.94) 0%,rgba(5,19,36,.82) 38%,rgba(5,19,36,.30) 75%,rgba(5,19,36,.22) 100%),
+    linear-gradient(0deg,rgba(4,16,31,.68),transparent 45%,rgba(4,16,31,.20));
+}
+.hero-masterclass-content{position:relative;z-index:2;width:min(760px,76%);padding:25px 0 38px}
+.hero-masterclass-kicker{
+  display:flex;align-items:center;gap:11px;color:#e7c98b;
+  font:800 10px 'DM Sans',sans-serif;letter-spacing:2.3px
+}
+.hero-masterclass-kicker span{width:28px;height:1px;background:#d5a84f}
+.hero-masterclass h1{
+  max-width:800px;margin:28px 0 23px;color:#fff;
+  font:800 clamp(54px,7.4vw,94px)/.99 Manrope,sans-serif;
+  letter-spacing:-4.5px;text-wrap:balance
+}
+.hero-masterclass h1 em{color:#e5c17a;font-style:normal}
+.hero-masterclass-content>p{
+  max-width:570px;margin:0;color:#e0e6ed;
+  font-size:17px;line-height:1.85;font-weight:400
+}
+.hero-masterclass-actions{display:flex;align-items:center;gap:27px;margin-top:36px}
+.hero-masterclass-primary{
+  min-height:54px;padding:0 25px;border-radius:3px;
+  background:#d5a84f;color:#091d35;font-size:12px;
+  font-weight:900;letter-spacing:.3px;box-shadow:0 12px 32px #0004
+}
+.hero-masterclass-primary:hover{background:#f0d18e;color:#091d35}
+.hero-masterclass-secondary{
+  display:inline-flex;align-items:center;gap:12px;color:#fff;
+  text-decoration:none;font-size:11px;font-weight:800;letter-spacing:.8px
+}
+.hero-masterclass-secondary:hover{color:#e5c17a}
+.hero-masterclass-signature{
+  display:flex;align-items:center;gap:13px;margin-top:65px;padding-top:20px;
+  border-top:1px solid #ffffff50;width:max-content;max-width:100%
+}
+.hero-masterclass-monogram{
+  display:grid;place-items:center;width:42px;height:42px;border:1px solid #d5a84f;
+  color:#e8ca8e;font:900 12px Manrope;letter-spacing:-.5px
+}
+.hero-masterclass-signature strong,.hero-masterclass-signature small{display:block}
+.hero-masterclass-signature strong{color:#f4e6c8;font:800 9px 'DM Sans';letter-spacing:1.5px}
+.hero-masterclass-signature small{margin-top:5px;color:#c1ccd8;font-size:10px}
+.hero-masterclass-side{
+  position:absolute;right:34px;top:50%;transform:translateY(-50%);
+  writing-mode:vertical-rl;color:#ffffffb8;font-size:9px;font-weight:800;letter-spacing:2.5px
+}
+.hero-masterclass-side span{margin-top:13px;color:#e5c17a}
+.hero-masterclass-scroll{
+  position:absolute;right:max(calc((100% - 1240px)/2),7%);bottom:38px;
+  display:flex;align-items:center;gap:12px;color:#ffffffc9;
+  text-decoration:none;font-size:8px;font-weight:800;letter-spacing:1.8px
+}
+.hero-masterclass-scroll span{display:block;width:34px;height:1px;background:#d5a84f}
+@keyframes shHeroImage{from{transform:scale(1)}to{transform:scale(1.07)}}
+@media(max-width:900px){
+  .hero-masterclass{min-height:650px;padding-left:6%;padding-right:6%}
+  .hero-masterclass-content{width:84%}
+  .hero-masterclass h1{font-size:clamp(52px,8vw,76px)}
+}
+@media(max-width:700px){
+  .hero-masterclass{min-height:690px;min-height:calc(100svh - 72px);padding:70px 7% 85px;align-items:center}
+  .hero-masterclass-image{object-position:58% center}
+  .hero-masterclass-shade{
+    background:linear-gradient(90deg,rgba(4,16,31,.91),rgba(4,16,31,.66)),
+    linear-gradient(0deg,rgba(4,16,31,.65),transparent 70%)
+  }
+  .hero-masterclass-content{width:100%;padding:0}
+  .hero-masterclass-kicker{font-size:8px;letter-spacing:1.5px}
+  .hero-masterclass h1{font-size:clamp(48px,12vw,68px);letter-spacing:-2.8px;margin:25px 0 20px}
+  .hero-masterclass-content>p{font-size:14px;line-height:1.8;max-width:440px}
+  .hero-masterclass-actions{align-items:flex-start;flex-direction:column;gap:20px;margin-top:29px}
+  .hero-masterclass-primary{width:100%;justify-content:center}
+  .hero-masterclass-signature{margin-top:42px;width:100%}
+  .hero-masterclass-side{right:12px;font-size:7px;opacity:.7}
+  .hero-masterclass-scroll{right:auto;left:7%;bottom:24px;font-size:7px}
+}
+@media(prefers-reduced-motion:reduce){.hero-masterclass-image{animation:none}}
