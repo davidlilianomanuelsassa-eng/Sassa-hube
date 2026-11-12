@@ -799,6 +799,18 @@ button {
   letter-spacing: 2px;
 }
 
+.cover-author {
+  display: inline-block;
+  align-self: flex-start;
+  padding: 8px 11px;
+  border: 1px solid #e5c47f;
+  border-radius: 5px;
+  color: #f2d18b;
+  background: #081b34aa;
+  font: 800 11px 'DM Sans', sans-serif;
+  letter-spacing: 1.4px;
+}
+
 .first-publication-cover strong {
   font: 800 clamp(25px,3vw,39px)/1.18 Manrope;
   letter-spacing: -1px;
