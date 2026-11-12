@@ -2538,3 +2538,47 @@ select:focus-visible {
 @media(max-width:700px){
   .footer-social{align-items:flex-start;flex-direction:column;gap:12px}
 }
+
+
+/* Autoria visível em todas as capas de livros publicados */
+.book-cover-wrap{
+  position:relative;
+  width:100%;
+  height:255px;
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:10px;
+  background:linear-gradient(145deg,#f5f7fa,#e9edf3);
+}
+.book-cover-wrap img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  display:block;
+}
+.book-cover-author,
+.generated-cover-author{
+  display:inline-block;
+  padding:8px 11px;
+  border:1px solid #e5c47f;
+  border-radius:5px;
+  color:#f6d58d;
+  background:rgba(8,27,52,.96);
+  font:900 10px 'DM Sans',sans-serif;
+  letter-spacing:1.25px;
+  text-align:center;
+}
+.book-cover-author{
+  position:absolute;
+  left:10px;
+  right:10px;
+  bottom:10px;
+}
+.generated-cover-author{
+  align-self:flex-start;
+  margin-top:auto;
+  margin-bottom:9px;
+}
+.book-cover-wrap + .store-format{margin-top:4px}
