@@ -38,11 +38,17 @@ function renderStore() {
     card.className = "work-card store-card";
 
     if (p.cover_url) {
+      const coverWrap = document.createElement("div");
+      coverWrap.className = "book-cover-wrap";
       const img = document.createElement("img");
       img.src = p.cover_url;
-      img.alt = "Capa de " + p.title;
+      img.alt = "Capa de " + p.title + " — Autor: David Sassa";
       img.loading = "lazy";
-      card.append(img);
+      const author = document.createElement("span");
+      author.className = "book-cover-author";
+      author.textContent = "AUTOR: DAVID SASSA";
+      coverWrap.append(img, author);
+      card.append(coverWrap);
     }
 
     const tag = document.createElement("span");
