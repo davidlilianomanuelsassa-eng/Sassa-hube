@@ -2497,3 +2497,31 @@ select:focus-visible {
   .quick-access-card strong{font-size:14px}
   .quick-access-card small{font-size:10px}
 }
+
+
+/* ================= REDES SOCIAIS NO RODAPÉ ================= */
+.footer-social{
+  grid-column:1/-1;
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:10px 22px;
+  padding:16px 0 2px;
+  border-top:1px solid #ffffff20;
+}
+.footer-social strong{
+  width:100%;
+  color:#f0d9a8;
+  font:700 12px Manrope,sans-serif;
+  letter-spacing:.4px;
+}
+.footer-social a{
+  color:#dbe3ee;
+  font-size:12px;
+  text-decoration:none;
+  transition:color .2s;
+}
+.footer-social a:hover{color:#e3bd72}
+@media(max-width:700px){
+  .footer-social{align-items:flex-start;flex-direction:column;gap:12px}
+}
