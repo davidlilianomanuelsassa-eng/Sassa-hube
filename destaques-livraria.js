@@ -53,10 +53,13 @@ function renderFeaturedBooks(products){
       img.alt="Capa de "+p.title+" — Autor: David Sassa";
       img.loading="lazy";
       img.onerror=()=>coverWrap.replaceWith(makeGeneratedCover(p));
+      const titleOverlay=document.createElement("span");
+      titleOverlay.className="book-cover-title-overlay";
+      titleOverlay.textContent=p.title||"Livro Sassa Hube";
       const author=document.createElement("span");
       author.className="book-cover-author";
       author.textContent="AUTOR: DAVID SASSA";
-      coverWrap.append(img,author);
+      coverWrap.append(img,titleOverlay,author);
       card.append(coverWrap);
     }else{
       card.append(makeGeneratedCover(p));
