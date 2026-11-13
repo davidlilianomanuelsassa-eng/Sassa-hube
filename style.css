@@ -3371,3 +3371,74 @@ select:focus-visible {
     font-size: 14px !important;
   }
 }
+
+
+/* ================= ACABAMENTO GLOBAL SASSA HUBE ================= */
+:root{
+  color-scheme:light;
+  --focus-ring:0 0 0 4px rgba(213,168,79,.24);
+}
+html{scroll-behavior:smooth}
+body{line-height:1.6}
+button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{
+  outline:3px solid #d5a84f;
+  outline-offset:3px;
+}
+input,textarea,select{
+  max-width:100%;
+  border:1px solid #d8e0ea;
+  border-radius:9px;
+  background:#fff;
+  color:#172b45;
+  transition:border-color .18s ease,box-shadow .18s ease;
+}
+input:focus,textarea:focus,select:focus{
+  border-color:#b98b3d;
+  box-shadow:var(--focus-ring);
+}
+input::placeholder,textarea::placeholder{color:#8995a5}
+button:disabled,.btn:disabled{opacity:.62;cursor:not-allowed;transform:none}
+.btn{min-height:44px}
+.work-card,.featured-book-card,.quick-access-card,.area-card,.related-site-card{
+  min-width:0;
+}
+.work-card h3,.featured-book-card h3,.quick-access-card strong{
+  overflow-wrap:anywhere;
+}
+.work-card p,.featured-book-description{overflow-wrap:anywhere}
+.status,.message,[role=status]{
+  line-height:1.7;
+}
+.hidden{display:none!important}
+.site-footer{
+  padding-left:max(calc((100% - 1180px)/2),5%);
+  padding-right:max(calc((100% - 1180px)/2),5%);
+}
+@media(max-width:700px){
+  .topbar{gap:10px;padding:10px 4%;min-height:68px}
+  .brand{gap:9px;font-size:14px}
+  .brand-mark{width:38px;height:38px;border-radius:10px}
+  .brand small{font-size:7px;letter-spacing:.8px}
+  .topbar>.btn{padding:10px 11px;font-size:11px}
+  .section{padding-top:55px;padding-bottom:58px}
+  .section-head{align-items:flex-start;flex-direction:column;gap:8px}
+  .items,.bookstore-items,.featured-books,.feature-cards{
+    grid-template-columns:1fr;
+  }
+  .work-card{padding:18px}
+  .store-order{scroll-margin-top:82px}
+  .store-order form .btn{width:100%}
+}
+@media(max-width:380px){
+  .brand small{max-width:160px;white-space:normal;line-height:1.3}
+  .mobile-menu-toggle{padding:0 9px;font-size:11px}
+  .topbar>.btn{font-size:10px;padding:9px}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    scroll-behavior:auto!important;
+    animation-duration:.01ms!important;
+    animation-iteration-count:1!important;
+    transition-duration:.01ms!important;
+  }
+}
