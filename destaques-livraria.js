@@ -55,6 +55,9 @@ function renderFeaturedBooks(products){
       img.onerror=()=>coverWrap.replaceWith(makeGeneratedCover(p));
       const titleOverlay=document.createElement("span");
       titleOverlay.className="book-cover-title-overlay";
+      if((p.title||"").trim().toLocaleUpperCase("pt-AO")==="REDES SOCIAIS E SAÚDE MENTAL: CONEXÃO E ISOLAMENTO"){
+        titleOverlay.classList.add("book-cover-title-contrast");
+      }
       titleOverlay.textContent=p.title||"Livro Sassa Hube";
       const author=document.createElement("span");
       author.className="book-cover-author";
