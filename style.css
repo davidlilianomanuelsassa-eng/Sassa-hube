@@ -3287,3 +3287,55 @@ select:focus-visible {
     min-height: auto;
   }
 }
+
+
+/* Título legível sobre capas com texto branco em fundo claro */
+.book-cover-wrap,
+.featured-cover-frame {
+  position: relative;
+  isolation: isolate;
+}
+
+.book-cover-title-overlay {
+  position: absolute;
+  z-index: 2;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: -webkit-box;
+  padding: 14px 15px 16px;
+  overflow: hidden;
+  color: #f3d28e;
+  background: linear-gradient(105deg, rgba(5, 22, 43, .97), rgba(15, 48, 81, .94));
+  border-top: 2px solid #d5a84f;
+  font: 900 clamp(13px, 1.35vw, 17px)/1.35 Manrope, sans-serif;
+  letter-spacing: .15px;
+  text-align: center;
+  text-shadow: 0 1px 2px rgba(0,0,0,.35);
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow-wrap: anywhere;
+  pointer-events: none;
+}
+
+.book-cover-wrap .book-cover-author {
+  z-index: 3;
+  top: 10px;
+  bottom: auto;
+  background: rgba(5, 22, 43, .88);
+  color: #f3d28e;
+  padding: 7px 10px;
+  border: 1px solid rgba(213,168,79,.75);
+  border-radius: 0 0 7px 0;
+}
+
+.featured-cover-frame .featured-cover-image {
+  padding: 0;
+}
+
+@media (max-width: 560px) {
+  .book-cover-title-overlay {
+    padding: 12px 11px 14px;
+    font-size: 14px;
+  }
+}
