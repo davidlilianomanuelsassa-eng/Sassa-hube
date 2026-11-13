@@ -3059,3 +3059,231 @@ select:focus-visible {
 @media(prefers-reduced-motion:reduce){
   .skip-link{transition:none}
 }
+
+/* ==========================================
+   SASSA HUBE — LIVROS EM DESTAQUE PREMIUM
+========================================== */
+
+.featured-store {
+  background:
+    radial-gradient(circle at 10% 10%, #eaf0f7 0, transparent 35%),
+    #f5f7fa;
+}
+
+.featured-store .section-head {
+  margin-bottom: 32px;
+}
+
+.featured-store .section-head h2 {
+  font-size: clamp(28px, 3vw, 36px);
+}
+
+.featured-store .section-head p {
+  max-width: 620px;
+}
+
+#featuredBooks {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+  align-items: stretch;
+}
+
+.featured-book-card {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 13px;
+  padding: 17px;
+  border: 1px solid #e1e7ef;
+  border-radius: 17px;
+  background: #fff;
+  box-shadow: 0 9px 28px rgba(8, 27, 52, .055);
+  transition: transform .25s ease, box-shadow .25s ease,
+    border-color .25s ease;
+}
+
+.featured-book-card:hover {
+  transform: translateY(-6px);
+  border-color: #d5a84f;
+  box-shadow: 0 18px 38px rgba(8, 27, 52, .12);
+}
+
+.featured-cover-frame,
+.featured-book-placeholder {
+  position: relative;
+  width: 100%;
+  height: 290px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: linear-gradient(145deg, #e9edf3, #f8f9fb);
+}
+
+.featured-cover-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 8px;
+  transition: transform .35s ease;
+}
+
+.featured-book-card:hover .featured-cover-image {
+  transform: scale(1.035);
+}
+
+.generated-book-cover {
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 25px;
+  color: #fff;
+  background:
+    radial-gradient(circle at 85% 15%, #315b88 0, transparent 35%),
+    linear-gradient(145deg, #081b34, #173f68 75%, #0b2544);
+  border: 1px solid #d5a84f;
+}
+
+.generated-cover-brand {
+  color: #f1d69e;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 2.5px;
+}
+
+.generated-cover-line {
+  width: 55px;
+  height: 3px;
+  background: #d5a84f;
+}
+
+.generated-cover-title {
+  max-width: 100%;
+  color: #fff;
+  font: 800 clamp(20px, 2vw, 27px)/1.2 Manrope, sans-serif;
+  overflow-wrap: anywhere;
+}
+
+.generated-cover-author {
+  color: #f0d6a4;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.generated-cover-format {
+  color: #dce6f1;
+  font-size: 9px;
+  letter-spacing: 1.5px;
+}
+
+.generated-cover-seal {
+  position: absolute;
+  right: 18px;
+  bottom: 18px;
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #e5c47f;
+  border-radius: 50%;
+  color: #f0d6a4;
+  font: 800 13px Manrope, sans-serif;
+}
+
+.featured-book-card .store-format {
+  align-self: flex-start;
+  padding: 7px 11px;
+  border-radius: 30px;
+  background: #f5ead2;
+  color: #805d27;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .3px;
+}
+
+.featured-book-card h3 {
+  min-height: 48px;
+  margin: 0;
+  color: #081b34;
+  font: 800 18px/1.35 Manrope, sans-serif;
+}
+
+.featured-book-description {
+  min-height: 60px;
+  margin: 0;
+  color: #68788e;
+  font-size: 12px;
+  line-height: 1.7;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.featured-book-card .store-price {
+  display: block;
+  margin-top: auto;
+  color: #173f68;
+  font: 800 18px Manrope, sans-serif;
+}
+
+.featured-book-button {
+  width: 100%;
+  min-height: 46px;
+  margin-top: 4px;
+  border-radius: 9px;
+}
+
+#featuredBooksStatus {
+  margin-top: 24px;
+  color: #68788e;
+  text-align: center;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+@media (max-width: 900px) {
+  #featuredBooks {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+  }
+}
+
+@media (max-width: 560px) {
+  .featured-store {
+    padding: 55px 5% 60px;
+  }
+
+  .featured-store .section-head {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  #featuredBooks {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .featured-book-card {
+    padding: 15px;
+  }
+
+  .featured-cover-frame,
+  .featured-book-placeholder {
+    height: 310px;
+  }
+
+  .featured-book-card h3 {
+    min-height: auto;
+  }
+
+  .featured-book-description {
+    min-height: auto;
+  }
+}
