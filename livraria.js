@@ -1,232 +1,367 @@
 
-(() => {
-  "use strict";
+const $ = id => document.getElementById(id);
 
-  const root = document.getElementById("featuredBooks");
-  const status = document.getElementById("featuredBooksStatus");
+let db = null;
+let products = [];
+let formatFilter = "Todos";
 
-  if (!root || !status) return;
+const MAX_PROOF_SIZE = 10 * 1024 * 1024;
 
-  const database =
-    window.SUPABASE_URL &&
-    window.SUPABASE_ANON_KEY &&
-    window.supabase
-      ? window.supabase.createClient(
-          window.SUPABASE_URL,
-          window.SUPABASE_ANON_KEY
-        )
-      : null;
+const PROOF_TYPES = {
+  pdf: "application/pdf",
+  jpg: "image/jpeg",
+  jpeg: "image/jpeg",
+  png: "image/png",
+  webp: "image/webp"
+};
 
-  function createElement(tag, className, content) {
-    const element = document.createElement(tag);
+if (
+  window.SUPABASE_URL &&
+  window.SUPABASE_ANON_KEY &&
+  window.supabase
+) {
+  db = window.supabase.createClient(
+    window.SUPABASE_URL,
+    window.SUPABASE_ANON_KEY
+  );
+}
 
-    if (className) element.className = className;
-    if (content !== undefined) element.textContent = content;
+function renderStore() {
+  const list = products.filter(
+    p => formatFilter === "Todos" || p.format === formatFilter
+  );
 
-    return element;
-  }
+  $("storeItems").replaceChildren();
 
-  function formatPrice(product) {
-    const price = Number(product.price);
+  list.forEach(p => {
+    const card = document.createElement("article");
+    card.className = "work-card store-card";
 
-    if (!Number.isFinite(price) || price === 0) {
-      return "Gratuito";
+    if (p.cover_url) {
+      const coverWrap = document.createElement("div");
+      coverWrap.className = "book-cover-wrap";
+      const img = document.createElement("img");
+      img.src = p.cover_url;
+      img.alt = "Capa de " + p.title + " — Autor: David Sassa";
+      img.loading = "lazy";
+      const author = document.createElement("span");
+      author.className = "book-cover-author";
+      author.textContent = "AUTOR: DAVID SASSA";
+      coverWrap.append(img, author);
+      card.append(coverWrap);
     }
 
-    try {
-      return new Intl.NumberFormat("pt-AO", {
+    const tag = document.createElement("span");
+    tag.className = "store-format";
+    tag.textContent = p.format === "Digital"
+      ? "📘 Livro digital · PDF"
+      : "📚 Livro físico";
+
+    const title = document.createElement("h3");
+    title.textContent = p.title;
+
+    const desc = document.createElement("p");
+    desc.textContent = p.description || "Sem descrição adicional.";
+
+    const price = document.createElement("strong");
+    price.className = "store-price";
+    price.textContent = Number(p.price) === 0
+      ? "Gratuito"
+      : new Intl.NumberFormat("pt-AO", {
+          style: "currency",
+          currency: p.currency || "AOA"
+        }).format(Number(p.price));
+
+    const btn = document.createElement("button");
+    btn.className = "btn btn-primary";
+    btn.textContent = Number(p.price) === 0
+      ? "Obter gratuitamente"
+      : "Encomendar";
+
+    btn.addEventListener("click", () => openOrder(p));
+
+    card.append(tag, title, desc, price, btn);
+    $("storeItems").append(card);
+  });
+
+  $("storeStatus").textContent = list.length
+    ? list.length + " livro(s) disponível(is)."
+    : "Ainda não há livros disponíveis nesta categoria.";
+}
+
+function openOrder(p) {
+  $("productId").value = p.id;
+
+  const priceText = Number(p.price) === 0
+    ? "Gratuito"
+    : new Intl.NumberFormat("pt-AO", {
         style: "currency",
-        currency: product.currency || "AOA"
-      }).format(price);
-    } catch {
-      return price.toLocaleString("pt-AO") + " " +
-        (product.currency || "AOA");
-    }
+        currency: p.currency || "AOA"
+      }).format(Number(p.price));
+
+  $("selectedBook").textContent = p.title + " — " + priceText;
+
+  // Mostra apenas os campos de pagamento aplicáveis ao tipo de livro.
+  const isPaid = Number(p.price) > 0;
+  $("paymentProofGroup").classList.toggle("hidden", !isPaid);
+  $("freeOrderNotice").classList.toggle("hidden", isPaid);
+  $("paymentProof").required = isPaid;
+  $("paymentProof").value = "";
+
+  $("orderPanel").classList.remove("hidden");
+  $("orderMessage").textContent = "";
+  $("orderReceipt").classList.add("hidden");
+
+  $("orderPanel").scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
+}
+
+async function loadStore() {
+  if (!db) {
+    $("storeStatus").textContent =
+      "A livraria precisa de ligação ao Supabase.";
+    return;
   }
 
-  function createCoverPlaceholder(product) {
-    const cover = createElement(
-      "div",
-      "featured-book-placeholder generated-book-cover"
-    );
+  const { data, error } = await db
+    .from("store_products")
+    .select("id,title,description,price,currency,format,cover_url")
+    .eq("active", true)
+    .order("created_at", { ascending: false });
 
-    cover.setAttribute("role", "img");
-    cover.setAttribute(
-      "aria-label",
-      "Capa provisória de " + (product.title || "Livro Sassa Hube")
-    );
-
-    const brand = createElement(
-      "span",
-      "generated-cover-brand",
-      "SASSA HUBE"
-    );
-
-    const line = createElement("span", "generated-cover-line");
-
-    const title = createElement(
-      "strong",
-      "generated-cover-title",
-      product.title || "Publicação Sassa Hube"
-    );
-
-    const author = createElement(
-      "span",
-      "generated-cover-author",
-      "AUTOR: DAVID SASSA"
-    );
-
-    const format = createElement(
-      "small",
-      "generated-cover-format",
-      product.format === "Digital"
-        ? "EDIÇÃO DIGITAL"
-        : "EDIÇÃO IMPRESSA"
-    );
-
-    const seal = createElement("span", "generated-cover-seal", "SH");
-
-    cover.append(brand, line, title, author, format, seal);
-
-    return cover;
+  if (error) {
+    $("storeStatus").textContent =
+      "Não foi possível carregar os livros. Verifica a ligação ao Supabase.";
+    return;
   }
 
-  function createBookCover(product) {
-    if (!product.cover_url) {
-      return createCoverPlaceholder(product);
-    }
+  products = data || [];
+  renderStore();
 
-    const wrapper = createElement("div", "featured-cover-frame");
+  const requestedProduct =
+    new URLSearchParams(window.location.search).get("produto");
 
-    const image = createElement("img", "featured-cover-image");
-
-    image.src = product.cover_url;
-    image.alt = "Capa de " + (product.title || "livro") +
-      " — Autor: David Sassa";
-    image.loading = "lazy";
-    image.decoding = "async";
-
-    const titleOverlay = createElement(
-      "span",
-      "book-cover-title-overlay",
-      product.title || "Livro Sassa Hube"
+  if (requestedProduct) {
+    const chosen = products.find(
+      p => String(p.id) === requestedProduct
     );
 
-    image.addEventListener("error", () => {
-      wrapper.replaceWith(createCoverPlaceholder(product));
-    }, { once: true });
-
-    wrapper.append(image, titleOverlay);
-
-    return wrapper;
+    if (chosen) openOrder(chosen);
   }
+}
 
-  function createBookCard(product) {
-    const card = createElement("article", "work-card featured-book-card");
+document.querySelectorAll("[data-format]").forEach(button => {
+  button.addEventListener("click", () => {
+    formatFilter = button.dataset.format;
 
-    card.append(createBookCover(product));
-
-    const format = createElement(
-      "span",
-      "store-format",
-      product.format === "Digital"
-        ? "Livro digital"
-        : "Livro físico"
-    );
-
-    const title = createElement(
-      "h3",
-      "",
-      product.title || "Livro sem título"
-    );
-
-    const description = createElement(
-      "p",
-      "featured-book-description",
-      product.description ||
-        "Descobre esta publicação na Livraria Sassa Hube."
-    );
-
-    const price = createElement(
-      "strong",
-      "store-price",
-      formatPrice(product)
-    );
-
-    const link = createElement(
-      "a",
-      "btn btn-primary featured-book-button",
-      Number(product.price) === 0
-        ? "Obter gratuitamente"
-        : "Consultar e comprar"
-    );
-
-    link.href =
-      "livraria.html?produto=" +
-      encodeURIComponent(product.id) +
-      "#orderPanel";
-
-    card.append(format, title, description, price, link);
-
-    return card;
-  }
-
-  function renderBooks(products) {
-    root.replaceChildren();
-
-    const availableBooks = products.slice(0, 6);
-
-    if (!availableBooks.length) {
-      status.textContent =
-        "Ainda não existem livros publicados na livraria.";
-      return;
-    }
-
-    const fragment = document.createDocumentFragment();
-
-    availableBooks.forEach(product => {
-      fragment.append(createBookCard(product));
+    document.querySelectorAll("[data-format]").forEach(item => {
+      item.classList.toggle("active", item === button);
     });
 
-    root.append(fragment);
+    renderStore();
+  });
+});
 
-    status.textContent =
-      "A mostrar " + availableBooks.length +
-      " de " + products.length +
-      " livro(s) disponível(is).";
+async function uploadPaymentProof(file, orderId) {
+  if (!file) return null;
+
+  if (file.size > MAX_PROOF_SIZE) {
+    throw new Error("O comprovativo não pode ultrapassar 10 MB.");
   }
 
-  async function loadBooks() {
-    if (!database) {
-      status.textContent =
-        "A livraria está temporariamente indisponível.";
+  const extension = file.name.split(".").pop().toLowerCase();
+  const contentType = PROOF_TYPES[extension];
+
+  if (!contentType) {
+    throw new Error(
+      "Formato inválido. Envia PDF, JPG, PNG ou WEBP."
+    );
+  }
+
+  const filePath =
+    orderId + "/" + crypto.randomUUID() + "." + extension;
+
+  const { error } = await db.storage
+    .from("payment-proofs")
+    .upload(filePath, file, {
+      cacheControl: "3600",
+      contentType,
+      upsert: false
+    });
+
+  if (error) {
+    throw new Error(
+      "Não foi possível guardar o comprovativo. Tenta novamente."
+    );
+  }
+
+  return filePath;
+}
+
+$("storeOrderForm").addEventListener("submit", async event => {
+  event.preventDefault();
+
+  if (!db) {
+    $("orderMessage").textContent =
+      "A ligação à livraria não está disponível.";
+    return;
+  }
+
+  const product = products.find(
+    p => p.id === $("productId").value
+  );
+
+  if (!product) {
+    $("orderMessage").textContent =
+      "Escolhe novamente o livro.";
+    return;
+  }
+
+  const buyerEmail = $("buyerEmail").value.trim();
+
+  if (!buyerEmail) {
+    $("orderMessage").textContent =
+      "Introduz o endereço de e-mail.";
+    return;
+  }
+
+  const proofFile = $("paymentProof").files[0] || null;
+
+  if (Number(product.price) > 0 && !proofFile) {
+    $("orderMessage").textContent =
+      "Anexa o comprovativo de pagamento antes de enviar a encomenda.";
+    $("paymentProof").focus();
+    return;
+  }
+
+  const orderId = crypto.randomUUID();
+
+  const accessCode = Array.from(
+    crypto.getRandomValues(new Uint8Array(32)),
+    byte => byte.toString(16).padStart(2, "0")
+  ).join("");
+
+  const hashBuffer = await crypto.subtle.digest(
+    "SHA-256",
+    new TextEncoder().encode(accessCode)
+  );
+
+  const accessCodeHash = Array.from(
+    new Uint8Array(hashBuffer),
+    byte => byte.toString(16).padStart(2, "0")
+  ).join("");
+
+  const button = event.submitter;
+  button.disabled = true;
+  button.textContent = "A enviar...";
+
+  try {
+    let proofPath = null;
+
+    if (proofFile) {
+      proofPath = await uploadPaymentProof(proofFile, orderId);
+    }
+
+    const payload = {
+      id: orderId,
+      product_id: product.id,
+      product_title: product.title,
+      format: product.format,
+      price: product.price,
+      currency: product.currency || "AOA",
+      buyer_name: $("buyerName").value.trim(),
+      buyer_contact: $("buyerContact").value.trim(),
+      buyer_email: buyerEmail,
+      note: $("buyerNote").value.trim() || null,
+      access_code_hash: accessCodeHash,
+      payment_proof_path: proofPath
+    };
+
+    const { error } = await db
+      .from("store_orders")
+      .insert(payload);
+
+    if (error) {
+      throw new Error(
+        "Não foi possível registar a encomenda. Tenta novamente."
+      );
+    }
+
+    $("orderMessage").textContent = proofPath
+      ? "Pedido enviado com o comprovativo. A equipa Sassa Hube irá verificar o pagamento e contactar-te."
+      : "Pedido do livro gratuito recebido. A equipa Sassa Hube irá contactar-te para confirmar a disponibilização.";
+
+    $("orderReceipt").classList.remove("hidden");
+    $("createdOrderId").textContent = orderId;
+    $("createdOrderCode").textContent = accessCode;
+
+    event.target.reset();
+
+  } catch (error) {
+    $("orderMessage").textContent =
+      error.message || "Ocorreu um erro ao enviar a encomenda.";
+  } finally {
+    button.disabled = false;
+    button.textContent = "Enviar encomenda";
+  }
+});
+
+$("downloadOrderForm").addEventListener("submit", async event => {
+  event.preventDefault();
+
+  if (!db) {
+    $("downloadMessage").textContent =
+      "A ligação à livraria não está disponível.";
+    return;
+  }
+
+  const button = event.submitter;
+  button.disabled = true;
+  button.textContent = "A verificar...";
+
+  const downloadWindow = window.open("about:blank", "_blank");
+
+  try {
+    const { data, error } = await db.functions.invoke(
+      "download-book",
+      {
+        body: {
+          order_id: $("downloadOrderId").value.trim(),
+          access_code: $("downloadAccessCode").value.trim()
+        }
+      }
+    );
+
+    if (error || !data?.download_url) {
+      if (downloadWindow) downloadWindow.close();
+
+      $("downloadMessage").textContent =
+        data?.error ||
+        "Não foi possível verificar a encomenda. Confirma os dados e tenta novamente.";
+
       return;
     }
 
-    status.textContent = "A carregar livros disponíveis...";
+    $("downloadMessage").textContent =
+      "Acesso autorizado. O link é válido durante 5 minutos.";
 
-    try {
-      const { data, error } = await database
-        .from("store_products")
-        .select(
-          "id,title,description,price,currency,format,cover_url"
-        )
-        .eq("active", true)
-        .order("created_at", { ascending: false })
-        .limit(6);
-
-      if (error) throw error;
-
-      renderBooks(data || []);
-    } catch (error) {
-      console.error("Erro ao carregar livros:", error);
-
-      root.replaceChildren();
-
-      status.textContent =
-        "Não foi possível carregar os livros. Tenta novamente mais tarde.";
+    if (downloadWindow) {
+      downloadWindow.location.href = data.download_url;
+    } else {
+      window.location.href = data.download_url;
     }
-  }
 
-  loadBooks();
-})();
+  } catch {
+    if (downloadWindow) downloadWindow.close();
+
+    $("downloadMessage").textContent =
+      "Ocorreu um erro ao consultar a encomenda.";
+  } finally {
+    button.disabled = false;
+    button.textContent = "Descarregar livro";
+  }
+});
+
+loadStore();
