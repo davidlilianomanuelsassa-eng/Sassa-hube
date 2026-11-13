@@ -16,7 +16,7 @@ Já existentes no projecto: `GMAIL_CLIENT_ID` e `GMAIL_CLIENT_SECRET`.
 
 Adicionar:
 - `GMAIL_TOKEN_ENCRYPTION_KEY`: chave aleatória de 32 bytes codificada em Base64. No Windows PowerShell, gerar localmente com:
-  `[Convert]::ToBase64String([Security.Cryptography.RandomNumberGenerator]::GetBytes(32))`
+  `$bytes = New-Object byte[] 32; [Security.Cryptography.RandomNumberGenerator]::Create().GetBytes($bytes); [Convert]::ToBase64String($bytes)`
   Copiar o resultado directamente para Supabase Secrets. Não o enviar por chat nem o guardar no GitHub ou no site.
 - `GMAIL_REDIRECT_URI`: `https://qcdgtglayifhgwbgsfyi.supabase.co/functions/v1/gmail-oauth-callback`
 - `GMAIL_FROM_EMAIL`: endereço Gmail que foi autorizado.
