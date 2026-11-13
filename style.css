@@ -3339,3 +3339,33 @@ select:focus-visible {
     font-size: 14px;
   }
 }
+
+/* Correcção de contraste da capa Redes Sociais e Saúde Mental */
+.book-cover-title-overlay.book-cover-title-contrast {
+  top: 23%;
+  bottom: 23%;
+  left: 7%;
+  right: 7%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 14px;
+  color: #102b50;
+  background: rgba(255,255,255,.96);
+  border: 1px solid #c99b4b;
+  border-top: 2px solid #c99b4b;
+  border-radius: 6px;
+  font: 900 clamp(14px, 1.45vw, 18px)/1.35 Manrope, sans-serif;
+  letter-spacing: .1px;
+  text-align: center;
+  text-shadow: none;
+  -webkit-line-clamp: unset;
+  overflow: visible;
+}
+@media (max-width: 560px) {
+  .book-cover-title-overlay.book-cover-title-contrast {
+    top: 22%;
+    bottom: 22%;
+    font-size: 15px;
+  }
+}
