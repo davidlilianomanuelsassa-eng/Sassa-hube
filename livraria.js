@@ -125,19 +125,30 @@ async function loadStore() {
     return;
   }
 
-  const { data, error } = await db
-    .from("store_products")
-    .select("id,title,description,price,currency,format,cover_url")
-    .eq("active", true)
-    .order("created_at", { ascending: false });
+  $("storeStatus").textContent = "A contactar a livraria...";
 
-  if (error) {
-    $("storeStatus").textContent =
-      "Não foi possível carregar os livros. Verifica a ligação ao Supabase.";
-    return;
-  }
+  try {
+    const request = db
+      .from("store_products")
+      .select("id,title,description,price,currency,format,cover_url")
+      .eq("active", true)
+      .order("created_at", { ascending: false });
 
-  products = data || [];
+    const timeout = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error("A ligação ao catálogo demorou demasiado tempo.")), 15000)
+    );
+
+    const { data, error } = await Promise.race([request, timeout]);
+
+    if (error) {
+      console.error("Supabase store_products:", error);
+      $("storeStatus").textContent =
+        "Não foi possível carregar os livros: " +
+        (error.message || "verifica a ligação e as permissões do catálogo.");
+      return;
+    }
+
+    products = data || [];
   renderStore();
 
   const requestedProduct =
@@ -149,6 +160,11 @@ async function loadStore() {
     );
 
     if (chosen) openOrder(chosen);
+  }
+  } catch (error) {
+    console.error("Erro ao carregar catálogo:", error);
+    $("storeStatus").textContent =
+      error.message || "Não foi possível ligar à livraria. Tenta novamente.";
   }
 }
 
