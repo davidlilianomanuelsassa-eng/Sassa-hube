@@ -3,8 +3,16 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="Biblioteca Digital do Sassa Hube: trabalhos, documentos e recursos para aprender e investigar.">
-<title>Biblioteca Digital | Sassa Hube</title>
+<meta name="description" content="Explore a Biblioteca Digital Sassa Hube: livros, documentos e recursos educativos para estudar, ensinar e investigar.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://davidlilianomanuelsassa-eng.github.io/Sassa-hube/biblioteca.html">
+<meta name="theme-color" content="#081b34">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Sassa Hube">
+<meta property="og:title" content="Biblioteca Digital | Sassa Hube">
+<meta property="og:description" content="Livros, documentos e recursos educativos para estudar, ensinar e investigar.">
+<meta property="og:url" content="https://davidlilianomanuelsassa-eng.github.io/Sassa-hube/biblioteca.html">
+<title>Biblioteca Digital | Sassa Hube — Aprender para transformar</title>
 <link rel="stylesheet" href="style.css">
 <style>
 .library-hero{background:linear-gradient(120deg,#123d68,#087e8b);color:#fff;padding:48px 7%;text-align:center}
@@ -25,14 +33,15 @@
 </style>
 </head>
 <body>
-<header>
-<div class="logo">SASSA HUBE</div>
-<nav><a href="index.html">Início</a><a href="index.html#publicacoes">Publicações</a><a href="index.html#contactos">Contactos</a></nav>
+<header class="topbar">
+<a class="brand" href="index.html"><span class="brand-mark">SH</span><span>SASSA HUBE<small>CONHECIMENTO · EDUCAÇÃO · INVESTIGAÇÃO</small></span></a>
+<nav aria-label="Navegação principal"><a href="index.html">Início</a><a href="index.html#publicacao-destaque">Publicações</a><a href="livraria.html">Livraria</a><a href="sobre.html">Sobre</a><a href="contactos.html">Contactos</a></nav>
+<a class="btn btn-outline" href="index.html">← Voltar ao início</a>
 </header>
 <section class="library-hero">
 <h1>Biblioteca Digital</h1>
 <p>Conhecimento, aprendizagem e investigação num só lugar.</p>
-<p><strong>Aprender a conhecer para transformar</strong> — (2026, David Sassa)</p>
+<p><strong>Aprender para transformar</strong></p>
 </section>
 <main class="library-wrap">
 <h2>Explorar publicações</h2>
@@ -44,7 +53,11 @@
 <p id="libraryStatus" class="library-state" role="status">A carregar a biblioteca...</p>
 <div id="libraryItems" class="library-grid"></div>
 </main>
-<footer><p>Sassa Hube © 2026</p><p>Aprender a conhecer para transformar — David Sassa</p><p><a href="index.html">Início</a> · <a href="politica-privacidade.html">Política de Privacidade</a></p></footer>
+<footer class="site-footer">
+<div class="footer-brand"><span class="brand-mark">SH</span><div><strong>SASSA HUBE</strong><p>Aprender para transformar</p></div></div>
+<div class="footer-links"><a href="index.html">Página inicial</a><a href="livraria.html">Livraria</a><a href="sobre.html">Sobre</a><a href="contactos.html">Contactos</a><a href="politica-privacidade.html">Política de Privacidade</a></div>
+<small>© 2026 Sassa Hube. Todos os direitos reservados.</small>
+</footer>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="config.js"></script>
 <script src="biblioteca.js"></script>
