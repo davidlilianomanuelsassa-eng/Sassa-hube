@@ -23,7 +23,8 @@
 <body>
 <header class="topbar">
 <a class="brand" href="index.html"><span class="brand-mark">SH</span><span>SASSA HUBE<small>CONHECIMENTO · EDUCAÇÃO · INVESTIGAÇÃO</small></span></a>
-<nav aria-label="Navegação principal"><a href="index.html">Início</a><a href="biblioteca.html">Biblioteca</a><a href="livraria.html">Livraria</a></nav>
+<button class="mobile-menu-toggle" id="mobileMenuToggle" type="button" aria-expanded="false" aria-controls="mainNav"><span aria-hidden="true">☰</span><span class="mobile-menu-label">Menu</span></button>
+<nav id="mainNav" aria-label="Navegação principal"><a href="index.html">Início</a><a href="biblioteca.html">Biblioteca</a><a href="livraria.html">Livraria</a></nav>
 <a class="btn btn-outline" href="index.html">← Voltar ao site</a>
 </header>
 <main class="privacy-wrap">
@@ -80,5 +81,25 @@
 <div class="footer-links"><a href="index.html">Página inicial</a><a href="biblioteca.html">Biblioteca Digital</a><a href="livraria.html">Livraria</a></div>
 <small>© 2026 Sassa Hube. Todos os direitos reservados.</small>
 </footer>
+<script>
+(() => {
+  const toggle = document.getElementById('mobileMenuToggle');
+  const nav = document.getElementById('mainNav');
+  if (!toggle || !nav) return;
+  toggle.addEventListener('click', () => {
+    const expanded = toggle.getAttribute('aria-expanded') === 'true';
+    toggle.setAttribute('aria-expanded', String(!expanded));
+    nav.classList.toggle('is-open', !expanded);
+    const icon = toggle.querySelector('[aria-hidden="true"]');
+    if (icon) icon.textContent = expanded ? '☰' : '×';
+  });
+  nav.querySelectorAll('a').forEach(link => link.addEventListener('click', () => {
+    toggle.setAttribute('aria-expanded', 'false');
+    nav.classList.remove('is-open');
+    const icon = toggle.querySelector('[aria-hidden="true"]');
+    if (icon) icon.textContent = '☰';
+  }));
+})();
+</script>
 </body>
 </html>
