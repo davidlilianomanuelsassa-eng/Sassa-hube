@@ -70,7 +70,7 @@ function renderFeaturedBooks(products){
         titleOverlay.style.setProperty("justify-content","center","important");
         titleOverlay.style.setProperty("padding","14px 12px","important");
         titleOverlay.style.setProperty("overflow","visible","important");
-        titleOverlay.style.setProperty("color","#f3d28e","important");
+        titleOverlay.style.setProperty("color","#f5d36f","important");
         titleOverlay.style.setProperty("background","linear-gradient(145deg,#081b34,#173f68)","important");
         titleOverlay.style.setProperty("border","2px solid #c99b4b","important");
         titleOverlay.style.setProperty("border-radius","7px","important");
