@@ -3340,32 +3340,34 @@ select:focus-visible {
   }
 }
 
-/* Correcção de contraste da capa Redes Sociais e Saúde Mental */
-.book-cover-title-overlay.book-cover-title-contrast {
-  top: 23%;
-  bottom: 23%;
-  left: 7%;
-  right: 7%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 12px 14px;
-  color: #102b50;
-  background: rgba(255,255,255,.96);
-  border: 1px solid #c99b4b;
-  border-top: 2px solid #c99b4b;
-  border-radius: 6px;
-  font: 900 clamp(14px, 1.45vw, 18px)/1.35 Manrope, sans-serif;
-  letter-spacing: .1px;
-  text-align: center;
-  text-shadow: none;
-  -webkit-line-clamp: unset;
-  overflow: visible;
+/* Máscara opaca para substituir visualmente o título branco da capa */
+.book-cover-wrap .book-cover-title-overlay.book-cover-title-contrast {
+  position: absolute !important;
+  z-index: 20 !important;
+  top: 20% !important;
+  bottom: 20% !important;
+  left: 6% !important;
+  right: 6% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 14px 12px !important;
+  overflow: visible !important;
+  color: #102b50 !important;
+  background: #ffffff !important;
+  border: 2px solid #c99b4b !important;
+  border-radius: 7px !important;
+  font: 900 16px/1.35 Manrope, sans-serif !important;
+  letter-spacing: .1px !important;
+  text-align: center !important;
+  text-shadow: none !important;
+  -webkit-line-clamp: unset !important;
+  -webkit-box-orient: initial !important;
 }
 @media (max-width: 560px) {
-  .book-cover-title-overlay.book-cover-title-contrast {
-    top: 22%;
-    bottom: 22%;
-    font-size: 15px;
+  .book-cover-wrap .book-cover-title-overlay.book-cover-title-contrast {
+    top: 19% !important;
+    bottom: 19% !important;
+    font-size: 14px !important;
   }
 }
