@@ -305,9 +305,25 @@ $("storeOrderForm").addEventListener("submit", async event => {
       );
     }
 
-    $("orderMessage").textContent = proofPath
+    // O recibo por e-mail é complementar: uma falha no Gmail nunca invalida a encomenda.
+    let receiptEmailSent = false;
+    try {
+      const { data: emailResult, error: emailError } = await db.functions.invoke(
+        "gmail-send",
+        { body: { order_id: orderId, access_code: accessCode } }
+      );
+      receiptEmailSent = !emailError && emailResult?.sent === true;
+    } catch (emailError) {
+      console.warn("O recibo ficou registado, mas o e-mail não foi enviado.");
+    }
+
+    const orderStatusText = proofPath
       ? "Pedido enviado com o comprovativo. A equipa Sassa Hube irá verificar o pagamento e contactar-te."
       : "Pedido do livro gratuito recebido. A equipa Sassa Hube irá contactar-te para confirmar a disponibilização.";
+
+    $("orderMessage").textContent = orderStatusText + (receiptEmailSent
+      ? " O recibo também foi enviado para o teu e-mail."
+      : " A encomenda ficou registada; o envio do e-mail não foi confirmado.");
 
     $("orderReceipt").classList.remove("hidden");
     $("createdOrderId").textContent = orderId;
