@@ -56,8 +56,29 @@ function renderFeaturedBooks(products){
       const titleOverlay=document.createElement("span");
       titleOverlay.className="book-cover-title-overlay";
       const coverTitleKey=(p.title||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toUpperCase();
-      if(coverTitleKey.includes("REDES SOCIAIS") && coverTitleKey.includes("SAUDE MENTAL")){
+      const isSocialHealthBook=coverTitleKey.includes("REDES SOCIAIS") && coverTitleKey.includes("SAUDE MENTAL");
+      if(isSocialHealthBook){
         titleOverlay.classList.add("book-cover-title-contrast");
+        titleOverlay.style.setProperty("position","absolute","important");
+        titleOverlay.style.setProperty("z-index","20","important");
+        titleOverlay.style.setProperty("top","20%","important");
+        titleOverlay.style.setProperty("bottom","22%","important");
+        titleOverlay.style.setProperty("left","6%","important");
+        titleOverlay.style.setProperty("right","6%","important");
+        titleOverlay.style.setProperty("display","flex","important");
+        titleOverlay.style.setProperty("align-items","center","important");
+        titleOverlay.style.setProperty("justify-content","center","important");
+        titleOverlay.style.setProperty("padding","14px 12px","important");
+        titleOverlay.style.setProperty("overflow","visible","important");
+        titleOverlay.style.setProperty("color","#f3d28e","important");
+        titleOverlay.style.setProperty("background","linear-gradient(145deg,#081b34,#173f68)","important");
+        titleOverlay.style.setProperty("border","2px solid #c99b4b","important");
+        titleOverlay.style.setProperty("border-radius","7px","important");
+        titleOverlay.style.setProperty("font","900 16px/1.35 Manrope,sans-serif","important");
+        titleOverlay.style.setProperty("text-align","center","important");
+        titleOverlay.style.setProperty("text-shadow","none","important");
+        titleOverlay.style.setProperty("-webkit-line-clamp","unset","important");
+        titleOverlay.style.setProperty("-webkit-box-orient","initial","important");
       }
       titleOverlay.textContent=p.title||"Livro Sassa Hube";
       const author=document.createElement("span");
