@@ -4,8 +4,19 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="Compre livros digitais e impressos na Livraria Sassa Hube. Consulte preços, solicite a sua encomenda e acompanhe a entrega.">
-<title>Livraria Digital | Comprar livros — Sassa Hube</title>
+<meta name="description" content="Explore a Livraria Sassa Hube: livros digitais e físicos, preços em Kwanzas e encomendas com consulta de acesso e descarregamento.">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<link rel="canonical" href="https://davidlilianomanuelsassa-eng.github.io/Sassa-hube/livraria.html">
+<meta name="theme-color" content="#081b34">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Sassa Hube">
+<meta property="og:locale" content="pt_AO">
+<meta property="og:title" content="Livraria Sassa Hube | Livros para aprender e transformar">
+<meta property="og:description" content="Descubra livros digitais e físicos, consulte preços e envie a sua encomenda na Livraria Sassa Hube.">
+<meta property="og:url" content="https://davidlilianomanuelsassa-eng.github.io/Sassa-hube/livraria.html">
+<meta property="og:image" content="https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=1200&q=80">
+<meta name="twitter:card" content="summary_large_image">
+<title>Livraria Sassa Hube | Livros para aprender e transformar</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -15,9 +26,13 @@
 <span class="brand-mark">SH</span>
 <span>SASSA HUBE<small>LIVRARIA DIGITAL</small></span>
 </a>
-<nav>
+<button class="mobile-menu-toggle" id="mobileMenuToggle" type="button" aria-expanded="false" aria-controls="mainNav"><span aria-hidden="true">☰</span><span class="mobile-menu-label">Menu</span></button>
+<nav id="mainNav" aria-label="Navegação principal">
 <a href="index.html">Início</a>
-<a href="index.html#biblioteca">Biblioteca</a>
+<a href="biblioteca.html">Biblioteca</a>
+<a href="index.html#publicacao-destaque">Publicações</a>
+<a href="sobre.html">Sobre</a>
+<a href="contactos.html">Contactos</a>
 </nav>
 <a class="btn btn-outline" href="index.html">← Voltar ao site</a>
 </header>
@@ -136,6 +151,8 @@ Este livro é gratuito. Não precisas de enviar comprovativo de pagamento.
 <div class="footer-links">
 <a href="index.html">Página inicial</a>
 <a href="admin.html">Painel de administração</a>
+<a href="politica-privacidade.html">Política de Privacidade</a>
+<a href="contactos.html">Contactos</a>
 </div>
 
 <small>© 2026 Sassa Hube. Todos os direitos reservados.</small>
@@ -144,6 +161,26 @@ Este livro é gratuito. Não precisas de enviar comprovativo de pagamento.
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="config.js"></script>
 <script src="livraria.js"></script>
+<script>
+(() => {
+  const toggle = document.getElementById('mobileMenuToggle');
+  const nav = document.getElementById('mainNav');
+  if (!toggle || !nav) return;
+  toggle.addEventListener('click', () => {
+    const expanded = toggle.getAttribute('aria-expanded') === 'true';
+    toggle.setAttribute('aria-expanded', String(!expanded));
+    nav.classList.toggle('is-open', !expanded);
+    const icon = toggle.querySelector('[aria-hidden="true"]');
+    if (icon) icon.textContent = expanded ? '☰' : '×';
+  });
+  nav.querySelectorAll('a').forEach(link => link.addEventListener('click', () => {
+    toggle.setAttribute('aria-expanded', 'false');
+    nav.classList.remove('is-open');
+    const icon = toggle.querySelector('[aria-hidden="true"]');
+    if (icon) icon.textContent = '☰';
+  }));
+})();
+</script>
 
 </body>
 </html>
