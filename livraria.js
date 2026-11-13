@@ -106,11 +106,17 @@
     image.loading = "lazy";
     image.decoding = "async";
 
+    const titleOverlay = createElement(
+      "span",
+      "book-cover-title-overlay",
+      product.title || "Livro Sassa Hube"
+    );
+
     image.addEventListener("error", () => {
       wrapper.replaceWith(createCoverPlaceholder(product));
     }, { once: true });
 
-    wrapper.append(image);
+    wrapper.append(image, titleOverlay);
 
     return wrapper;
   }
