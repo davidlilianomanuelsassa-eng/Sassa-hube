@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ligar Gmail | Sassa Hube</title>
+<link rel="stylesheet" href="style.css">
+<style>
+.gmail-connect{max-width:720px;margin:70px auto;padding:28px;background:#fff;border-radius:18px;box-shadow:0 12px 40px #10204018}
+.gmail-connect h1{color:#10284a}.gmail-connect p{line-height:1.7}.gmail-connect .message{margin-top:16px}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="brand" href="index.html"><span class="brand-mark">SH</span><span>SASSA HUBE<small>APRENDER PARA TRANSFORMAR</small></span></a><a class="btn btn-outline" href="admin.html">Voltar ao painel</a></header>
+<main class="gmail-connect">
+<span class="eyebrow">CONFIGURAÇÃO ADMINISTRATIVA</span>
+<h1>Ligar a conta Gmail</h1>
+<p>Esta ligação permite enviar recibos de encomendas da livraria. A autorização é guardada no servidor e não fica exposta aos visitantes.</p>
+<p id="gmailStatus" class="message" role="status">A verificar a sessão administrativa...</p>
+<button id="connectGmail" class="btn btn-primary" type="button" disabled>Ligar Gmail com Google</button>
+<p><small>O Gmail em modo de teste pode exigir nova autorização periodicamente. Os e-mails de encomendas pagas informam que o pagamento ainda está pendente de verificação.</small></p>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script>
+const statusBox = document.getElementById("gmailStatus");
+const button = document.getElementById("connectGmail");
+let client;
+if (window.SUPABASE_URL && window.SUPABASE_ANON_KEY && window.supabase) {
+  client = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
+}
+(async () => {
+  const params = new URLSearchParams(location.search);
+  if (params.get("status") === "connected") {
+    statusBox.textContent = "Conta Gmail ligada com sucesso. Já podes voltar ao painel.";
+    return;
+  }
+  if (!client) { statusBox.textContent = "Não foi possível iniciar o Supabase."; return; }
+  const { data: { session } } = await client.auth.getSession();
+  if (!session) { statusBox.textContent = "Inicia sessão no painel de administração antes de ligar o Gmail."; return; }
+  const { data: admin, error } = await client.from("site_admins").select("user_id").eq("user_id", session.user.id).maybeSingle();
+  if (error || !admin) { statusBox.textContent = "Esta conta não tem permissões de administrador."; return; }
+  statusBox.textContent = "Sessão administrativa confirmada. Podes ligar a conta.";
+  button.disabled = false;
+})();
+button.addEventListener("click", async () => {
+  button.disabled = true;
+  statusBox.textContent = "A preparar a autorização Google...";
+  try {
+    const { data: { session } } = await client.auth.getSession();
+    const { data, error } = await client.functions.invoke("gmail-oauth-start", {
+      body: {}, headers: { Authorization: "Bearer " + session.access_token }
+    });
+    if (error || !data?.authorization_url) throw new Error(data?.error || "Não foi possível iniciar a autorização.");
+    location.href = data.authorization_url;
+  } catch (error) {
+    statusBox.textContent = error.message || "Ocorreu um erro.";
+    button.disabled = false;
+  }
+});
+</script>
+</body>
+</html>
