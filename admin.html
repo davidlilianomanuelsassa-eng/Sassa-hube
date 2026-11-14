@@ -150,6 +150,24 @@
 <h2>Livraria Sassa Hube</h2>
 <p class="muted">Regista livros digitais (PDF) e livros físicos para aparecerem no catálogo público.</p>
 
+<form id="paymentSettingsForm" class="upload-form">
+<h3>Coordenadas bancárias para pagamentos</h3>
+<p class="muted">Estes dados serão apresentados aos clientes quando escolherem um livro pago. Preenche apenas dados destinados a receber transferências.</p>
+<label for="paymentBankName">Banco</label>
+<input id="paymentBankName" maxlength="120" required placeholder="Nome do banco">
+<label for="paymentAccountHolder">Titular da conta</label>
+<input id="paymentAccountHolder" maxlength="160" required placeholder="Nome do titular">
+<label for="paymentIban">IBAN</label>
+<input id="paymentIban" maxlength="64" required placeholder="AO06...">
+<label for="paymentAccountNumber">Número de conta (opcional)</label>
+<input id="paymentAccountNumber" maxlength="64" placeholder="Número de conta">
+<label for="paymentInstructions">Instruções adicionais (opcional)</label>
+<textarea id="paymentInstructions" rows="3" maxlength="600" placeholder="Ex.: Indica o título do livro na descrição da transferência."></textarea>
+<button class="btn btn-primary" type="submit">Guardar coordenadas bancárias</button>
+<p id="paymentSettingsMsg" class="message" role="status"></p>
+</form>
+
+
 <form id="storeProductForm" class="upload-form">
 <label for="storeTitle">Título do livro</label>
 <input id="storeTitle" maxlength="180" required>
@@ -887,6 +905,59 @@ async function loadStoreOrders() {
   });
 }
 
+/* COORDENADAS BANCÁRIAS */
+async function loadPaymentSettings() {
+  const message = $("paymentSettingsMsg");
+  const { data, error } = await db
+    .from("store_payment_settings")
+    .select("bank_name,account_holder,iban,account_number,payment_instructions")
+    .eq("id", "main")
+    .maybeSingle();
+
+  if (error) {
+    if (message) notice("paymentSettingsMsg", "Executa primeiro o ficheiro supabase-payment-settings.sql no SQL Editor.");
+    return;
+  }
+
+  if (!data) return;
+  $("paymentBankName").value = data.bank_name || "";
+  $("paymentAccountHolder").value = data.account_holder || "";
+  $("paymentIban").value = data.iban || "";
+  $("paymentAccountNumber").value = data.account_number || "";
+  $("paymentInstructions").value = data.payment_instructions || "";
+}
+
+$("paymentSettingsForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  if (!db || !await isAdmin()) {
+    notice("paymentSettingsMsg", "Acesso administrativo não confirmado.");
+    return;
+  }
+
+  const button = e.submitter;
+  button.disabled = true;
+  const payload = {
+    id: "main",
+    bank_name: $("paymentBankName").value.trim(),
+    account_holder: $("paymentAccountHolder").value.trim(),
+    iban: $("paymentIban").value.trim().replace(/\\s+/g, ""),
+    account_number: $("paymentAccountNumber").value.trim(),
+    payment_instructions: $("paymentInstructions").value.trim(),
+    updated_at: new Date().toISOString()
+  };
+
+  const { error } = await db
+    .from("store_payment_settings")
+    .upsert(payload, { onConflict: "id" });
+
+  button.disabled = false;
+  if (error) {
+    notice("paymentSettingsMsg", "Não foi possível guardar. Confirma se executaste supabase-payment-settings.sql.");
+    return;
+  }
+  notice("paymentSettingsMsg", "Coordenadas bancárias guardadas. Serão apresentadas nos livros pagos.", false);
+});
+
 /* ADICIONAR LIVRO */
 $("storeProductForm").addEventListener("submit", async e => {
   e.preventDefault();
@@ -1097,6 +1168,7 @@ $("loginForm").addEventListener("submit", async e => {
   await loadAdminQuestions();
   await loadStoreProducts();
   await loadStoreOrders();
+  await loadPaymentSettings();
 });
 
 $("logout").addEventListener("click", async () => {
@@ -1125,6 +1197,7 @@ document.querySelectorAll(".admin-tab").forEach(button => {
     if (button.dataset.panel === "livraria") {
       loadStoreProducts();
       loadStoreOrders();
+      loadPaymentSettings();
     }
 
     if (button.dataset.panel === "perguntas") loadAdminQuestions();
@@ -1150,6 +1223,7 @@ document.querySelectorAll(".admin-tab").forEach(button => {
       await loadAdminQuestions();
       await loadStoreProducts();
       await loadStoreOrders();
+      await loadPaymentSettings();
     } else {
       await db.auth.signOut();
       showLogin();
