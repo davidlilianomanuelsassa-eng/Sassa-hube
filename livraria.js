@@ -89,6 +89,35 @@ function renderStore() {
     : "Ainda não há livros disponíveis nesta categoria.";
 }
 
+async function loadPaymentDetails() {
+  const panel = $("paymentDetails");
+  const text = $("paymentDetailsText");
+  if (!panel || !text || !db) return;
+
+  panel.classList.remove("hidden");
+  text.textContent = "A carregar coordenadas bancárias...";
+
+  const { data, error } = await db
+    .from("store_payment_settings")
+    .select("bank_name,account_holder,iban,account_number,payment_instructions")
+    .eq("id", "main")
+    .maybeSingle();
+
+  if (error || !data || !data.bank_name || !data.account_holder || !data.iban) {
+    text.textContent = "Os dados bancários ainda não estão configurados. Contacta a equipa Sassa Hube antes de efectuar qualquer transferência.";
+    return;
+  }
+
+  const lines = [
+    "Banco: " + data.bank_name,
+    "Titular: " + data.account_holder,
+    "IBAN: " + data.iban
+  ];
+  if (data.account_number) lines.push("Número de conta: " + data.account_number);
+  if (data.payment_instructions) lines.push("Instruções: " + data.payment_instructions);
+  text.textContent = lines.join("\\n");
+}
+
 function openOrder(p) {
   $("productId").value = p.id;
 
@@ -104,6 +133,8 @@ function openOrder(p) {
   // Mostra apenas os campos de pagamento aplicáveis ao tipo de livro.
   const isPaid = Number(p.price) > 0;
   $("paymentProofGroup").classList.toggle("hidden", !isPaid);
+  $("paymentDetails").classList.toggle("hidden", !isPaid);
+  if (isPaid) loadPaymentDetails();
   $("freeOrderNotice").classList.toggle("hidden", isPaid);
   $("paymentProof").required = isPaid;
   $("paymentProof").value = "";
