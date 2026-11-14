@@ -940,7 +940,7 @@ $("paymentSettingsForm").addEventListener("submit", async e => {
     id: "main",
     bank_name: $("paymentBankName").value.trim(),
     account_holder: $("paymentAccountHolder").value.trim(),
-    iban: $("paymentIban").value.trim().replace(/\\s+/g, ""),
+    iban: $("paymentIban").value.trim().replace(/\s+/g, ""),
     account_number: $("paymentAccountNumber").value.trim(),
     payment_instructions: $("paymentInstructions").value.trim(),
     updated_at: new Date().toISOString()
