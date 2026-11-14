@@ -115,7 +115,7 @@ async function loadPaymentDetails() {
   ];
   if (data.account_number) lines.push("Número de conta: " + data.account_number);
   if (data.payment_instructions) lines.push("Instruções: " + data.payment_instructions);
-  text.textContent = lines.join("\\n");
+  text.textContent = lines.join("\n");
 }
 
 function openOrder(p) {
