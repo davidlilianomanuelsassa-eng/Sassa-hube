@@ -4,6 +4,7 @@
   const status = document.getElementById("libraryStatus");
   const items = document.getElementById("libraryItems");
   let publications = [];
+  let supabaseClient = null;
 
   const textValue = value => String(value ?? "");
   const make = (tag, className, text) => {
@@ -71,6 +72,24 @@
         window.open("https://wa.me/?text=" + encodeURIComponent(message), "_blank", "noopener,noreferrer");
       });
       actions.append(share);
+      const save = make("button", "share-file", "Guardar");
+      save.type = "button";
+      save.addEventListener("click", async () => {
+        if (!supabaseClient) { alert("A ligação à conta não está disponível."); return; }
+        const { data: sessionData } = await supabaseClient.auth.getSession();
+        const user = sessionData.session?.user;
+        if (!user) { window.location.href = "experiencia.html#conta"; return; }
+        const targetUrl = work.kind === "store"
+          ? new URL("livraria.html?produto=" + encodeURIComponent(work.id), window.location.href).href
+          : (work.url || window.location.href);
+        const { error } = await supabaseClient.from("sh_bookmarks").upsert(
+          { user_id: user.id, title: work.title || "Publicação Sassa Hube", url: targetUrl },
+          { onConflict: "user_id,url" }
+        );
+        save.textContent = error ? "Tentar novamente" : "Guardado ✓";
+        if (error) console.error("Não foi possível guardar o favorito:", error);
+      });
+      actions.append(save);
       card.append(actions);
       items.append(card);
     });
@@ -83,6 +102,7 @@
     }
 
     const client = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
+    supabaseClient = client;
     status.textContent = "A carregar publicações e livros...";
     try {
       const [worksResult, productsResult] = await Promise.all([
