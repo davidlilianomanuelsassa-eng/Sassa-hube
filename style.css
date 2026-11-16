@@ -3722,3 +3722,46 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
  .info-hero,.contact-hero{padding:30px 22px!important}
  .site-footer{padding:42px 20px!important}
 }
+
+
+/* SASSA HUBE — REESTRUTURAÇÃO EDITORIAL E HIERARQUIA DE CONTEÚDO */
+.editorial-manifesto{max-width:1240px;margin:0 auto;padding:92px 28px;display:grid;grid-template-columns:.55fr 1.5fr .8fr;gap:35px;align-items:start;border-bottom:1px solid #dfe7dc}
+.manifesto-index{display:flex;align-items:center;gap:12px;color:#69836a;font-size:9px;font-weight:900;letter-spacing:1.5px}
+.manifesto-index>span:first-child{font:800 42px Manrope;color:#a8c96c;letter-spacing:-2px}
+.manifesto-index i{width:28px;height:1px;background:#a8c96c}
+.manifesto-copy .eyebrow{color:#64834c;font-size:10px;font-weight:900;letter-spacing:2px}
+.manifesto-copy h2{font:800 clamp(32px,4.3vw,54px)/1.08 Manrope;color:#17231e;letter-spacing:-2px;margin:17px 0 20px}
+.manifesto-copy h2 em{font-style:normal;color:#638347}
+.manifesto-copy>p:last-child{max-width:690px;color:#68766f;font-size:15px;line-height:1.9}
+.manifesto-aside{margin-top:38px;border-left:1px solid #cbd9c5;padding:4px 0 4px 20px;display:grid;gap:14px}
+.manifesto-aside strong{font:800 10px Manrope;letter-spacing:1px;color:#304c37}
+.manifesto-aside a{font-size:11px;color:#547542;font-weight:800;text-decoration:none;margin-top:8px}
+#biblioteca,#livraria-destaques,#academia,#investigacao,#publicacao-destaque,#sites-relacionados{scroll-margin-top:95px}
+#biblioteca .section-head,#livraria-destaques .section-head,#academia .section-head{display:flex;align-items:end;justify-content:space-between;gap:25px}
+#biblioteca .section-head h2,#livraria-destaques .section-head h2,#academia .section-head h2{max-width:650px}
+#biblioteca .library-toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:12px;padding:18px;background:#eaf0e8;border-radius:12px}
+#biblioteca .library-toolbar .search{flex:1;min-width:220px}
+#biblioteca .items,#livraria-destaques .items{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+#biblioteca .library-item,#livraria-destaques .library-item{min-width:0}
+#livraria-destaques{background:#eaf0e8;max-width:none;padding-left:max(calc((100% - 1240px)/2),28px)!important;padding-right:max(calc((100% - 1240px)/2),28px)!important}
+#livraria-destaques .section-head{max-width:1240px;margin-left:auto;margin-right:auto}
+#livraria-destaques .items,#livraria-destaques .status{max-width:1184px;margin-left:auto;margin-right:auto}
+#academia .feature-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}
+#academia .feature-cards article{padding:28px;border:1px solid #e2e8e2;border-radius:13px;background:#fff}
+#academia .feature-cards article>span{display:inline-grid;place-items:center;width:38px;height:38px;border-radius:50%;background:#eff8dc;color:#416238;font:800 12px Manrope}
+#academia .feature-cards h3{font:800 18px Manrope;color:#17231e;margin:18px 0 10px}
+#academia .feature-cards p{font-size:13px;color:#68766f;line-height:1.8}
+#investigacao{max-width:1240px;margin:25px auto 70px;padding:58px 60px!important;border-radius:16px;background:#14251f!important;color:#fff}
+#investigacao .eyebrow{color:#c7ef75!important}
+#investigacao h2{font:800 clamp(32px,4vw,46px) Manrope;color:#fff;margin:15px 0}
+#investigacao p{max-width:760px;color:#d0dbd2;line-height:1.9}
+#investigacao .research-link{display:inline-flex;margin-top:15px;padding:13px 17px;border-radius:7px;background:#c7ef75;color:#14251f;font-weight:800;text-decoration:none}
+#publicacao-destaque{display:grid;grid-template-columns:.8fr 1.2fr;gap:55px;align-items:center}
+#publicacao-destaque .first-publication-cover{width:min(100%,360px);min-height:430px;justify-self:center;box-shadow:22px 25px 50px #14251f20;transform:rotate(-2deg)}
+#publicacao-destaque .first-publication-copy h2{font:800 clamp(32px,4vw,48px)/1.08 Manrope;color:#17231e;letter-spacing:-1.8px}
+#publicacao-destaque .first-publication-copy>p:not(.publication-byline){color:#68766f;line-height:1.9;font-size:14px}
+#sites-relacionados{background:#eaf0e8!important}
+#fundador{max-width:1240px;margin:70px auto;padding:65px 45px!important;border-radius:18px}
+#sobre{max-width:1240px;margin:0 auto 65px;padding:55px!important;border:1px solid #e2e8e2;border-radius:16px;background:#fff}
+@media(max-width:850px){.editorial-manifesto{grid-template-columns:1fr;gap:18px;padding:65px 24px}.manifesto-aside{margin-top:5px}.manifesto-index{order:0}#publicacao-destaque{grid-template-columns:1fr;gap:30px}#publicacao-destaque .first-publication-cover{min-height:380px}#biblioteca .items,#livraria-destaques .items{grid-template-columns:repeat(2,minmax(0,1fr))}#investigacao{margin:20px 18px 55px;padding:40px 28px!important}}
+@media(max-width:600px){#biblioteca .section-head,#livraria-destaques .section-head,#academia .section-head{display:block}#biblioteca .items,#livraria-destaques .items,#academia .feature-cards{grid-template-columns:1fr}#livraria-destaques{padding-left:18px!important;padding-right:18px!important}#fundador{margin:35px 18px;padding:28px 20px!important}#sobre{margin:0 18px 40px;padding:30px 22px!important}.manifesto-copy h2{font-size:36px}}
