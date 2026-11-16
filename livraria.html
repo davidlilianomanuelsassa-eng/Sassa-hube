@@ -11,12 +11,12 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Sassa Hube">
 <meta property="og:locale" content="pt_AO">
-<meta property="og:title" content="Livraria Sassa Hube | Livros para aprender e transformar">
+<meta property="og:title" content="Livraria Sassa Hube | Livros para descobrir novas ideias">
 <meta property="og:description" content="Descubra livros digitais e físicos, consulte preços e envie a sua encomenda na Livraria Sassa Hube.">
 <meta property="og:url" content="https://davidlilianomanuelsassa-eng.github.io/Sassa-hube/livraria.html">
 <meta property="og:image" content="https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=1200&q=80">
 <meta name="twitter:card" content="summary_large_image">
-<title>Livraria Sassa Hube | Livros para aprender e transformar</title>
+<title>Livraria Sassa Hube | Livros para descobrir novas ideias</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -42,27 +42,27 @@
 <div class="section-head">
 <div>
 <span class="eyebrow">LIVRARIA SASSA HUBE</span>
-<h1>Livros para aprender e transformar</h1>
-<p>Descobre livros digitais e impressos. Escolhe uma obra e envia a tua encomenda.</p>
+<h1>Uma livraria para alargar horizontes.</h1>
+<p>Obras para despertar perguntas, aprofundar conhecimentos e acompanhar o seu percurso de aprendizagem.</p>
 </div>
 </div>
 
 <section class="store-intro" aria-label="Como comprar na livraria">
   <div class="store-intro-copy">
     <span class="eyebrow">LEITURA COM PROPÓSITO</span>
-    <h2>Encontra a tua próxima leitura.</h2>
-    <p>Escolhe entre obras gratuitas e pagas. Os livros digitais gratuitos ficam disponíveis para descarregar logo após o pedido. Nos livros pagos, o acesso é liberado depois da confirmação do pagamento.</p>
+    <h2>Há livros que informam. Outros mudam a forma de pensar.</h2>
+    <p>Explore cada título com atenção às informações, ao formato e às condições apresentadas. Os livros digitais gratuitos estão identificados no catálogo; os livros pagos seguem o processo de confirmação indicado no momento da encomenda.</p>
   </div>
   <div class="store-steps">
-    <article><span>01</span><strong>Escolhe o livro</strong><small>Consulta a descrição e o preço.</small></article>
-    <article><span>02</span><strong>Envia o pedido</strong><small>Preenche os teus dados de contacto.</small></article>
-    <article><span>03</span><strong>Recebe o livro</strong><small>Gratuito digital: descarga imediata. Pago: após confirmação do pagamento.</small></article>
+    <article><span>01</span><strong>Escolha com intenção</strong><small>Consulte o resumo, o formato e as condições de acesso.</small></article>
+    <article><span>02</span><strong>Envie o seu pedido</strong><small>Preencha os dados solicitados para identificar correctamente a encomenda.</small></article>
+    <article><span>03</span><strong>Receba o acesso</strong><small>Nos títulos gratuitos, siga a opção de descarregamento. Nos pagos, o acesso é disponibilizado após a confirmação.</small></article>
   </div>
 </section>
 
 <div class="store-catalog-heading">
-  <div><span class="eyebrow">CATÁLOGO</span><h2>Livros disponíveis</h2></div>
-  <p>Preços apresentados em Kwanzas, salvo indicação em contrário.</p>
+  <div><span class="eyebrow">CATÁLOGO</span><h2>Escolha a sua próxima leitura</h2></div>
+  <p>Os preços são apresentados em Kwanzas, salvo indicação em contrário.</p>
 </div>
 
 <div class="bookstore-filters">
@@ -75,7 +75,7 @@
 <p id="storeStatus" class="status">A carregar livros...</p>
 
 <section class="store-order hidden" id="orderPanel">
-<h2>Encomendar livro</h2>
+<h2>Concluir pedido de encomenda</h2>
 <p id="selectedBook"></p>
 
 <form id="storeOrderForm">
@@ -125,7 +125,7 @@ Este livro é gratuito. Não precisas de enviar comprovativo de pagamento.
 </section>
 
 <section class="store-order" id="downloadPanel">
-<h2>Consultar encomenda e descarregar livro</h2>
+<h2>Acompanhar pedido e aceder ao livro</h2>
 <p>Introduz a referência e o código que recebeste ao fazer a encomenda.</p>
 
 <form id="downloadOrderForm">
@@ -165,6 +165,7 @@ Este livro é gratuito. Não precisas de enviar comprovativo de pagamento.
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="config.js"></script>
+<script src="analytics.js"></script>
 <script src="livraria.js"></script>
 <script>
 (() => {
