@@ -14,23 +14,7 @@
 <meta property="og:url" content="https://davidlilianomanuelsassa-eng.github.io/Sassa-hube/biblioteca.html">
 <title>Biblioteca Digital | Sassa Hube — Aprender para transformar</title>
 <link rel="stylesheet" href="style.css">
-<style>
-.library-hero{background:linear-gradient(120deg,#123d68,#087e8b);color:#fff;padding:48px 7%;text-align:center}
-.library-hero h1{margin:0 0 10px;font-size:clamp(28px,5vw,42px)}
-.library-wrap{max-width:1100px;margin:30px auto;padding:0 20px}
-.library-tools{display:grid;grid-template-columns:1fr 220px;gap:12px;margin:22px 0}
-.library-tools input,.library-tools select{width:100%;padding:13px;border:1px solid #ccd5df;border-radius:8px;font:inherit;background:#fff}
-.library-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px}
-.library-item{background:#fff;border:1px solid #e3e9f1;border-radius:12px;padding:19px;display:flex;flex-direction:column;gap:9px}
-.library-item h3{margin:0;color:#123d68;overflow-wrap:anywhere}
-.library-item p{margin:0;color:#536477;font-size:14px;line-height:1.55}
-.library-meta{font-size:12px;color:#68778b}
-.library-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:auto;padding-top:8px}
-.library-actions a,.library-actions button{font:700 12px Arial;text-decoration:none;border:0;border-radius:7px;padding:10px 12px;cursor:pointer}
-.open-file{background:#087e8b;color:white}.share-file{background:#eaf2f7;color:#123d68}
-.library-state{padding:18px;background:#fff;border-radius:10px;color:#536477}
-@media(max-width:620px){.library-tools{grid-template-columns:1fr}}
-</style>
+
 </head>
 <body>
 <header class="topbar">
@@ -40,15 +24,15 @@
 <a class="btn btn-outline" href="index.html">← Voltar ao início</a>
 </header>
 <section class="library-hero">
-<h1>Biblioteca Digital</h1>
-<p>Um espaço para encontrar materiais, aprofundar temas e continuar a aprender.</p>
-<p><strong>Aprender para transformar</strong></p>
+<div class="library-hero-inner"><span class="eyebrow">SASSA HUBE · CENTRO DE LEITURA E CONSULTA</span>
+<h1>Encontre conhecimento.<br><em>Construa o seu próximo passo.</em></h1>
+<p>Pesquise materiais de apoio, consulte documentos e descubra conteúdos para estudar, ensinar e investigar com mais profundidade.</p>
+<div class="library-hero-points"><span>CONSULTA</span><span>ESTUDO</span><span>INVESTIGAÇÃO</span></div></div>
 </section>
 <main class="library-wrap">
-<h2>Encontre materiais para estudar</h2>
-<p>Pesquise por título, tema ou palavra-chave. Os materiais públicos podem ser consultados sem criar conta.</p>
+<div class="library-heading"><span class="eyebrow">CATÁLOGO DIGITAL</span><h2>O que procura aprender hoje?</h2><p>Use a pesquisa por título ou tema. Seleccione uma categoria para encontrar mais depressa o material de que precisa. Os materiais públicos podem ser consultados sem criar conta.</p></div>
 <div class="library-tools">
-<input id="librarySearch" type="search" placeholder="O que pretende encontrar hoje?" aria-label="Pesquisar publicações">
+<input id="librarySearch" type="search" placeholder="Ex.: Psicologia, Didáctica, Educação..." aria-label="Pesquisar publicações">
 <select id="libraryCategory" aria-label="Filtrar por categoria"><option value="">Todas as categorias</option></select>
 </div>
 <p id="libraryStatus" class="library-state" role="status">A carregar a biblioteca...</p>
