@@ -845,12 +845,19 @@ async function loadStoreOrders() {
       row.append(missing);
     }
 
-    /* PREPARAR ENTREGA DIGITAL */
+    /* ENTREGA DIGITAL: gratuitos ficam disponíveis automaticamente */
     const canDeliver = isFree
       ? o.status === "free_delivered"
       : ["confirmed", "delivered"].includes(o.status) && !!proofPath;
 
-    if (o.format === "Digital" && canDeliver && filePath) {
+    if (o.format === "Digital" && isFree && canDeliver && filePath) {
+      const freeInfo = document.createElement("small");
+      freeInfo.className = "order-proof-ok";
+      freeInfo.textContent = "Livro gratuito: descarga automática disponível ao cliente através da referência e do código de acesso.";
+      row.append(freeInfo);
+    }
+
+    if (o.format === "Digital" && !isFree && canDeliver && filePath) {
       const sendButton = document.createElement("button");
       sendButton.type = "button";
       sendButton.className = "btn btn-primary";
