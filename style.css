@@ -3829,3 +3829,28 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
  .rating-prompt .rating-button{width:100%}
 }
 @media(prefers-reduced-motion:reduce){.rating-prompt{animation:none}}
+
+
+/* ÁREA PESSOAL — DESTAQUE NA PÁGINA PRINCIPAL */
+.personal-quick-card .quick-access-icon{background:#081b34!important;color:#d5a84f!important}
+.personal-area-promo{
+  width:min(1240px,calc(100% - 48px));margin:12px auto 74px!important;padding:clamp(28px,5vw,64px)!important;
+  display:grid;grid-template-columns:1fr 1fr;gap:clamp(28px,5vw,70px);align-items:center;
+  border:1px solid #e8dfce;border-radius:20px;
+  background:radial-gradient(circle at 8% 0%,#1c4775 0,transparent 34%),linear-gradient(135deg,#081b34 0%,#12345a 72%,#173d66 100%);
+  box-shadow:0 22px 55px #081b3418;color:#fff;overflow:hidden
+}
+.personal-area-promo .eyebrow{color:#e7c77e!important}
+.personal-area-promo-copy h2{max-width:590px;margin:14px 0 18px;color:#fff;font:800 clamp(32px,4.2vw,49px)/1.08 Manrope,sans-serif;letter-spacing:-1.7px}
+.personal-area-promo-copy h2 em{font-style:normal;color:#d5a84f}
+.personal-area-promo-copy>p{max-width:570px;color:#d8e2ed;font-size:15px;line-height:1.9;margin:0 0 26px}
+.personal-area-cta{display:inline-flex;align-items:center;gap:18px;padding:15px 21px;border:1px solid #e2bd6e;border-radius:9px;background:#d5a84f;color:#081b34;text-decoration:none;font-size:13px;font-weight:900;transition:transform .2s,background .2s}
+.personal-area-cta:hover{transform:translateY(-3px);background:#edca80}
+.personal-area-more{display:block;width:max-content;max-width:100%;margin-top:16px;color:#f0d6a4;font-size:12px;font-weight:800;text-decoration:none;border-bottom:1px solid #d5a84f;padding-bottom:4px}
+.personal-area-benefits{display:grid;gap:10px}
+.personal-area-benefits article{display:flex;gap:17px;align-items:flex-start;padding:17px 18px;border:1px solid #ffffff24;border-radius:12px;background:#ffffff0b}
+.personal-area-benefits article>span{flex:0 0 34px;width:34px;height:34px;display:grid;place-items:center;border-radius:8px;background:#d5a84f;color:#081b34;font-size:11px;font-weight:900}
+.personal-area-benefits h3{margin:0 0 5px;color:#fff;font:800 15px Manrope,sans-serif}
+.personal-area-benefits p{margin:0;color:#d3deea;font-size:12px;line-height:1.7}
+@media(max-width:850px){.personal-area-promo{grid-template-columns:1fr;gap:30px;margin-bottom:55px!important}.personal-area-benefits{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.personal-area-promo{width:calc(100% - 28px);padding:29px 20px!important;margin-top:0!important}.personal-area-benefits{grid-template-columns:1fr}.personal-area-cta{width:100%;justify-content:space-between}.personal-area-promo-copy h2{font-size:34px}}
