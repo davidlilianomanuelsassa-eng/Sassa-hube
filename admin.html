@@ -26,6 +26,9 @@
 .admin-profile{gap:12px}
 .admin-welcome-profile{align-items:flex-start}
 }
+
+/* Estatísticas de audiência — painel administrativo */
+.analytics-stat-grid article{background:#fff;border:1px solid #e5e8eb;border-radius:10px;padding:18px;display:flex;flex-direction:column;gap:9px}.analytics-stat-grid article span{font-size:13px;color:#65758a}.analytics-stat-grid article strong{font:800 30px Manrope,Arial,sans-serif;color:#12345a}.analytics-row{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:12px 15px;background:#fff;border:1px solid #e5e8eb;border-radius:8px;margin:8px 0}.analytics-row strong{color:#12345a;overflow-wrap:anywhere}.analytics-row small{color:#65758a;text-align:right}@media(max-width:600px){.analytics-row{align-items:flex-start;flex-direction:column}.analytics-row small{text-align:left}}
 </style>
 </head>
 
@@ -84,6 +87,7 @@
 <button class="admin-tab" data-panel="recursos">▣ Tipos de ficheiro</button>
 <button class="admin-tab" data-panel="perguntas">✉ Perguntas</button>
 <button class="admin-tab" data-panel="avaliacoes">♡ Avaliações</button>
+<button class="admin-tab" data-panel="visitas">◉ Estatísticas de visitas</button>
 <button class="admin-tab" data-panel="livraria">▣ Livraria</button>
 <button class="admin-tab" data-panel="seguranca">♧ Segurança</button>
 </aside>
@@ -144,6 +148,23 @@
 </div>
 <button id="refreshVotes" class="btn btn-outline" type="button">Actualizar avaliações</button>
 <p id="votesMsg" class="message" role="status"></p>
+</section>
+
+<section class="admin-panel" id="panel-visitas">
+<h2>Estatísticas de visitas</h2>
+<p class="muted">Acompanha a audiência do Sassa Hube. Os dados são agregados e não identificam visitantes anónimos.</p>
+<div class="rating-admin-grid analytics-stat-grid">
+<article><span>Visualizações nas últimas 24 horas</span><strong id="views24h">—</strong></article>
+<article><span>Visualizações nos últimos 7 dias</span><strong id="views7d">—</strong></article>
+<article><span>Visualizações nos últimos 30 dias</span><strong id="views30d">—</strong></article>
+</div>
+<div class="list-heading"><h3>Páginas mais consultadas</h3><button id="refreshAnalytics" class="btn btn-outline" type="button">Actualizar dados</button></div>
+<div id="analyticsTopPages" class="admin-list">A carregar...</div>
+<div class="list-heading"><h3>Dispositivos utilizados</h3></div><div id="analyticsDevices" class="admin-list">A carregar...</div>
+<div class="list-heading"><h3>Origem das visitas</h3></div><div id="analyticsSources" class="admin-list">A carregar...</div>
+<div class="list-heading"><h3>Visitas recentes</h3></div><div id="analyticsRecent" class="admin-list">A carregar...</div>
+<p id="analyticsMsg" class="message" role="status"></p>
+<p class="muted">São contabilizadas visualizações de página, não pessoas identificadas nem visitantes únicos. A página de administração não é contabilizada.</p>
 </section>
 
 <section class="admin-panel" id="panel-livraria">
@@ -256,6 +277,67 @@ async function isAdmin() {
     .maybeSingle();
 
   return !error && !!data;
+}
+
+
+async function loadSiteAnalytics() {
+  const msg = $("analyticsMsg");
+  msg.textContent = "A actualizar estatísticas...";
+  const set = (id, value) => { const el = $(id); if (el) el.textContent = value; };
+  const now = new Date();
+  const since24 = new Date(now.getTime() - 86400000).toISOString();
+  const since7 = new Date(now.getTime() - 7*86400000).toISOString();
+  const since30 = new Date(now.getTime() - 30*86400000).toISOString();
+  try {
+    const count = async since => {
+      let q = db.from("site_analytics").select("id", {count:"exact",head:true});
+      if (since) q = q.gte("viewed_at",since);
+      const result = await q;
+      if (result.error) throw result.error;
+      return result.count || 0;
+    };
+    const [v24,v7,v30,rowsResult] = await Promise.all([
+      count(since24),count(since7),count(since30),
+      db.from("site_analytics").select("page_path,referrer_host,device_type,viewed_at")
+        .gte("viewed_at",since30).order("viewed_at",{ascending:false}).limit(1000)
+    ]);
+    if (rowsResult.error) throw rowsResult.error;
+    set("views24h",v24.toLocaleString("pt-AO"));
+    set("views7d",v7.toLocaleString("pt-AO"));
+    set("views30d",v30.toLocaleString("pt-AO"));
+    const rows=rowsResult.data||[];
+    const renderList=(id,items,empty)=>{
+      const box=$(id);box.replaceChildren();
+      if(!items.length){box.textContent=empty;return;}
+      items.forEach(item=>{
+        const row=document.createElement("div");row.className="analytics-row";
+        const title=document.createElement("strong");title.textContent=item.label;
+        const detail=document.createElement("small");detail.textContent=item.value;
+        row.append(title,detail);box.append(row);
+      });
+    };
+    const tally=(key,labelFn)=>{
+      const counts=new Map();
+      rows.forEach(r=>{const k=labelFn(r[key]||"");counts.set(k,(counts.get(k)||0)+1);});
+      return [...counts.entries()].sort((a,b)=>b[1]-a[1]).slice(0,10)
+        .map(([label,n])=>({label,value:n+" visualizações"}));
+    };
+    renderList("analyticsTopPages",tally("page_path",v=>v||"/"),"Ainda não existem visitas registadas.");
+    renderList("analyticsDevices",tally("device_type",v=>({desktop:"Computador",mobile:"Telemóvel",tablet:"Tablet"}[v]||"Não identificado")),"Sem dados de dispositivos.");
+    renderList("analyticsSources",tally("referrer_host",v=>v||"Acesso directo / origem não indicada"),"Sem dados de origem.");
+    renderList("analyticsRecent",rows.slice(0,25).map(r=>({
+      label:r.page_path,
+      value:new Date(r.viewed_at).toLocaleString("pt-AO")+" · "+({desktop:"Computador",mobile:"Telemóvel",tablet:"Tablet"}[r.device_type]||r.device_type)
+    })),"Ainda não existem visitas recentes.");
+    msg.textContent="Estatísticas actualizadas. A lista detalhada mostra até 1.000 visualizações dos últimos 30 dias.";
+    msg.style.color="#16804a";
+  } catch(err) {
+    console.error("Erro nas estatísticas:",err);
+    ["views24h","views7d","views30d"].forEach(id=>set(id,"—"));
+    ["analyticsTopPages","analyticsDevices","analyticsSources","analyticsRecent"].forEach(id=>set(id,"Não foi possível carregar. Executa primeiro supabase-analytics.sql no Supabase."));
+    msg.textContent="As estatísticas ainda não estão activadas na base de dados.";
+    msg.style.color="#b42318";
+  }
 }
 
 async function loadAdminVotes() {
@@ -1184,6 +1266,7 @@ $("loginForm").addEventListener("submit", async e => {
   showDashboard();
   await loadAdminWorks();
   await loadAdminVotes();
+  await loadSiteAnalytics();
   await loadAdminQuestions();
   await loadStoreProducts();
   await loadStoreOrders();
@@ -1197,6 +1280,7 @@ $("logout").addEventListener("click", async () => {
 
 $("refresh").addEventListener("click", loadAdminWorks);
 $("refreshVotes").addEventListener("click", loadAdminVotes);
+$("refreshAnalytics").addEventListener("click", loadSiteAnalytics);
 $("refreshQuestions").addEventListener("click", loadAdminQuestions);
 
 /* MENU: UMA SECÇÃO DE CADA VEZ */
@@ -1221,6 +1305,7 @@ document.querySelectorAll(".admin-tab").forEach(button => {
 
     if (button.dataset.panel === "perguntas") loadAdminQuestions();
     if (button.dataset.panel === "avaliacoes") loadAdminVotes();
+    if (button.dataset.panel === "visitas") loadSiteAnalytics();
     if (button.dataset.panel === "publicacoes") loadAdminWorks();
   });
 });
@@ -1239,6 +1324,7 @@ document.querySelectorAll(".admin-tab").forEach(button => {
       showDashboard();
       await loadAdminWorks();
       await loadAdminVotes();
+      await loadSiteAnalytics();
       await loadAdminQuestions();
       await loadStoreProducts();
       await loadStoreOrders();
