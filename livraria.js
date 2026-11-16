@@ -304,6 +304,10 @@ $("storeOrderForm").addEventListener("submit", async event => {
   button.disabled = true;
   button.textContent = "A enviar...";
 
+  // Abre a janela durante o clique do visitante para permitir a descarga automática.
+  const isFreeDigital = Number(product.price) === 0 && product.format === "Digital";
+  const downloadWindow = isFreeDigital ? window.open("about:blank", "_blank") : null;
+
   try {
     let proofPath = null;
 
@@ -336,19 +340,44 @@ $("storeOrderForm").addEventListener("submit", async event => {
       );
     }
 
-    const orderStatusText = proofPath
-      ? "Pedido enviado com o comprovativo. A equipa Sassa Hube irá verificar o pagamento e contactar-te."
-      : "Pedido do livro gratuito recebido. A equipa Sassa Hube irá contactar-te para confirmar a disponibilização.";
-
-    $("orderMessage").textContent = orderStatusText;
-
     $("orderReceipt").classList.remove("hidden");
     $("createdOrderId").textContent = orderId;
     $("createdOrderCode").textContent = accessCode;
 
+    if (isFreeDigital) {
+      $("orderMessage").textContent =
+        "Pedido gratuito registado! O teu livro está disponível para descarregar.";
+      const { data: downloadData, error: downloadError } = await db.functions.invoke(
+        "download-book",
+        { body: { order_id: orderId, access_code: accessCode } }
+      );
+
+      if (!downloadError && downloadData?.download_url) {
+        if (downloadWindow) {
+          downloadWindow.location.href = downloadData.download_url;
+        } else {
+          $("orderMessage").textContent +=
+            " O navegador bloqueou a abertura automática. Usa a referência e o código abaixo na área «Consultar encomenda e descarregar livro».";
+        }
+      } else {
+        if (downloadWindow) downloadWindow.close();
+        $("orderMessage").textContent =
+          "O pedido foi registado, mas o PDF ainda não está disponível para descarga. Guarda a referência e o código abaixo e tenta novamente mais tarde.";
+      }
+    } else if (proofPath) {
+      $("orderMessage").textContent =
+        "Pedido enviado com o comprovativo. A equipa Sassa Hube irá verificar o pagamento antes de disponibilizar o livro.";
+      if (downloadWindow) downloadWindow.close();
+    } else {
+      $("orderMessage").textContent =
+        "Pedido recebido. A equipa Sassa Hube irá tratar da encomenda.";
+      if (downloadWindow) downloadWindow.close();
+    }
+
     event.target.reset();
 
   } catch (error) {
+    if (downloadWindow) downloadWindow.close();
     $("orderMessage").textContent =
       error.message || "Ocorreu um erro ao enviar a encomenda.";
   } finally {
