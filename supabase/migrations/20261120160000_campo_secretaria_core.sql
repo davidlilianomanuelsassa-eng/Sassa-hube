@@ -356,3 +356,18 @@ using (private.has_secretaria_permission('orders','view'));
 create policy "secretaria_members_read_owner_identity"
 on public.site_members for select to authenticated
 using (role = 'owner' and status = 'active' and private.is_secretaria_member());
+
+
+-- Publicações: separar rascunhos de conteúdos publicados.
+alter table public.works
+  add column if not exists status text not null default 'published'
+  check (status in ('draft','published','archived'));
+
+drop policy if exists "Public can read works" on public.works;
+create policy "Public can read published works"
+on public.works for select to anon, authenticated
+using (status = 'published');
+
+create policy "Secretaria can read works"
+on public.works for select to authenticated
+using (private.has_secretaria_permission('works','view'));
