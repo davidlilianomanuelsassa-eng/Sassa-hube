@@ -1,4 +1,7 @@
 -- Campo da Secretaria: núcleo privado, permissões e registos.
+create schema if not exists private;
+revoke all on schema private from public, anon;
+grant usage on schema private to authenticated, service_role;
 -- Esta migração é aditiva. Não altera as políticas/tabelas administrativas legadas.
 create table if not exists public.site_members (
   user_id uuid primary key references auth.users(id) on delete cascade,
@@ -63,6 +66,9 @@ create table if not exists public.secretary_messages (
   constraint secretary_message_distinct_users check (sender_id <> recipient_id)
 );
 
+create unique index if not exists one_secretary_assistant_only
+  on public.site_members (role) where role = 'assistant';
+
 create table if not exists public.secretary_tasks (
   id uuid primary key default gen_random_uuid(),
   title text not null check (char_length(title) between 2 and 180),
@@ -97,7 +103,7 @@ create index if not exists secretary_tasks_assignee_status_idx
 create index if not exists secretary_audit_actor_created_idx
   on public.secretary_audit_logs (actor_id, created_at desc);
 
-create or replace function public.is_secretaria_owner()
+create or replace function private.is_secretaria_owner()
 returns boolean
 language sql
 stable
@@ -112,7 +118,7 @@ as $$
   );
 $$;
 
-create or replace function public.is_secretaria_member()
+create or replace function private.is_secretaria_member()
 returns boolean
 language sql
 stable
@@ -126,7 +132,7 @@ as $$
   );
 $$;
 
-create or replace function public.is_secretaria_active_member(p_user_id uuid)
+create or replace function private.is_secretaria_active_member(p_user_id uuid)
 returns boolean
 language sql
 stable
@@ -139,14 +145,14 @@ as $
   );
 $;
 
-create or replace function public.has_secretaria_permission(p_module text, p_action text)
+create or replace function private.has_secretaria_permission(p_module text, p_action text)
 returns boolean
 language sql
 stable
 security definer
 set search_path = public, pg_temp
 as $$
-  select public.is_secretaria_owner()
+  select private.is_secretaria_owner()
     or exists (
       select 1
       from public.site_members m
@@ -159,14 +165,14 @@ as $$
     );
 $$;
 
-revoke all on function public.is_secretaria_owner() from public, anon;
-revoke all on function public.is_secretaria_member() from public, anon;
-revoke all on function public.has_secretaria_permission(text,text) from public, anon;
-revoke all on function public.is_secretaria_active_member(uuid) from public, anon;
-grant execute on function public.is_secretaria_owner() to authenticated;
-grant execute on function public.is_secretaria_member() to authenticated;
-grant execute on function public.has_secretaria_permission(text,text) to authenticated;
-grant execute on function public.is_secretaria_active_member(uuid) to authenticated;
+revoke all on function private.is_secretaria_owner() from public, anon;
+revoke all on function private.is_secretaria_member() from public, anon;
+revoke all on function private.has_secretaria_permission(text,text) from public, anon;
+revoke all on function private.is_secretaria_active_member(uuid) from public, anon;
+grant execute on function private.is_secretaria_owner() to authenticated;
+grant execute on function private.is_secretaria_member() to authenticated;
+grant execute on function private.has_secretaria_permission(text,text) to authenticated;
+grant execute on function private.is_secretaria_active_member(uuid) to authenticated;
 
 alter table public.site_members enable row level security;
 alter table public.site_member_permissions enable row level security;
@@ -192,21 +198,21 @@ grant update (read_at) on public.secretary_notifications, public.secretary_messa
 
 create policy "secretaria_members_read_self_or_owner"
 on public.site_members for select to authenticated
-using (user_id = auth.uid() or public.is_secretaria_owner());
+using (user_id = auth.uid() or private.is_secretaria_owner());
 
 create policy "secretaria_permissions_read_self_or_owner"
 on public.site_member_permissions for select to authenticated
-using (user_id = auth.uid() or public.is_secretaria_owner());
+using (user_id = auth.uid() or private.is_secretaria_owner());
 
 create policy "secretaria_approvals_read_participant"
 on public.secretary_approval_requests for select to authenticated
-using (public.is_secretaria_owner() or requested_by = auth.uid());
+using (private.is_secretaria_owner() or requested_by = auth.uid());
 
 create policy "secretaria_approvals_create_by_member"
 on public.secretary_approval_requests for insert to authenticated
 with check (
   requested_by = auth.uid()
-  and public.is_secretaria_member()
+  and private.is_secretaria_member()
   and status = 'pending'
   and reviewed_by is null
   and reviewed_at is null
@@ -215,17 +221,17 @@ with check (
 
 create policy "secretaria_notifications_read_recipient"
 on public.secretary_notifications for select to authenticated
-using (recipient_id = auth.uid() and public.is_secretaria_member());
+using (recipient_id = auth.uid() and private.is_secretaria_member());
 
 create policy "secretaria_notifications_mark_read"
 on public.secretary_notifications for update to authenticated
-using (recipient_id = auth.uid() and public.is_secretaria_member())
-with check (recipient_id = auth.uid() and public.is_secretaria_member());
+using (recipient_id = auth.uid() and private.is_secretaria_member())
+with check (recipient_id = auth.uid() and private.is_secretaria_member());
 
 create policy "secretaria_messages_read_participant"
 on public.secretary_messages for select to authenticated
 using (
-  public.is_secretaria_member()
+  private.is_secretaria_member()
   and (sender_id = auth.uid() or recipient_id = auth.uid())
 );
 
@@ -233,44 +239,44 @@ create policy "secretaria_messages_send_as_self"
 on public.secretary_messages for insert to authenticated
 with check (
   sender_id = auth.uid()
-  and public.is_secretaria_member()
-  and public.is_secretaria_active_member(recipient_id)
+  and private.is_secretaria_member()
+  and private.is_secretaria_active_member(recipient_id)
 );
 
 create policy "secretaria_messages_mark_read"
 on public.secretary_messages for update to authenticated
-using (recipient_id = auth.uid() and public.is_secretaria_member())
-with check (recipient_id = auth.uid() and public.is_secretaria_member());
+using (recipient_id = auth.uid() and private.is_secretaria_member())
+with check (recipient_id = auth.uid() and private.is_secretaria_member());
 
 create policy "secretaria_tasks_read_owner_or_participant"
 on public.secretary_tasks for select to authenticated
 using (
-  public.is_secretaria_owner()
-  or (public.is_secretaria_member() and (created_by = auth.uid() or assigned_to = auth.uid()))
+  private.is_secretaria_owner()
+  or (private.is_secretaria_member() and (created_by = auth.uid() or assigned_to = auth.uid()))
 );
 
 create policy "secretaria_tasks_create_as_member"
 on public.secretary_tasks for insert to authenticated
 with check (
   created_by = auth.uid()
-  and public.is_secretaria_member()
-  and (assigned_to is null or public.is_secretaria_active_member(assigned_to))
+  and private.is_secretaria_member()
+  and (assigned_to is null or private.is_secretaria_active_member(assigned_to))
 );
 
 create policy "secretaria_audit_read_owner_or_actor"
 on public.secretary_audit_logs for select to authenticated
-using (public.is_secretaria_owner() or (actor_id = auth.uid() and public.is_secretaria_member()));
+using (private.is_secretaria_owner() or (actor_id = auth.uid() and private.is_secretaria_member()));
 
 create policy "secretaria_audit_insert_as_actor"
 on public.secretary_audit_logs for insert to authenticated
-with check (actor_id = auth.uid() and public.is_secretaria_member());
+with check (actor_id = auth.uid() and private.is_secretaria_member());
 
 -- Não existem políticas UPDATE/DELETE para auditoria, pedidos de aprovação,
 -- membros ou permissões. As decisões críticas serão executadas por Edge Function autenticada.
 
 -- Decisão de aprovação transaccional: actualiza o pedido, notifica o autor e audita
 -- numa única transacção. Só a Edge Function com service_role pode invocar esta função.
-create or replace function public.review_secretary_approval(
+create or replace function private.review_secretary_approval(
   p_approval_id uuid,
   p_decision text,
   p_review_note text,
@@ -330,5 +336,16 @@ begin
 end;
 $$;
 
-revoke all on function public.review_secretary_approval(uuid,text,text,uuid) from public, anon, authenticated;
-grant execute on function public.review_secretary_approval(uuid,text,text,uuid) to service_role;
+revoke all on function private.review_secretary_approval(uuid,text,text,uuid) from public, anon, authenticated;
+grant execute on function private.review_secretary_approval(uuid,text,text,uuid) to service_role;
+
+
+-- Assistente pode consultar produtos inactivos e encomendas apenas quando recebe
+-- as permissões de leitura correspondentes. As mutações passam por Edge Functions.
+create policy "secretaria_assistant_read_store_products"
+on public.store_products for select to authenticated
+using (private.has_secretaria_permission('store','view'));
+
+create policy "secretaria_assistant_read_store_orders"
+on public.store_orders for select to authenticated
+using (private.has_secretaria_permission('orders','view'));
