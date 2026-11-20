@@ -399,3 +399,7 @@ drop trigger if exists secretary_approval_notify_owner on public.secretary_appro
 create trigger secretary_approval_notify_owner
 after insert on public.secretary_approval_requests
 for each row execute function private.notify_owner_of_secretary_approval();
+
+create policy "Secretaria owner can read all works"
+on public.works for select to authenticated
+using (private.is_secretaria_owner());
