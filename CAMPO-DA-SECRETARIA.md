@@ -132,3 +132,15 @@ Não guardar passwords, tokens de recuperação ou chaves API nestas tabelas.
 - Todas as acções administrativas e decisões ficam auditadas.
 - Remover/suspender a assistente corta o acesso sem afectar a conta do proprietário.
 - Nenhuma chave secreta é incluída no frontend ou no Git.
+
+
+## 11. Progresso de implementação — 20/11/2026
+
+Foi criada na branch `feature/campo-secretaria` uma primeira versão de trabalho:
+- `secretaria.html`: interface privada com autenticação individual, verificação de membro activo no servidor/base de dados e módulos iniciais de aprovações, tarefas, notificações e histórico.
+- `supabase/migrations/20261120160000_campo_secretaria_core.sql`: estrutura aditiva para membros, permissões, pedidos de aprovação, notificações, mensagens, tarefas, auditoria e políticas RLS. A migração regista como proprietário o administrador legado existente.
+- `supabase/functions/secretary-review/index.ts`: função autenticada para o proprietário aprovar/rejeitar pedidos, com validação no servidor; a decisão é registada com notificação interna e auditoria.
+- Os ficheiros permanecem na branch de trabalho. A migração ainda não foi aplicada ao projecto Supabase e a Edge Function ainda não foi publicada. Por isso, a interface ainda não está operacional em produção.
+- A aprovação de um pedido regista a decisão, mas não executa automaticamente a operação crítica. Cada tipo de operação terá de ser ligado a um executor seguro e validado antes de ser activado.
+- O envio de e-mail continua por configurar e testar. As notificações internas também dependem da migração.
+- A assistente ainda não foi convidada, criada ou autorizada. O acesso só será preparado depois da aprovação expressa do proprietário.
