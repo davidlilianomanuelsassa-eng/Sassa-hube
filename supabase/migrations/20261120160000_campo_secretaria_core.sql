@@ -126,6 +126,19 @@ as $$
   );
 $$;
 
+create or replace function public.is_secretaria_active_member(p_user_id uuid)
+returns boolean
+language sql
+stable
+security definer
+set search_path = public, pg_temp
+as $
+  select exists (
+    select 1 from public.site_members m
+    where m.user_id = p_user_id and m.status = 'active'
+  );
+$;
+
 create or replace function public.has_secretaria_permission(p_module text, p_action text)
 returns boolean
 language sql
@@ -149,9 +162,11 @@ $$;
 revoke all on function public.is_secretaria_owner() from public, anon;
 revoke all on function public.is_secretaria_member() from public, anon;
 revoke all on function public.has_secretaria_permission(text,text) from public, anon;
+revoke all on function public.is_secretaria_active_member(uuid) from public, anon;
 grant execute on function public.is_secretaria_owner() to authenticated;
 grant execute on function public.is_secretaria_member() to authenticated;
 grant execute on function public.has_secretaria_permission(text,text) to authenticated;
+grant execute on function public.is_secretaria_active_member(uuid) to authenticated;
 
 alter table public.site_members enable row level security;
 alter table public.site_member_permissions enable row level security;
@@ -219,11 +234,7 @@ on public.secretary_messages for insert to authenticated
 with check (
   sender_id = auth.uid()
   and public.is_secretaria_member()
-  and public.is_secretaria_member()
-  and exists (
-    select 1 from public.site_members recipient
-    where recipient.user_id = recipient_id and recipient.status = 'active'
-  )
+  and public.is_secretaria_active_member(recipient_id)
 );
 
 create policy "secretaria_messages_mark_read"
@@ -243,10 +254,7 @@ on public.secretary_tasks for insert to authenticated
 with check (
   created_by = auth.uid()
   and public.is_secretaria_member()
-  and (assigned_to is null or exists (
-    select 1 from public.site_members assignee
-    where assignee.user_id = assigned_to and assignee.status = 'active'
-  ))
+  and (assigned_to is null or public.is_secretaria_active_member(assigned_to))
 );
 
 create policy "secretaria_audit_read_owner_or_actor"
