@@ -276,7 +276,7 @@ with check (actor_id = auth.uid() and private.is_secretaria_member());
 
 -- Decisão de aprovação transaccional: actualiza o pedido, notifica o autor e audita
 -- numa única transacção. Só a Edge Function com service_role pode invocar esta função.
-create or replace function private.review_secretary_approval(
+create or replace function public.review_secretary_approval(
   p_approval_id uuid,
   p_decision text,
   p_review_note text,
@@ -336,8 +336,8 @@ begin
 end;
 $$;
 
-revoke all on function private.review_secretary_approval(uuid,text,text,uuid) from public, anon, authenticated;
-grant execute on function private.review_secretary_approval(uuid,text,text,uuid) to service_role;
+revoke all on function public.review_secretary_approval(uuid,text,text,uuid) from public, anon, authenticated;
+grant execute on function public.review_secretary_approval(uuid,text,text,uuid) to service_role;
 
 
 -- Assistente pode consultar produtos inactivos e encomendas apenas quando recebe
@@ -349,3 +349,10 @@ using (private.has_secretaria_permission('store','view'));
 create policy "secretaria_assistant_read_store_orders"
 on public.store_orders for select to authenticated
 using (private.has_secretaria_permission('orders','view'));
+
+
+-- O membro assistente pode obter o identificador do proprietário activo para
+-- a comunicação privada; outros perfis continuam invisíveis.
+create policy "secretaria_members_read_owner_identity"
+on public.site_members for select to authenticated
+using (role = 'owner' and status = 'active' and private.is_secretaria_member());
