@@ -1,9 +1,23 @@
 -- Reconcile the core workspace with configurable task permissions and approval decisions.
 drop index if exists public.one_secretary_assistant_only;
-create unique index if not exists site_members_one_active_assistant
+drop index if exists public.site_members_one_active_assistant;
+create unique index site_members_one_active_assistant
   on public.site_members(role) where role='assistant' and status='active';
 
+alter table public.site_members drop constraint if exists site_members_status_check;
+alter table public.site_members add constraint site_members_status_check
+  check (status in ('pending','active','suspended'));
+
+alter table public.secretary_approval_requests add column if not exists executed_at timestamptz;
+alter table public.secretary_approval_requests drop constraint if exists secretary_approval_requests_status_check;
+alter table public.secretary_approval_requests add constraint secretary_approval_requests_status_check
+  check(status in ('pending','approved','rejected','cancelled','executed','failed'));
+
+alter table public.secretary_audit_logs alter column actor_id set not null;
+
 drop policy if exists "secretaria_tasks_create_as_member" on public.secretary_tasks;
+drop policy if exists secretary_tasks_insert_members on public.secretary_tasks;
+drop policy if exists secretary_tasks_update_members on public.secretary_tasks;
 create policy secretaria_tasks_create_with_permission
 on public.secretary_tasks for insert to authenticated
 with check (
