@@ -152,3 +152,18 @@ Foi criada na branch `feature/campo-secretaria` uma primeira versão de trabalho
 - A interface subscreve eventos Realtime da tabela `secretary_messages` e actualiza a conversa quando há novas mensagens.
 - A tabela mantém RLS: apenas remetente e destinatário podem ler; o envio exige que o remetente seja a própria conta autenticada e que o destinatário seja membro activo.
 - O chat está preparado no código da branch. Só ficará disponível depois da migração de base de dados, publicação da função e configuração/activação do Realtime no projecto.
+
+
+## Estado da aplicação em produção — 20/11/2026
+- Aplicadas as migrações de núcleo, permissões de módulos, fila privada de e-mail, auditoria append-only e reforço de privilégios.
+- A conta existente em `site_admins` foi registada como proprietário em `site_members`; não foi criada nenhuma conta de assistente.
+- A tabela `secretary_messages` foi adicionada à publicação `supabase_realtime`.
+- Edge Functions activas com JWT obrigatório: `secretary-message`, `secretary-review`, `secretary-request-approval`, `secretary-task-update` e `secretary-members`.
+- A auditoria não permite inserções/alterações directas por utilizadores autenticados; os registos são escritos por serviços confiáveis.
+- Acesso anónimo ao chat não tem privilégios; utilizadores autenticados só têm leitura e actualização restrita de `read_at`; a inserção de mensagens ocorre no servidor.
+- O teste SQL em transacção foi revertido e confirmou a sintaxe das migrações antes da aplicação.
+- Testes de privilégios confirmaram: sem SELECT para anon; sem INSERT para authenticated em mensagens; sem INSERT em auditoria; leitura e marcação de leitura limitadas por RLS.
+- Os avisos existentes relativos às tabelas OAuth Gmail sem políticas, funções SECURITY DEFINER antigas e protecção de passwords comprometidas continuam por rever; a fila de e-mail sem políticas é intencional e só é acessível por service_role.
+- O envio de e-mail não está configurado nem foi testado; não prometer notificações por e-mail até definir remetente/domínio e segredos do serviço.
+- O chat ainda não pode ser testado com duas pessoas porque não existe assistente activa. A pessoa será convidada/aprovada apenas depois da escolha explícita do proprietário.
+- A interface permanece na branch `feature/campo-secretaria`; não foi integrada em `main` nem publicada no GitHub Pages. A publicação aguarda revisão e autorização específica.
