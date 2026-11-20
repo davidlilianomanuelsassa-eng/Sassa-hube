@@ -230,10 +230,10 @@ begin
   if not found then raise exception 'Request not pending'; end if;
   insert into public.secretary_notifications(recipient_id,notification_type,title,body,href)
   values(v_request.requested_by,'approval_decision','Pedido analisado',
-    'O proprietário '+case when p_decision='approved' then 'aprovou' else 'rejeitou' end+
+    'O proprietário '||case when p_decision='approved' then 'aprovou' else 'rejeitou' end||
     ' o teu pedido. Consulta o Campo da Secretaria.','secretaria.html');
   insert into public.secretary_audit_logs(actor_id,action,target_type,target_id,details)
-  values(p_actor_id,'secretary_approval_'+p_decision,'approval_request',p_approval_id::text,
+  values(p_actor_id,'secretary_approval_'||p_decision,'approval_request',p_approval_id::text,
     jsonb_build_object('requested_by',v_request.requested_by));
   return p_approval_id;
 end;
