@@ -43,17 +43,17 @@ Deno.serve(async (req: Request) => {
     return respond(403, { error: "Apenas o proprietário pode gerir o acesso da secretaria." });
   }
 
-  let body: { action?: string; user_id?: string; permissions?: string[][] };
+  let body: { action?: string; user_id?: string; email?: string; permissions?: string[][] };
   try { body = await req.json(); } catch { return respond(400, { error: "Pedido inválido." }); }
 
   if (body.action === "approve_assistant") {
-    const targetId = body.user_id || "";
-    const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-    if (!uuid.test(targetId) || targetId === user.id) return respond(400, { error: "Conta de assistente inválida." });
-
-    const { data: target, error: targetError } = await admin.auth.admin.getUserById(targetId);
-    if (targetError || !target?.user || !target.user.email_confirmed_at) {
-      return respond(400, { error: "A conta precisa existir e ter o e-mail confirmado antes da aprovação." });
+    const email = String(body.email || "").trim().toLowerCase();
+    if (!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)) return respond(400, { error: "Indica um e-mail válido." });
+    const { data: userList, error: listError } = await admin.auth.admin.listUsers({ page: 1, perPage: 1000 });
+    const target = userList?.users?.find((candidate) => (candidate.email || "").toLowerCase() === email);
+    const targetId = target?.id || "";
+    if (listError || !target || !target.email_confirmed_at || targetId === user.id) {
+      return respond(400, { error: "A conta precisa existir, ter o e-mail confirmado e ser diferente da conta do proprietário." });
     }
     const { data: existing, error: existingError } = await admin.from("site_members").select("role").eq("user_id", targetId).maybeSingle();
     if (existingError || existing?.role === "owner") return respond(409, { error: "Esta conta não pode ser aprovada como assistente." });
