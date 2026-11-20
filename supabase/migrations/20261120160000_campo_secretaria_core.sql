@@ -267,3 +267,68 @@ with check (actor_id = auth.uid() and public.is_secretaria_member());
 
 -- Não existem políticas UPDATE/DELETE para auditoria, pedidos de aprovação,
 -- membros ou permissões. As decisões críticas serão executadas por Edge Function autenticada.
+
+-- Decisão de aprovação transaccional: actualiza o pedido, notifica o autor e audita
+-- numa única transacção. Só a Edge Function com service_role pode invocar esta função.
+create or replace function public.review_secretary_approval(
+  p_approval_id uuid,
+  p_decision text,
+  p_review_note text,
+  p_actor_id uuid
+)
+returns uuid
+language plpgsql
+security definer
+set search_path = public, pg_temp
+as $$
+declare
+  v_request public.secretary_approval_requests%rowtype;
+begin
+  if p_decision not in ('approved','rejected') then
+    raise exception 'Decisão inválida';
+  end if;
+  if not exists (
+    select 1 from public.site_members
+    where user_id = p_actor_id and role = 'owner' and status = 'active'
+  ) then
+    raise exception 'Apenas o proprietário pode decidir pedidos';
+  end if;
+
+  update public.secretary_approval_requests
+     set status = p_decision,
+         reviewed_by = p_actor_id,
+         reviewed_at = now(),
+         review_note = nullif(left(coalesce(p_review_note,''),1000),'')
+   where id = p_approval_id and status = 'pending'
+   returning * into v_request;
+
+  if not found then
+    raise exception 'Pedido inexistente ou já decidido';
+  end if;
+
+  insert into public.secretary_notifications
+    (recipient_id, notification_type, title, body, href)
+  values
+    (v_request.requested_by,
+     'approval_decision',
+     case when p_decision = 'approved' then 'Pedido aprovado' else 'Pedido rejeitado' end,
+     case when p_decision = 'approved'
+       then 'O proprietário aprovou o pedido. A execução ainda depende do processamento seguro da operação.'
+       else 'O proprietário rejeitou o pedido.' end,
+     'secretaria.html');
+
+  insert into public.secretary_audit_logs
+    (actor_id, action, target_type, target_id, details)
+  values
+    (p_actor_id,
+     'secretary_approval_' || p_decision,
+     'approval_request',
+     v_request.id::text,
+     jsonb_build_object('action_key',v_request.action_key,'resource_type',v_request.resource_type));
+
+  return v_request.id;
+end;
+$$;
+
+revoke all on function public.review_secretary_approval(uuid,text,text,uuid) from public, anon, authenticated;
+grant execute on function public.review_secretary_approval(uuid,text,text,uuid) to service_role;
