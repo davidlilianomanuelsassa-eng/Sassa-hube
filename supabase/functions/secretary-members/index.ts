@@ -62,6 +62,15 @@ Deno.serve(async (req: Request) => {
     if (!siteUrl || !/^https:\/\//.test(siteUrl)) {
       return response({ error: "Endereço oficial do site ainda não configurado." }, 503);
     }
+    if (email === String(user.email || "").toLowerCase()) return response({ error: "Não podes convidar a tua própria conta como assistente." }, 400);
+    const { data: existingUsers, error: usersError } = await admin.auth.admin.listUsers({ page: 1, perPage: 1000 });
+    if (usersError) return response({ error: "Não foi possível validar a conta indicada." }, 502);
+    const existingUser = existingUsers.users.find(candidate => (candidate.email || "").toLowerCase() === email);
+    if (existingUser) {
+      const { data: existingMember } = await admin.from("site_members").select("role").eq("user_id", existingUser.id).maybeSingle();
+      if (existingMember?.role === "owner") return response({ error: "Uma conta de proprietário não pode ser convertida em assistente." }, 409);
+      return response({ error: "Este e-mail já está registado. Usa o processo de aprovação de uma conta existente." }, 409);
+    }
     const { data: invitation, error: inviteError } = await admin.auth.admin.inviteUserByEmail(email, {
       redirectTo: siteUrl.replace(/\/$/, "") + "/secretaria.html",
     });
