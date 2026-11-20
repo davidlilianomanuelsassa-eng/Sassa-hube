@@ -12,7 +12,7 @@ declare
   v_actor uuid := auth.uid();
 begin
   if v_actor is null then
-    return coalesce(new,old);
+    return new;
   end if;
   insert into public.secretary_audit_logs(actor_id,action,target_type,target_id,details)
   values (
@@ -22,7 +22,7 @@ begin
     coalesce(new.id,old.id)::text,
     jsonb_build_object('status',coalesce(new.status,old.status))
   );
-  return coalesce(new,old);
+  return new;
 end;
 $$;
 revoke all on function public.log_secretary_task_change() from public,anon,authenticated;
