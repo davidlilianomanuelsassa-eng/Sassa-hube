@@ -167,3 +167,10 @@ Foi criada na branch `feature/campo-secretaria` uma primeira versão de trabalho
 - O envio de e-mail não está configurado nem foi testado; não prometer notificações por e-mail até definir remetente/domínio e segredos do serviço.
 - O chat ainda não pode ser testado com duas pessoas porque não existe assistente activa. A pessoa será convidada/aprovada apenas depois da escolha explícita do proprietário.
 - A interface permanece na branch `feature/campo-secretaria`; não foi integrada em `main` nem publicada no GitHub Pages. A publicação aguarda revisão e autorização específica.
+
+
+### Reconciliação final da migração base
+- A migração-base já presente em `main` foi preservada na branch de publicação.
+- A migração adicional `20261120220000_secretaria_reconcile_and_approval.sql` foi aplicada em produção para alinhar permissões de tarefas, índice de assistente activa, estados de aprovação e RPC de decisão.
+- Total aplicado em produção: sete migrações do Campo da Secretaria.
+- O PR de publicação permanece em rascunho; a interface não foi integrada nem publicada.
