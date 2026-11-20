@@ -371,3 +371,31 @@ using (status = 'published');
 create policy "Secretaria can read works"
 on public.works for select to authenticated
 using (private.has_secretaria_permission('works','view'));
+
+
+-- Ao receber um pedido crítico, cria notificação interna para o proprietário.
+create or replace function private.notify_owner_of_secretary_approval()
+returns trigger
+language plpgsql
+security definer
+set search_path = public, private, pg_temp
+as $$
+begin
+  insert into public.secretary_notifications
+    (recipient_id, notification_type, title, body, href)
+  select m.user_id, 'approval_request', 'Novo pedido de aprovação',
+         'A secretaria enviou um pedido que aguarda a tua decisão.',
+         'secretaria.html'
+  from public.site_members m
+  where m.role = 'owner' and m.status = 'active';
+
+  return new;
+end;
+$$;
+
+revoke all on function private.notify_owner_of_secretary_approval() from public, anon, authenticated;
+
+drop trigger if exists secretary_approval_notify_owner on public.secretary_approval_requests;
+create trigger secretary_approval_notify_owner
+after insert on public.secretary_approval_requests
+for each row execute function private.notify_owner_of_secretary_approval();
