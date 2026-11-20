@@ -196,11 +196,11 @@ for select to authenticated
 using(private.is_secretaria_owner() or created_by=auth.uid() or assigned_to=auth.uid());
 create policy secretary_tasks_insert_members on public.secretary_tasks
 for insert to authenticated
-with check(private.is_secretaria_member() and created_by=auth.uid());
+with check(private.has_secretaria_permission('tasks','create') and created_by=auth.uid());
 create policy secretary_tasks_update_members on public.secretary_tasks
 for update to authenticated
-using(private.is_secretaria_owner() or (private.is_secretaria_member() and (created_by=auth.uid() or assigned_to=auth.uid())))
-with check(private.is_secretaria_owner() or (private.is_secretaria_member() and (created_by=auth.uid() or assigned_to=auth.uid())));
+using(private.is_secretaria_owner() or (private.has_secretaria_permission('tasks','update') and (created_by=auth.uid() or assigned_to=auth.uid())))
+with check(private.is_secretaria_owner() or (private.has_secretaria_permission('tasks','update') and (created_by=auth.uid() or assigned_to=auth.uid())));
 
 create policy secretary_audit_select_owner_or_actor on public.secretary_audit_logs
 for select to authenticated
