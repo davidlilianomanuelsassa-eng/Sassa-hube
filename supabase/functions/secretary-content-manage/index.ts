@@ -70,7 +70,7 @@ Deno.serve(async(req:Request)=>{
       return respond(400,{error:"Dados da publicação inválidos."});
     }
     if(status==="published"&&!await can("works","publish")) return respond(403,{error:"Não tens permissão para publicar este conteúdo."});
-    const payload={title,description,category,status,url:body.url||null,file_path:body.file_path||null};
+    const payload={title,description,category,status,url:body.url||'',file_path:body.file_path||''};
     if(updating){
       const id=String(body.id||"");
       if(!/^[0-9a-f-]{36}$/i.test(id)) return respond(400,{error:"Identificador da publicação inválido."});
