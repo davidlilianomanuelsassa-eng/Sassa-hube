@@ -144,3 +144,11 @@ Foi criada na branch `feature/campo-secretaria` uma primeira versão de trabalho
 - A aprovação de um pedido regista a decisão, mas não executa automaticamente a operação crítica. Cada tipo de operação terá de ser ligado a um executor seguro e validado antes de ser activado.
 - O envio de e-mail continua por configurar e testar. As notificações internas também dependem da migração.
 - A assistente ainda não foi convidada, criada ou autorizada. O acesso só será preparado depois da aprovação expressa do proprietário.
+
+
+### Chat privado estilo SMS
+- A página `secretaria.html` inclui um único separador de chat privado, com balões distintos para mensagens enviadas e recebidas, data/hora, estado de leitura e caixa de composição.
+- O envio utiliza a Edge Function autenticada `secretary-message`, que valida o membro activo e entrega a mensagem apenas ao outro membro activo.
+- A interface subscreve eventos Realtime da tabela `secretary_messages` e actualiza a conversa quando há novas mensagens.
+- A tabela mantém RLS: apenas remetente e destinatário podem ler; o envio exige que o remetente seja a própria conta autenticada e que o destinatário seja membro activo.
+- O chat está preparado no código da branch. Só ficará disponível depois da migração de base de dados, publicação da função e configuração/activação do Realtime no projecto.
