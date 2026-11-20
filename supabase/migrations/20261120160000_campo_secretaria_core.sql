@@ -217,9 +217,7 @@ begin
   if p_decision not in ('approved','rejected') then
     raise exception 'Invalid decision';
   end if;
-  if p_actor_id is distinct from auth.uid() and auth.role() <> 'service_role' then
-    raise exception 'Actor mismatch';
-  end if;
+  -- This RPC is executable only by service_role; the Edge Function supplies the verified actor.
   if not exists(select 1 from public.site_members
     where user_id=p_actor_id and role='owner' and status='active') then
     raise exception 'Owner required';
