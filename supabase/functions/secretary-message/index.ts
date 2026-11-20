@@ -16,6 +16,10 @@ Deno.serve(async req=>{
   const admin=createClient(url,service,{auth:{persistSession:false,autoRefreshToken:false}});
   const {data:member}=await admin.from("site_members").select("role,status").eq("user_id",user.id).maybeSingle();
   if(!member||member.status!=="active") return reply({error:"Acesso não autorizado."},403);
+  if(member.role!=="owner"){
+    const {data:permission,error:permissionError}=await admin.from("site_member_permissions").select("user_id").eq("user_id",user.id).eq("module","messages").eq("action","send").maybeSingle();
+    if(permissionError||!permission) return reply({error:"Este perfil não tem permissão para enviar mensagens."},403);
+  }
   const targetRole=member.role==="owner"?"assistant":"owner";
   const {data:target}=await admin.from("site_members").select("user_id").eq("role",targetRole).eq("status","active").limit(1).maybeSingle();
   if(!target) return reply({error:"Ainda não existe outro membro activo para receber a mensagem."},404);
