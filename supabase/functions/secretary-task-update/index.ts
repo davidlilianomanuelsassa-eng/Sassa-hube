@@ -28,6 +28,10 @@ Deno.serve(async (req: Request) => {
   const {data:task,error:taskError}=await admin.from("secretary_tasks").select("created_by,assigned_to").eq("id",body.task_id).maybeSingle();
   if(taskError||!task) return respond(404,{error:"Tarefa não encontrada."});
   const owner=member.role==="owner";
+  if(!owner){
+    const {data:permission,error:permissionError}=await admin.from("site_member_permissions").select("user_id").eq("user_id",user.id).eq("module","tasks").eq("action","update").maybeSingle();
+    if(permissionError||!permission) return respond(403,{error:"Este perfil não tem permissão para actualizar tarefas."});
+  }
   if(!owner && task.created_by!==user.id && task.assigned_to!==user.id) return respond(403,{error:"Não podes alterar esta tarefa."});
   const {error:updateError}=await admin.from("secretary_tasks").update({status:body.status,updated_at:new Date().toISOString()}).eq("id",body.task_id);
   if(updateError) return respond(500,{error:"Não foi possível actualizar a tarefa."});
