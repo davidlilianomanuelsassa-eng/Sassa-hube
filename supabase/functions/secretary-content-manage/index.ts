@@ -31,7 +31,7 @@ Deno.serve(async(req:Request)=>{
 
   if(body.action==="product_create"||body.action==="product_update"){
     const updating=body.action==="product_update";
-    const required=updating?"edit":"create";
+    const required=updating?"update":"create;
     if(!await can("catalog",required)) return respond(403,{error:"Não tens permissão para gerir livros da loja."});
     const title=String(body.title||"").trim(),description=String(body.description||"").trim();
     const price=Number(body.price),format=body.format,currency=body.currency||"AOA";
@@ -60,7 +60,7 @@ Deno.serve(async(req:Request)=>{
 
   if(body.action==="work_create"||body.action==="work_update"){
     const updating=body.action==="work_update";
-    if(!await can("publications",updating?"edit":"create")) return respond(403,{error:"Não tens permissão para gerir publicações."});
+    if(!await can("publications",updating?"update":"create")) return respond(403,{error:"Não tens permissão para gerir publicações."});
     const title=String(body.title||"").trim(),description=String(body.description||"").trim(),category=String(body.category||"").trim();
     const status=String(body.status||"draft");
     if(title.length<2||title.length>250||description.length>5000||category.length<2||category.length>120||
