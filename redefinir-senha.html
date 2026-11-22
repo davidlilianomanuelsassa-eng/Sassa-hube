@@ -67,6 +67,7 @@
     </form>
 
     <p id="mensagem" role="status"></p>
+    <p id="continuar" hidden><a href="secretaria-painel.html">Entrar no painel individual da secretária</a></p>
     <p><a href="index.html">Voltar ao Sassa Hube</a></p>
   </div>
 
@@ -116,8 +117,14 @@
             "Não foi possível actualizar: " + error.message;
         } else {
           mensagem.textContent =
-            "Palavra-passe actualizada com sucesso! Já podes entrar.";
+            "Palavra-passe actualizada com sucesso!";
           formulario.hidden = true;
+          const destino = new URLSearchParams(window.location.search).get("next");
+          if (destino === "secretaria-painel.html") {
+            document.getElementById("continuar").hidden = false;
+          } else {
+            mensagem.textContent += " Já podes entrar com a tua nova palavra-passe.";
+          }
         }
       });
     }

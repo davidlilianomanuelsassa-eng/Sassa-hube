@@ -174,3 +174,15 @@ Foi criada na branch `feature/campo-secretaria` uma primeira versão de trabalho
 - A migração adicional `20261120220000_secretaria_reconcile_and_approval.sql` foi aplicada em produção para alinhar permissões de tarefas, índice de assistente activa, estados de aprovação e RPC de decisão.
 - Total aplicado em produção: sete migrações do Campo da Secretaria.
 - O PR de publicação permanece em rascunho; a interface não foi integrada nem publicada.
+
+
+## Continuação do desenvolvimento — 22/11/2026
+
+Na branch `feature/painel-individual-secretaria` e no PR #20, foram acrescentados:
+- Painel independente `secretaria-painel.html`, reservado ao perfil `assistant`; o proprietário continua a usar o seu próprio painel.
+- Formulário para a secretária definir a palavra-passe após aceitar o convite, com ligação de continuação para o painel individual.
+- O convite passa a apontar para `redefinir-senha.html?next=secretaria-painel.html`, em vez de encaminhar para o painel do proprietário.
+- Módulos de criação/edição de livros e publicações no painel individual, ligados à Edge Function `secretary-content-manage`.
+- Corrigida a correspondência dos nomes das permissões nessa função (`catalog` e `publications`), para coincidir com as permissões guardadas na base de dados.
+
+**Ainda não concluído:** os ficheiros estão numa branch/PR em revisão; não foram integrados nem publicados. A Edge Function de gestão de conteúdos precisa de ser publicada; o fluxo de convite requer que o URL de redireccionamento da página de redefinição esteja autorizado nas configurações do Supabase Auth. O carregamento de PDFs directamente pelo painel e o teste completo com duas contas continuam pendentes. Nenhuma conta de assistente foi criada ou convidada.
