@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+<defs>
+ <linearGradient id="bg" x2="1" y2="1"><stop stop-color="#123f83"/><stop offset=".55" stop-color="#071d45"/><stop offset="1" stop-color="#030d28"/></linearGradient>
+ <linearGradient id="gold" x2="0" y2="1"><stop stop-color="#ffe77a"/><stop offset=".48" stop-color="#ffbd22"/><stop offset="1" stop-color="#e98708"/></linearGradient>
+ <linearGradient id="blue" x2="0" y2="1"><stop stop-color="#28c8ff"/><stop offset="1" stop-color="#0753c7"/></linearGradient>
+</defs>
+<rect width="512" height="512" rx="112" fill="url(#bg)"/>
+<circle cx="405" cy="104" r="65" fill="#0d3b78" opacity=".55"/>
+<path d="M90 180 256 110 422 180 256 235Z" fill="url(#blue)" stroke="#77dcff" stroke-width="8" stroke-linejoin="round"/>
+<path d="M151 205v49c55 33 155 33 210 0v-49l-105 44Z" fill="#0871d8"/>
+<path d="M420 178v77" stroke="url(#gold)" stroke-width="9" stroke-linecap="round"/>
+<circle cx="420" cy="260" r="10" fill="#ffcf48"/>
+<text x="256" y="356" font-family="Arial,sans-serif" font-size="205" font-weight="900" text-anchor="middle" letter-spacing="-18" fill="#fff">S<tspan fill="url(#gold)">H</tspan></text>
+<path d="M63 374Q250 460 449 365" fill="none" stroke="url(#gold)" stroke-width="18" stroke-linecap="round"/>
+<path d="M87 416Q256 357 425 416L256 480Z" fill="#f8fbff" stroke="#80d7ff" stroke-width="8" stroke-linejoin="round"/>
+<path d="M256 423v55" stroke="#0b56b5" stroke-width="9"/>
+<path d="M87 416Q256 455 425 416" fill="none" stroke="#1689e9" stroke-width="9"/>
+<path d="m384 70 10 20 22 3-16 15 4 22-20-11-20 11 4-22-16-15 22-3Z" fill="url(#gold)"/>
+</svg>
