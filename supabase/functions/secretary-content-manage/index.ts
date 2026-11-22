@@ -32,7 +32,7 @@ Deno.serve(async(req:Request)=>{
   if(body.action==="product_create"||body.action==="product_update"){
     const updating=body.action==="product_update";
     const required=updating?"edit":"create";
-    if(!await can("store",required)) return respond(403,{error:"Não tens permissão para gerir livros da loja."});
+    if(!await can("catalog",required)) return respond(403,{error:"Não tens permissão para gerir livros da loja."});
     const title=String(body.title||"").trim(),description=String(body.description||"").trim();
     const price=Number(body.price),format=body.format,currency=body.currency||"AOA";
     if(title.length<2||title.length>180||description.length>1200||!Number.isFinite(price)||price<0||
@@ -41,7 +41,7 @@ Deno.serve(async(req:Request)=>{
       return respond(400,{error:"Dados do livro inválidos. Usa preço não negativo e ligações HTTPS."});
     }
     const active=body.active===true;
-    if(active&&!await can("store","publish")) return respond(403,{error:"A publicação de livros não está autorizada para este perfil."});
+    if(active&&!await can("catalog","publish")) return respond(403,{error:"A publicação de livros não está autorizada para este perfil."});
     const payload={title,description,price,currency,format,cover_url:body.cover_url||null,active,
       digital_file_path:typeof body.digital_file_path==="string"&&body.digital_file_path.length<=500?body.digital_file_path:null};
     if(updating){
@@ -60,7 +60,7 @@ Deno.serve(async(req:Request)=>{
 
   if(body.action==="work_create"||body.action==="work_update"){
     const updating=body.action==="work_update";
-    if(!await can("works",updating?"edit":"create")) return respond(403,{error:"Não tens permissão para gerir publicações."});
+    if(!await can("publications",updating?"edit":"create")) return respond(403,{error:"Não tens permissão para gerir publicações."});
     const title=String(body.title||"").trim(),description=String(body.description||"").trim(),category=String(body.category||"").trim();
     const status=String(body.status||"draft");
     if(title.length<2||title.length>250||description.length>5000||category.length<2||category.length>120||
@@ -69,7 +69,7 @@ Deno.serve(async(req:Request)=>{
       (body.file_path&&(typeof body.file_path!=="string"||body.file_path.length>500||body.file_path.includes("..")))){
       return respond(400,{error:"Dados da publicação inválidos."});
     }
-    if(status==="published"&&!await can("works","publish")) return respond(403,{error:"Não tens permissão para publicar este conteúdo."});
+    if(status==="published"&&!await can("publications","publish")) return respond(403,{error:"Não tens permissão para publicar este conteúdo."});
     const payload={title,description,category,status,url:body.url||'',file_path:body.file_path||''};
     if(updating){
       const id=String(body.id||"");
