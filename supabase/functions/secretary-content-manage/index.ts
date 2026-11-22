@@ -31,7 +31,7 @@ Deno.serve(async(req:Request)=>{
 
   if(body.action==="product_create"||body.action==="product_update"){
     const updating=body.action==="product_update";
-    const required=updating?"update":"create;
+    const required=updating?"update":"create";
     if(!await can("catalog",required)) return respond(403,{error:"Não tens permissão para gerir livros da loja."});
     const title=String(body.title||"").trim(),description=String(body.description||"").trim();
     const price=Number(body.price),format=body.format,currency=body.currency||"AOA";
