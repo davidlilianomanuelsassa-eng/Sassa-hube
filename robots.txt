@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /admin.html
 
-Sitemap: https://davidlilianomanuelsassa-eng.github.io/Sassa-hube/sitemap.xml
+Sitemap: https://sassa-hube.vercel.app/sitemap.xml
