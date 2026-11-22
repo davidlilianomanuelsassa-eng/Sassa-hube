@@ -72,7 +72,7 @@ Deno.serve(async (req: Request) => {
       return response({ error: "Este e-mail já está registado. Usa o processo de aprovação de uma conta existente." }, 409);
     }
     const { data: invitation, error: inviteError } = await admin.auth.admin.inviteUserByEmail(email, {
-      redirectTo: siteUrl.replace(/\/$/, "") + "/secretaria.html",
+      redirectTo: siteUrl.replace(/\/$/, "") + "/redefinir-senha.html?next=secretaria-painel.html",
     });
     if (inviteError || !invitation.user) {
       return response({ error: "Não foi possível enviar o convite. Verifica a configuração de e-mail do Supabase Auth." }, 502);
