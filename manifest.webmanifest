@@ -1,0 +1,17 @@
+{
+  "id": "/",
+  "name": "SASSA HUBE",
+  "short_name": "SASSA HUBE",
+  "description": "Acesso directo à plataforma SASSA HUBE.",
+  "lang": "pt-AO",
+  "start_url": "/?source=app",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "any",
+  "theme_color": "#102b50",
+  "background_color": "#071d45",
+  "icons": [
+    {"src": "/icons/sassa-hube-icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable"}
+  ]
+}
