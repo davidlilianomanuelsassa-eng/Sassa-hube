@@ -48,7 +48,7 @@ Deno.serve(async (req: Request) => {
 
   if (body.action === "approve_assistant") {
     const email = String(body.email || "").trim().toLowerCase();
-    if (!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)) return respond(400, { error: "Indica um e-mail válido." });
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return respond(400, { error: "Indica um e-mail válido." });
     const { data: userList, error: listError } = await admin.auth.admin.listUsers({ page: 1, perPage: 1000 });
     const target = userList?.users?.find((candidate) => (candidate.email || "").toLowerCase() === email);
     const targetId = target?.id || "";
