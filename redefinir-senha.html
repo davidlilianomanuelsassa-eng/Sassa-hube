@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Redefinir palavra-passe | Sassa Hube</title>
+  <title>Primeiro acesso da secretaria | Sassa Hube</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="config.js"></script>
   <style>
@@ -51,11 +51,13 @@
 </head>
 <body>
   <div class="painel">
-    <h1>Nova palavra-passe</h1>
-    <p>Define uma nova palavra-passe para a tua conta do Sassa Hube.</p>
+    <h1>Activar a tua conta</h1>
+    <p>Este é o teu primeiro acesso ao Sassa Hube. Confirma o teu email e cria a palavra-passe que usarás para entrar todos os dias.</p>
+    <label for="email">Email</label>
+    <input id="email" type="email" autocomplete="email" readonly required>
 
     <form id="formulario">
-      <label for="senha">Nova palavra-passe</label>
+      <label for="senha">Criar palavra-passe</label>
       <input id="senha" type="password" minlength="12"
         autocomplete="new-password" required>
 
@@ -63,7 +65,7 @@
       <input id="confirmacao" type="password" minlength="12"
         autocomplete="new-password" required>
 
-      <button type="submit">Guardar palavra-passe</button>
+      <button type="submit">Activar conta e entrar</button>
     </form>
 
     <p id="mensagem" role="status"></p>
@@ -94,6 +96,15 @@
     }
 
     if (cliente) {
+      cliente.auth.getUser().then(({ data, error }) => {
+        if (error || !data.user) {
+          mensagem.textContent = "O convite não foi validado ou já expirou. Solicita ao administrador um novo convite.";
+          formulario.hidden = true;
+          return;
+        }
+        document.getElementById("email").value = data.user.email || "";
+      });
+
       formulario.addEventListener("submit", async function(evento) {
         evento.preventDefault();
 
@@ -117,7 +128,7 @@
             "Não foi possível actualizar: " + error.message;
         } else {
           mensagem.textContent =
-            "Palavra-passe actualizada com sucesso!";
+            "Conta activada! A tua palavra-passe ficou guardada.";
           formulario.hidden = true;
           const destino = new URLSearchParams(window.location.search).get("next");
           if (destino === "secretaria-painel.html") {
