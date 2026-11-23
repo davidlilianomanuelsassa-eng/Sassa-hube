@@ -58,9 +58,18 @@ Deno.serve(async (req: Request) => {
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254) {
       return response({ error: "Endereço de e-mail inválido." }, 400);
     }
-    const siteUrl = Deno.env.get("SECRETARIA_SITE_URL");
-    if (!siteUrl || !/^https:\/\//.test(siteUrl)) {
-      return response({ error: "Endereço oficial do site ainda não configurado." }, 503);
+    // Use the verified production origin as a safe fallback when the optional
+    // SECRETARIA_SITE_URL project secret has not been configured.
+    const siteUrl = (Deno.env.get("SECRETARIA_SITE_URL") || "https://sassa-hube.vercel.app").replace(/\/$/, "");
+    let redirectOrigin: string;
+    try {
+      const parsedSiteUrl = new URL(siteUrl);
+      if (parsedSiteUrl.protocol !== "https:" || parsedSiteUrl.hostname !== "sassa-hube.vercel.app") {
+        return response({ error: "O endereço oficial configurado não é válido." }, 503);
+      }
+      redirectOrigin = parsedSiteUrl.origin;
+    } catch {
+      return response({ error: "O endereço oficial configurado não é válido." }, 503);
     }
     if (email === String(user.email || "").toLowerCase()) return response({ error: "Não podes convidar a tua própria conta como assistente." }, 400);
     const { data: existingUsers, error: usersError } = await admin.auth.admin.listUsers({ page: 1, perPage: 1000 });
@@ -72,7 +81,7 @@ Deno.serve(async (req: Request) => {
       return response({ error: "Este e-mail já está registado. Usa o processo de aprovação de uma conta existente." }, 409);
     }
     const { data: invitation, error: inviteError } = await admin.auth.admin.inviteUserByEmail(email, {
-      redirectTo: siteUrl.replace(/\/$/, "") + "/redefinir-senha.html?next=secretaria-painel.html",
+      redirectTo: redirectOrigin + "/redefinir-senha.html?next=secretaria-painel.html",
     });
     if (inviteError || !invitation.user) {
       return response({ error: "Não foi possível enviar o convite. Verifica a configuração de e-mail do Supabase Auth." }, 502);
