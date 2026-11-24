@@ -186,3 +186,14 @@ Na branch `feature/painel-individual-secretaria` e no PR #20, foram acrescentado
 - Corrigida a correspondência dos nomes das permissões nessa função (`catalog` e `publications`), para coincidir com as permissões guardadas na base de dados.
 
 **Ainda não concluído:** os ficheiros estão numa branch/PR em revisão; não foram integrados nem publicados. A Edge Function de gestão de conteúdos precisa de ser publicada; o fluxo de convite requer que o URL de redireccionamento da página de redefinição esteja autorizado nas configurações do Supabase Auth. O carregamento de PDFs directamente pelo painel e o teste completo com duas contas continuam pendentes. Nenhuma conta de assistente foi criada ou convidada.
+
+## Convite individual da secretária — implementação de 24/11/2026
+
+- A Edge Function `secretary-members` foi actualizada e publicada no Supabase (versão 3, JWT obrigatório).
+- O proprietário pode convidar um endereço novo ou uma conta já existente no Supabase Auth. Para conta nova é gerado link de convite; para conta existente, link mágico de autenticação enviado para o mesmo e-mail.
+- O convite activa o perfil `assistant` por autorização directa do proprietário; não existe uma segunda aprovação para aceitar o convite.
+- O link encaminha para `redefinir-senha.html?next=secretaria-painel.html`; a página confirma a sessão, mostra o e-mail associado, solicita nova palavra-passe e confirmação, e encaminha automaticamente para o painel individual.
+- A página `secretaria-painel.html` valida que o perfil seja `assistant` e esteja activo.
+- A interface de produção foi actualizada e o deployment Vercel correspondente ficou `READY`.
+- O envio personalizado usa Resend. Para concluir o teste real de entrega, o projecto Supabase precisa de `RESEND_API_KEY` e `SECRETARIA_FROM_EMAIL`; o remetente deve ser um endereço/domínio verificado no Resend. A chave `RESEND_API_KEY` já tinha sido configurada, mas não foi possível confirmar que `SECRETARIA_FROM_EMAIL` esteja definido.
+- Não foi enviado convite de teste, porque ainda não foi indicado um endereço de teste e o remetente verificado precisa de confirmação. Não considerar o envio por e-mail validado até realizar esse teste.
