@@ -32,7 +32,10 @@ Deno.serve(async (req: Request) => {
   const url = Deno.env.get("SUPABASE_URL");
   const anon = Deno.env.get("SUPABASE_ANON_KEY");
   const service = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-  if (!url || !anon || !service) return response({ error: "Serviço não configurado." }, 503);
+  const resendKey = Deno.env.get("RESEND_API_KEY");
+  const from = Deno.env.get("SECRETARIA_FROM_EMAIL");
+  if (!url || !anon || !service) return response({ error: "Serviço de autenticação não configurado." }, 503);
+  if (!resendKey || !from) return response({ error: "O envio de convites exige RESEND_API_KEY e SECRETARIA_FROM_EMAIL no Supabase." }, 503);
 
   const auth = createClient(url, anon);
   const { data: { user }, error: authError } = await auth.auth.getUser(token);
