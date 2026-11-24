@@ -132,7 +132,7 @@ body.admin-page{background:#f3f7f3;color:#19372c}
 <button class="admin-tab" data-panel="livraria">▣ Livraria</button>
 <button class="admin-tab" data-panel="seguranca">♧ Segurança</button>
 <a class="admin-tab" href="secretaria.html" style="display:block;text-decoration:none" aria-label="Abrir Campo da Secretaria">▣ Secretaria</a>
-<a class="admin-tab" href="aprovar-secretaria.html" style="display:block;text-decoration:none" aria-label="Aprovar pedidos da Secretaria">✓ Pedidos de acesso à Secretaria</a>
+<button class="admin-tab" data-panel="secretaria-pedidos">✓ Pedidos de acesso à Secretaria</button>
 </aside>
 
 <div class="admin-content">
@@ -270,6 +270,14 @@ body.admin-page{background:#f3f7f3;color:#19372c}
 <div id="storeOrders" class="admin-list">A carregar encomendas...</div>
 </section>
 
+<section class="admin-panel" id="panel-secretaria-pedidos">
+<h2>Pedidos de acesso à Secretaria</h2>
+<p class="muted">Analisa os pedidos recebidos. A conta só recebe acesso ao painel individual depois da tua aprovação.</p>
+<div class="list-heading"><h3>Solicitações recebidas</h3><button id="refreshSecretaryRequests" class="btn btn-outline" type="button">Actualizar pedidos</button></div>
+<p id="secretaryRequestsMsg" class="message" role="status"></p>
+<div id="secretaryRequests" class="admin-list">A carregar pedidos...</div>
+</section>
+
 <section class="admin-panel" id="panel-seguranca">
 <h2>Segurança e permissões</h2>
 <p>O painel confirma a sessão e verifica se a conta consta da tabela <code>site_admins</code>. As regras da base de dados também devem limitar operações de escrita a administradores.</p>
@@ -322,6 +330,78 @@ async function isAdmin() {
   return !error && !!data;
 }
 
+
+async function loadSecretaryRequests() {
+  const box = $("secretaryRequests");
+  if (!box || !db) return;
+  box.textContent = "A carregar pedidos...";
+  if (!await isAdmin()) {
+    box.textContent = "Acesso administrativo não confirmado.";
+    return;
+  }
+  const { data, error } = await db.functions.invoke("secretary-onboarding", { body: { action: "list" } });
+  if (error) {
+    box.textContent = "Não foi possível carregar os pedidos. Confirma a sessão do proprietário.";
+    notice("secretaryRequestsMsg", "Falha ao consultar os pedidos. Tenta actualizar a página.");
+    return;
+  }
+  box.replaceChildren();
+  const requests = data?.requests || [];
+  if (!requests.length) {
+    box.textContent = "Ainda não existem pedidos de acesso à Secretaria.";
+    notice("secretaryRequestsMsg", "Lista actualizada.", false);
+    return;
+  }
+  requests.forEach(request => {
+    const card = document.createElement("article");
+    card.className = "admin-row store-order-row";
+    const details = document.createElement("div");
+    details.style.display = "grid";
+    details.style.gap = "7px";
+    const name = document.createElement("strong");
+    name.textContent = request.full_name || "Nome não indicado";
+    const email = document.createElement("small");
+    email.textContent = "E-mail: " + (request.email || "Não indicado");
+    const date = document.createElement("small");
+    date.textContent = "Pedido: " + new Date(request.created_at).toLocaleString("pt-AO");
+    const state = document.createElement("small");
+    state.textContent = "Estado: " + ({pending:"Pendente",approved:"Aprovado",rejected:"Rejeitado"}[request.status] || request.status);
+    details.append(name, email, date, state);
+    card.append(details);
+    if (request.status === "pending") {
+      const actions = document.createElement("div");
+      actions.className = "order-actions";
+      [["approve","Aprovar","btn btn-primary"],["reject","Rejeitar","btn btn-outline"]].forEach(([decision,label,css]) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = css;
+        button.textContent = label;
+        button.addEventListener("click", async () => {
+          const question = decision === "approve"
+            ? "Aprovar " + request.full_name + " e activar o acesso individual à Secretaria?"
+            : "Queres rejeitar o pedido de " + request.full_name + "?";
+          if (!confirm(question)) return;
+          button.disabled = true;
+          notice("secretaryRequestsMsg", "A registar decisão...", false);
+          const { error: reviewError } = await db.functions.invoke("secretary-onboarding", {
+            body: { action: "review", request_id: request.id, decision }
+          });
+          if (reviewError) {
+            button.disabled = false;
+            notice("secretaryRequestsMsg", "Não foi possível concluir a decisão. Tenta novamente.");
+            return;
+          }
+          notice("secretaryRequestsMsg", decision === "approve" ? "Pedido aprovado. O acesso à Secretaria foi activado." : "Pedido rejeitado.", false);
+          await loadSecretaryRequests();
+        });
+        actions.append(button);
+      });
+      card.append(actions);
+    }
+    box.append(card);
+  });
+  notice("secretaryRequestsMsg", "Pedidos carregados: " + requests.length, false);
+}
 
 async function loadSiteAnalytics() {
   const msg = $("analyticsMsg");
@@ -1314,6 +1394,7 @@ $("loginForm").addEventListener("submit", async e => {
   await loadStoreProducts();
   await loadStoreOrders();
   await loadPaymentSettings();
+  await loadSecretaryRequests();
 });
 
 $("logout").addEventListener("click", async () => {
@@ -1322,6 +1403,7 @@ $("logout").addEventListener("click", async () => {
 });
 
 $("refresh").addEventListener("click", loadAdminWorks);
+$("refreshSecretaryRequests").addEventListener("click", loadSecretaryRequests);
 $("refreshVotes").addEventListener("click", loadAdminVotes);
 $("refreshAnalytics").addEventListener("click", loadSiteAnalytics);
 $("refreshQuestions").addEventListener("click", loadAdminQuestions);
@@ -1350,6 +1432,7 @@ document.querySelectorAll(".admin-tab").forEach(button => {
     if (button.dataset.panel === "avaliacoes") loadAdminVotes();
     if (button.dataset.panel === "visitas") loadSiteAnalytics();
     if (button.dataset.panel === "publicacoes") loadAdminWorks();
+    if (button.dataset.panel === "secretaria-pedidos") loadSecretaryRequests();
   });
 });
 
@@ -1372,6 +1455,7 @@ document.querySelectorAll(".admin-tab").forEach(button => {
       await loadStoreProducts();
       await loadStoreOrders();
       await loadPaymentSettings();
+      await loadSecretaryRequests();
     } else {
       await db.auth.signOut();
       showLogin();
