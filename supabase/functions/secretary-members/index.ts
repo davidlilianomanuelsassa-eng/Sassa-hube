@@ -123,6 +123,15 @@ Deno.serve(async (req: Request) => {
     }
     const targetId = linkData.user.id;
     const previousMember = existingMemberResult.data;
+    const rollbackInvite = async () => {
+      if (!previousMember) {
+        await admin.from("site_member_permissions").delete().eq("user_id", targetId);
+        await admin.from("site_members").delete().eq("user_id", targetId);
+        if (!target) await admin.auth.admin.deleteUser(targetId);
+      } else {
+        await admin.from("site_members").update({ status: previousMember.status }).eq("user_id", targetId);
+      }
+    };
     const { error: memberError } = await admin.from("site_members").upsert({
       user_id: targetId, role: "assistant", status: "active", created_by: user.id,
       updated_at: new Date().toISOString(),
@@ -165,6 +174,7 @@ Deno.serve(async (req: Request) => {
     const credentialResult = await admin.from("gmail_oauth_credentials")
       .select("refresh_token_ciphertext,refresh_token_iv").eq("id", 1).maybeSingle();
     if (credentialResult.error || !credentialResult.data) {
+      await rollbackInvite();
       return response({ error: "A conta Gmail do administrador ainda não está ligada. Liga o Gmail no painel e tenta novamente." }, 503);
     }
     let keyBytes: Uint8Array;
@@ -179,6 +189,7 @@ Deno.serve(async (req: Request) => {
       );
       refreshToken = new TextDecoder().decode(plain);
     } catch {
+      await rollbackInvite();
       return response({ error: "Não foi possível ler a autorização Gmail guardada. Liga novamente a conta Gmail." }, 503);
     }
     const tokenResponse = await fetch("https://oauth2.googleapis.com/token", {
@@ -191,6 +202,7 @@ Deno.serve(async (req: Request) => {
     });
     const tokenData = await tokenResponse.json();
     if (!tokenResponse.ok || !tokenData.access_token) {
+      await rollbackInvite();
       return response({ error: "A autorização Gmail expirou ou foi revogada. Liga novamente o Gmail no painel." }, 503);
     }
     const subject = "Convite autorizado — Secretaria SASSA HUBE";
@@ -212,12 +224,7 @@ Deno.serve(async (req: Request) => {
     });
     if (!gmailResponse.ok) {
       const detail = (await gmailResponse.text()).slice(0, 350);
-      if (!previousMember) {
-        await admin.from("site_member_permissions").delete().eq("user_id", targetId);
-        await admin.from("site_members").delete().eq("user_id", targetId);
-      } else {
-        await admin.from("site_members").update({ status: previousMember.status }).eq("user_id", targetId);
-      }
+      await rollbackInvite();
       console.error("Gmail secretary invitation failed:", detail);
       return response({ error: "O Gmail não conseguiu enviar o convite. O perfil não foi autorizado por este envio; verifica a ligação Gmail e tenta novamente." }, 502);
     }
