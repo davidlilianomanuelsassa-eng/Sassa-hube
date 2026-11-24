@@ -32,7 +32,10 @@ Deno.serve(async (req: Request) => {
   const url = Deno.env.get("SUPABASE_URL");
   const anon = Deno.env.get("SUPABASE_ANON_KEY");
   const service = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-  if (!url || !anon || !service) return response({ error: "Serviço não configurado." }, 503);
+  const resendKey = Deno.env.get("RESEND_API_KEY");
+  const from = Deno.env.get("SECRETARIA_FROM_EMAIL");
+  if (!url || !anon || !service) return response({ error: "Serviço de autenticação não configurado." }, 503);
+  if (!resendKey || !from) return response({ error: "O envio de convites exige RESEND_API_KEY e SECRETARIA_FROM_EMAIL no Supabase." }, 503);
 
   const auth = createClient(url, anon);
   const { data: { user }, error: authError } = await auth.auth.getUser(token);
@@ -58,58 +61,112 @@ Deno.serve(async (req: Request) => {
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254) {
       return response({ error: "Endereço de e-mail inválido." }, 400);
     }
-    // Use the verified production origin as a safe fallback when the optional
-    // SECRETARIA_SITE_URL project secret has not been configured.
+    if (email === String(user.email || "").toLowerCase()) {
+      return response({ error: "Não podes convidar a tua própria conta como secretária." }, 400);
+    }
+
     const siteUrl = (Deno.env.get("SECRETARIA_SITE_URL") || "https://sassa-hube.vercel.app").replace(/\/$/, "");
     let redirectOrigin: string;
     try {
-      const parsedSiteUrl = new URL(siteUrl);
-      if (parsedSiteUrl.protocol !== "https:" || parsedSiteUrl.hostname !== "sassa-hube.vercel.app") {
-        return response({ error: "O endereço oficial configurado não é válido." }, 503);
+      const parsed = new URL(siteUrl);
+      if (parsed.protocol !== "https:" || parsed.hostname !== "sassa-hube.vercel.app") {
+        return response({ error: "O endereço oficial do site não é válido." }, 503);
       }
-      redirectOrigin = parsedSiteUrl.origin;
+      redirectOrigin = parsed.origin;
     } catch {
-      return response({ error: "O endereço oficial configurado não é válido." }, 503);
+      return response({ error: "O endereço oficial do site não é válido." }, 503);
     }
-    if (email === String(user.email || "").toLowerCase()) return response({ error: "Não podes convidar a tua própria conta como assistente." }, 400);
-    const { data: existingUsers, error: usersError } = await admin.auth.admin.listUsers({ page: 1, perPage: 1000 });
-    if (usersError) return response({ error: "Não foi possível validar a conta indicada." }, 502);
-    const existingUser = existingUsers.users.find(candidate => (candidate.email || "").toLowerCase() === email);
-    if (existingUser) {
-      const { data: existingMember } = await admin.from("site_members").select("role").eq("user_id", existingUser.id).maybeSingle();
-      if (existingMember?.role === "owner") return response({ error: "Uma conta de proprietário não pode ser convertida em assistente." }, 409);
-      return response({ error: "Este e-mail já está registado. Usa o processo de aprovação de uma conta existente." }, 409);
-    }
-    const { data: invitation, error: inviteError } = await admin.auth.admin.inviteUserByEmail(email, {
-      redirectTo: redirectOrigin + "/redefinir-senha.html?next=secretaria-painel.html",
-    });
-    if (inviteError || !invitation.user) {
-      return response({ error: "Não foi possível enviar o convite. Verifica a configuração de e-mail do Supabase Auth." }, 502);
-    }
-    const { error: memberError } = await admin.from("site_members").upsert({
-      user_id: invitation.user.id,
-      role: "assistant",
-      status: "active",
-      created_by: user.id,
-    });
-    if (memberError) return response({ error: "Convite criado, mas não foi possível activar o perfil. Contacta o suporte técnico." }, 500);
+    const redirectTo = redirectOrigin + "/redefinir-senha.html?next=secretaria-painel.html";
 
-    const permissions = Array.isArray(body.permissions) ? body.permissions : [];
-    const valid = [...new Set(permissions.filter(p => typeof p === "string" && allowed.has(p)))];
-    if (valid.length) {
-      const rows = valid.map(value => {
-        const [module, action] = value.split(":");
-        return { user_id: invitation.user.id, module, action, granted_by: user.id };
-      });
-      const { error } = await admin.from("site_member_permissions").upsert(rows, { onConflict: "user_id,module,action" });
-      if (error) return response({ error: "Perfil criado, mas não foi possível aplicar todas as permissões. Revê o painel de membros." }, 500);
+    let target: any = null;
+    for (let page = 1; page <= 10; page++) {
+      const { data, error } = await admin.auth.admin.listUsers({ page, perPage: 1000 });
+      if (error) return response({ error: "Não foi possível validar o e-mail indicado." }, 502);
+      target = data.users.find(candidate => (candidate.email || "").toLowerCase() === email) || null;
+      if (target || data.users.length < 1000) break;
     }
-    await admin.from("secretary_audit_logs").insert({
-      actor_id: user.id, action: "assistant_invited",
-      target_type: "site_member", target_id: invitation.user.id,
-      details: { permissions: valid },
+
+    const existingMemberResult = target
+      ? await admin.from("site_members").select("role,status").eq("user_id", target.id).maybeSingle()
+      : { data: null, error: null };
+    if (existingMemberResult.error) return response({ error: "Não foi possível validar o perfil existente." }, 500);
+    if (existingMemberResult.data?.role === "owner") {
+      return response({ error: "Uma conta de proprietário não pode ser convertida em secretária." }, 409);
+    }
+
+    const linkType = target ? "magiclink" : "invite";
+    const { data: linkData, error: linkError } = await admin.auth.admin.generateLink({
+      type: linkType,
+      email,
+      options: { redirectTo },
     });
-    return response({ success: true, user_id: invitation.user.id, status: "active" }, 201);
+    if (linkError || !linkData?.user || !linkData?.properties?.action_link) {
+      return response({ error: "Não foi possível gerar o link seguro. Confirma as configurações de Auth do Supabase." }, 502);
+    }
+    const targetId = linkData.user.id;
+    const previousMember = existingMemberResult.data;
+    const { error: memberError } = await admin.from("site_members").upsert({
+      user_id: targetId, role: "assistant", status: "active", created_by: user.id,
+      updated_at: new Date().toISOString(),
+    });
+    if (memberError) return response({ error: "Não foi possível activar o perfil da secretária." }, 500);
+
+    const requested = Array.isArray(body.permissions) ? body.permissions : [];
+    const permissions = [...new Set(requested.filter(p => typeof p === "string" && allowed.has(p)))];
+    const { error: clearError } = await admin.from("site_member_permissions").delete().eq("user_id", targetId);
+    if (clearError) {
+      if (!previousMember) await admin.from("site_members").delete().eq("user_id", targetId);
+      else await admin.from("site_members").update({ status: previousMember.status }).eq("user_id", targetId);
+      return response({ error: "Não foi possível preparar as permissões da secretária." }, 500);
+    }
+    if (permissions.length) {
+      const rows = permissions.map(value => {
+        const [module, action] = value.split(":");
+        return { user_id: targetId, module, action, granted_by: user.id };
+      });
+      const { error } = await admin.from("site_member_permissions").insert(rows);
+      if (error) {
+        if (!previousMember) await admin.from("site_members").delete().eq("user_id", targetId);
+        else await admin.from("site_members").update({ status: previousMember.status }).eq("user_id", targetId);
+        return response({ error: "Não foi possível guardar as permissões." }, 500);
+      }
+    }
+
+    const safeEmail = email.replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]!));
+    const safeActionLink = String(linkData.properties.action_link).replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]!));
+    const html = `<!doctype html><html lang="pt"><body style="font-family:Arial,sans-serif;color:#173b2d;line-height:1.6">
+      <div style="max-width:560px;margin:24px auto;padding:28px;border:1px solid #e2e9e3;border-radius:16px">
+      <h2 style="color:#19583f">Convite para a Secretaria — SASSA HUBE</h2>
+      <p>O proprietário convidou este endereço para aceder ao painel individual da secretária:</p>
+      <p><strong>${safeEmail}</strong></p>
+      <p>Este convite já foi autorizado pelo proprietário. Não é necessária outra aprovação.</p>
+      <p><a href="${safeActionLink}" style="display:inline-block;padding:13px 20px;background:#19583f;color:#fff;text-decoration:none;border-radius:8px">Aceitar convite e definir palavra-passe</a></p>
+      <p>Depois de abrir o link, confirma o e-mail e define uma nova palavra-passe. A página irá encaminhar-te para o painel da secretária.</p>
+      <p style="font-size:12px;color:#66786d">Se não esperavas este convite, ignora esta mensagem.</p>
+      </div></body></html>`;
+    const mail = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: { "Authorization": "Bearer " + resendKey, "Content-Type": "application/json" },
+      body: JSON.stringify({ from, to: [email], subject: "Convite autorizado — Secretaria SASSA HUBE", html }),
+    });
+    if (!mail.ok) {
+      const detail = (await mail.text()).slice(0, 350);
+      if (!previousMember) {
+        await admin.from("site_member_permissions").delete().eq("user_id", targetId);
+        await admin.from("site_members").delete().eq("user_id", targetId);
+      } else {
+        await admin.from("site_members").update({ status: previousMember.status }).eq("user_id", targetId);
+      }
+      console.error("Resend invitation failed:", detail);
+      return response({ error: "O perfil foi preparado, mas o e-mail não foi enviado. Confirma o remetente verificado no Resend e tenta novamente." }, 502);
+    }
+
+    await admin.from("secretary_audit_logs").insert({
+      actor_id: user.id, action: target ? "assistant_invite_resent" : "assistant_invited",
+      target_type: "site_member", target_id: targetId,
+      details: { email, permissions, auth_flow: linkType, email_provider: "resend" },
+    });
+    return response({ success: true, user_id: targetId, status: "active", existing_account: Boolean(target) }, 201);
   }
 
   if (body.action === "set_permissions") {
