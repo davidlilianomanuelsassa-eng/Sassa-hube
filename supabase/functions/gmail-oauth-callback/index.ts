@@ -1,6 +1,6 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 
-const redirectPage = "https://davidlilianomanuelsassa-eng.github.io/Sassa-hube/gmail-connect.html";
+const redirectPage = "https://sassa-hube.vercel.app/gmail-connect.html";
 const html = (message: string, ok = false) => new Response(
   `<!doctype html><html lang="pt"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Sassa Hube — Gmail</title><body style="font:16px Arial,sans-serif;max-width:620px;margin:12vh auto;padding:24px;color:#172033"><h1>SASSA HUBE</h1><h2>${ok ? "Gmail ligado" : "Não foi possível ligar o Gmail"}</h2><p>${message}</p><p>Podes fechar esta página e voltar ao painel Sassa Hube.</p></body></html>`,
   { status: ok ? 200 : 400, headers: { "Content-Type": "text/html; charset=utf-8" } },
