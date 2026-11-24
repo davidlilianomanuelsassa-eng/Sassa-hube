@@ -34,55 +34,50 @@
     <p><a href="index.html">Voltar ao SASSA HUBE</a></p>
   </main>
   <script>
-    const mensagem=document.getElementById("mensagem");
-    const formulario=document.getElementById("formulario");
-    const guardar=document.getElementById("guardar");
-    let cliente=null;
-    try{
-      if(!window.supabase||!window.SUPABASE_URL||!window.SUPABASE_ANON_KEY) throw new Error("Configuração indisponível");
-      cliente=window.supabase.createClient(window.SUPABASE_URL,window.SUPABASE_ANON_KEY);
-    }catch(e){
-      mensagem.textContent="Não foi possível carregar o serviço de autenticação.";
+  const mensagem=document.getElementById("mensagem");
+  const formulario=document.getElementById("formulario");
+  const guardar=document.getElementById("guardar");
+  let cliente=null;
+  try{
+    if(!window.supabase||!window.SUPABASE_URL||!window.SUPABASE_ANON_KEY) throw new Error("Configuração indisponível");
+    cliente=window.supabase.createClient(window.SUPABASE_URL,window.SUPABASE_ANON_KEY);
+  }catch(e){
+    mensagem.textContent="Não foi possível carregar o serviço de autenticação.";
+  }
+  async function iniciar(){
+    if(!cliente)return;
+    const {data:{session},error}=await cliente.auth.getSession();
+    if(error||!session){
+      mensagem.textContent="O convite não é válido ou já expirou. Pede ao proprietário para enviar um novo link.";
+      return;
     }
-    async function iniciar(){
-      if(!cliente)return;
-      const {data:{session},error}=await cliente.auth.getSession();
-      if(error||!session){
-        mensagem.textContent="O convite não é válido ou já expirou. Pede ao proprietário para enviar um novo link.";
-        return;
-      }
-      const {data:{user},error:userError}=await cliente.auth.getUser();
-      if(userError||!user||!user.email){
-        mensagem.textContent="Não foi possível confirmar o e-mail do convite. Abre novamente o link recebido.";
-        return;
-      }
-      document.getElementById("email").value=user.email;
-      formulario.hidden=false;
-      mensagem.textContent="Convite confirmado. Define a tua palavra-passe para concluir o acesso.";
+    const {data:{user},error:userError}=await cliente.auth.getUser();
+    if(userError||!user||!user.email){
+      mensagem.textContent="Não foi possível confirmar o e-mail do convite. Abre novamente o link recebido.";
+      return;
     }
-    formulario.addEventListener("submit",async evento=>{
-      evento.preventDefault();
-      const senha=document.getElementById("senha").value;
-      const confirmacao=document.getElementById("confirmacao").value;
-      if(senha.length<12){mensagem.textContent="A palavra-passe deve ter pelo menos 12 caracteres.";return;}
-      if(senha!==confirmacao){mensagem.textContent="As palavras-passe não coincidem.";return;}
-      guardar.disabled=true;
-      mensagem.textContent="A guardar a palavra-passe...";
-      const {error}=await cliente.auth.updateUser({password:senha});
-      if(error){
-        guardar.disabled=false;
-        mensagem.textContent="Não foi possível guardar a palavra-passe. O link pode ter expirado; pede um novo convite.";
-        return;
-      }
-      mensagem.textContent="Palavra-passe guardada. A abrir o painel individual da secretária...";
-      const destino=new URLSearchParams(window.location.search).get("next");
-      if(destino==="secretaria-painel.html"){
-        window.location.replace("secretaria-painel.html");
-      }else{
-        window.location.replace("secretaria-painel.html");
-      }
-    });
-    iniciar();
-  </script>
+    document.getElementById("email").value=user.email;
+    formulario.hidden=false;
+    mensagem.textContent="Convite confirmado. Define a tua palavra-passe para concluir o acesso.";
+  }
+  formulario.addEventListener("submit",async evento=>{
+    evento.preventDefault();
+    const senha=document.getElementById("senha").value;
+    const confirmacao=document.getElementById("confirmacao").value;
+    if(senha.length<12){mensagem.textContent="A palavra-passe deve ter pelo menos 12 caracteres.";return;}
+    if(senha!==confirmacao){mensagem.textContent="As palavras-passe não coincidem.";return;}
+    guardar.disabled=true;
+    mensagem.textContent="A guardar a palavra-passe...";
+    const {error}=await cliente.auth.updateUser({password:senha});
+    if(error){
+      guardar.disabled=false;
+      mensagem.textContent="Não foi possível guardar a palavra-passe. O link pode ter expirado; pede um novo convite.";
+      return;
+    }
+    mensagem.textContent="Palavra-passe guardada. A abrir o painel individual da secretária...";
+    window.location.replace("secretaria-painel.html");
+  });
+  iniciar();
+</script>
 </body>
 </html>
