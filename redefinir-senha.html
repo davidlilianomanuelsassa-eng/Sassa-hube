@@ -14,9 +14,9 @@ button:disabled{opacity:.65;cursor:wait}#mensagem{margin-top:18px;line-height:1.
 </style></head>
 <body><main class="painel">
 <h1>Solicitar acesso à Secretaria</h1>
-<p class="subtitulo">Introduz o e-mail do convite, cria uma palavra-passe e confirma-a. O pedido só será enviado para aprovação depois de concluíres estes passos.</p>
+<p class="subtitulo">O e-mail abaixo é o endereço associado ao convite e não pode ser alterado. Cria uma palavra-passe e confirma-a para enviar o pedido de acesso.</p>
 <form id="formulario" hidden novalidate>
-<label for="email">E-mail do convite</label><input id="email" type="email" autocomplete="username" required>
+<label for="email">E-mail do convite</label><input id="email" type="email" autocomplete="username" readonly required>
 <label for="senha">Criar palavra-passe</label><input id="senha" type="password" minlength="12" autocomplete="new-password" required><small>Usa pelo menos 12 caracteres. Se o campo estiver incompleto, a página explicará o que falta.</small>
 <label for="confirmacao">Confirmar palavra-passe</label><input id="confirmacao" type="password" minlength="12" autocomplete="new-password" required>
 <button id="guardar" type="submit">Enviar pedido de acesso</button>
@@ -53,7 +53,7 @@ button:disabled{opacity:.65;cursor:wait}#mensagem{margin-top:18px;line-height:1.
      inviteUser=user;
      emailInput.value=user.email;
      formulario.hidden=false;
-     show("Convite validado. Cria a palavra-passe e envia o pedido para aprovação.");
+     show("Convite validado para " + user.email + ". Cria a palavra-passe e envia o pedido para aprovação.");
    }catch(e){show("Não foi possível validar o convite. Actualiza a página ou pede um novo link.");}
  }
  formulario.addEventListener("submit",async function(evento){
