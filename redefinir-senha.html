@@ -10,7 +10,7 @@ body{margin:0;padding:24px;min-height:100vh;display:grid;place-items:center;back
 h1{color:#123d68}.subtitulo{color:#536579;line-height:1.55}label{display:block;font-weight:600;margin-top:14px}
 input{width:100%;padding:13px;margin:8px 0 14px;box-sizing:border-box;border:1px solid #ccd5df;border-radius:7px}
 button{width:100%;padding:13px;border:0;border-radius:7px;background:#087e8b;color:#fff;font-weight:bold;cursor:pointer}
-button:disabled{opacity:.65;cursor:wait}#mensagem{margin-top:18px;line-height:1.5}
+button:disabled{opacity:.65;cursor:wait}#mensagem{margin-top:18px;line-height:1.5;overflow-wrap:anywhere}
 </style></head>
 <body><main class="painel">
 <h1>Solicitar acesso à Secretaria</h1>
@@ -21,37 +21,69 @@ button:disabled{opacity:.65;cursor:wait}#mensagem{margin-top:18px;line-height:1.
 <label for="confirmacao">Confirmar palavra-passe</label><input id="confirmacao" type="password" minlength="12" autocomplete="new-password" required>
 <button id="guardar" type="submit">Enviar pedido de acesso</button>
 </form>
-<p id="mensagem" role="status">A validar o convite...</p>
+<p id="mensagem" role="status" aria-live="polite">A preparar o formulário...</p>
 <p><a href="index.html">Voltar à Sassa Hube</a></p>
 </main>
 <script>
-const mensagem=document.getElementById("mensagem"),formulario=document.getElementById("formulario"),guardar=document.getElementById("guardar"),emailInput=document.getElementById("email");
-let cliente=null,inviteUser=null;
-try{if(!window.supabase||!window.SUPABASE_URL||!window.SUPABASE_ANON_KEY)throw new Error();cliente=window.supabase.createClient(window.SUPABASE_URL,window.SUPABASE_ANON_KEY);}catch{mensagem.textContent="Não foi possível carregar a autenticação. Actualiza a página.";}
-async function iniciar(){
- if(!cliente)return;
- const {data:{session},error}=await cliente.auth.getSession();
- if(error||!session){mensagem.textContent="O link do convite expirou ou já foi usado. Pede ao proprietário que envie um novo convite.";return;}
- const {data:{user},error:userError}=await cliente.auth.getUser();
- if(userError||!user||!user.email){mensagem.textContent="Não foi possível validar o e-mail do convite. Abre novamente o link recebido.";return;}
- inviteUser=user;emailInput.value=user.email;formulario.hidden=false;
- mensagem.textContent="Convite validado. Preenche o e-mail e define a tua palavra-passe.";
-}
-formulario.addEventListener("submit",async evento=>{
- evento.preventDefault();
- const email=emailInput.value.trim().toLowerCase(),senha=document.getElementById("senha").value,confirmacao=document.getElementById("confirmacao").value;
- if(!inviteUser||email!==String(inviteUser.email||"").toLowerCase()){mensagem.textContent="O e-mail deve ser igual ao endereço para o qual o convite foi enviado.";return;}
- if(senha.length<12){mensagem.textContent="A palavra-passe deve ter pelo menos 12 caracteres.";return;}
- if(senha!==confirmacao){mensagem.textContent="As duas palavras-passe não coincidem.";return;}
- guardar.disabled=true;mensagem.textContent="A guardar a palavra-passe e a enviar o pedido...";
- const {error:passwordError}=await cliente.auth.updateUser({password:senha});
- if(passwordError){guardar.disabled=false;mensagem.textContent="Não foi possível guardar a palavra-passe. O link pode ter expirado; pede um novo convite.";return;}
- const {data:{session}}=await cliente.auth.getSession();
- const {data,error}=await cliente.functions.invoke("secretary-onboarding",{body:{action:"invite_request"}});
- if(error||!data?.success){guardar.disabled=false;mensagem.textContent=data?.error||"A palavra-passe foi guardada, mas o pedido não foi registado. Entra na página de pedido de acesso e tenta novamente.";return;}
- await cliente.auth.signOut();
- formulario.hidden=true;
- mensagem.textContent=data.message||"Pedido enviado. Aguarda a aprovação do proprietário. Ainda não tens acesso ao painel.";
-});
-iniciar();
+(function(){
+ const mensagem=document.getElementById("mensagem");
+ const formulario=document.getElementById("formulario");
+ const guardar=document.getElementById("guardar");
+ const emailInput=document.getElementById("email");
+ const senhaInput=document.getElementById("senha");
+ const confirmacaoInput=document.getElementById("confirmacao");
+ let cliente=null,inviteUser=null,submitting=false;
+ function show(text){mensagem.textContent=text;}
+ function initClient(){
+   if(!window.supabase||!window.SUPABASE_URL||!window.SUPABASE_ANON_KEY){
+     show("A autenticação não carregou. Verifica a ligação à internet e actualiza a página.");return false;
+   }
+   try{cliente=window.supabase.createClient(window.SUPABASE_URL,window.SUPABASE_ANON_KEY);return true;}
+   catch(e){show("Não foi possível iniciar a autenticação. Actualiza a página.");return false;}
+ }
+ async function iniciar(){
+   if(!initClient())return;
+   try{
+     const result=await cliente.auth.getSession();
+     const session=result.data&&result.data.session;
+     if(result.error||!session){show("O convite expirou ou já foi utilizado. Pede ao proprietário que gere um novo link.");return;}
+     const userResult=await cliente.auth.getUser();
+     const user=userResult.data&&userResult.data.user;
+     if(userResult.error||!user||!user.email){show("Não foi possível validar o e-mail do convite. Abre novamente o link recebido.");return;}
+     inviteUser=user;
+     emailInput.value=user.email;
+     formulario.hidden=false;
+     show("Convite validado. Cria a palavra-passe e envia o pedido para aprovação.");
+   }catch(e){show("Não foi possível validar o convite. Actualiza a página ou pede um novo link.");}
+ }
+ formulario.addEventListener("submit",async function(evento){
+   evento.preventDefault();
+   if(submitting)return;
+   const email=emailInput.value.trim().toLowerCase();
+   const senha=senhaInput.value;
+   const confirmacao=confirmacaoInput.value;
+   if(!inviteUser){show("O convite ainda não foi validado. Actualiza a página.");return;}
+   if(email!==String(inviteUser.email||"").trim().toLowerCase()){show("O e-mail deve ser igual ao endereço do convite.");return;}
+   if(senha.length<12){show("A palavra-passe deve ter pelo menos 12 caracteres.");return;}
+   if(senha!==confirmacao){show("As duas palavras-passe não coincidem.");return;}
+   submitting=true;guardar.disabled=true;show("A guardar a palavra-passe e a enviar o pedido...");
+   try{
+     const passwordResult=await cliente.auth.updateUser({password:senha});
+     if(passwordResult.error){show("Não foi possível guardar a palavra-passe: "+passwordResult.error.message);return;}
+     const invokeResult=await cliente.functions.invoke("secretary-onboarding",{body:{action:"invite_request"}});
+     if(invokeResult.error||!invokeResult.data||!invokeResult.data.success){
+       const detail=(invokeResult.data&&invokeResult.data.error)||(invokeResult.error&&invokeResult.error.message)||"Erro desconhecido";
+       show("A palavra-passe foi guardada, mas o pedido não foi registado. Detalhe: "+detail+". Tenta novamente ou pede ao proprietário um novo convite.");return;
+     }
+     await cliente.auth.signOut();
+     formulario.hidden=true;
+     show(invokeResult.data.message||"Pedido enviado. Aguarda a aprovação do proprietário. Ainda não tens acesso ao painel.");
+   }catch(error){
+     show("Ocorreu um erro ao enviar o pedido. Verifica a ligação e tenta novamente. "+(error&&error.message?error.message:""));
+   }finally{
+     submitting=false;guardar.disabled=false;
+   }
+ });
+ iniciar();
+})();
 </script></body></html>
