@@ -15,9 +15,9 @@ button:disabled{opacity:.65;cursor:wait}#mensagem{margin-top:18px;line-height:1.
 <body><main class="painel">
 <h1>Solicitar acesso à Secretaria</h1>
 <p class="subtitulo">Introduz o e-mail do convite, cria uma palavra-passe e confirma-a. O pedido só será enviado para aprovação depois de concluíres estes passos.</p>
-<form id="formulario" hidden>
+<form id="formulario" hidden novalidate>
 <label for="email">E-mail do convite</label><input id="email" type="email" autocomplete="username" required>
-<label for="senha">Criar palavra-passe</label><input id="senha" type="password" minlength="12" autocomplete="new-password" required>
+<label for="senha">Criar palavra-passe</label><input id="senha" type="password" minlength="12" autocomplete="new-password" required><small>Usa pelo menos 12 caracteres. Se o campo estiver incompleto, a página explicará o que falta.</small>
 <label for="confirmacao">Confirmar palavra-passe</label><input id="confirmacao" type="password" minlength="12" autocomplete="new-password" required>
 <button id="guardar" type="submit">Enviar pedido de acesso</button>
 </form>
@@ -63,6 +63,10 @@ button:disabled{opacity:.65;cursor:wait}#mensagem{margin-top:18px;line-height:1.
    const senha=senhaInput.value;
    const confirmacao=confirmacaoInput.value;
    if(!inviteUser){show("O convite ainda não foi validado. Actualiza a página.");return;}
+   if(!email){show("Introduz o e-mail do convite.");emailInput.focus();return;}
+   if(!emailInput.checkValidity()){show("Introduz um endereço de e-mail válido.");emailInput.focus();return;}
+   if(!senha){show("Cria uma palavra-passe.");senhaInput.focus();return;}
+   if(!confirmacao){show("Confirma a palavra-passe.");confirmacaoInput.focus();return;}
    if(email!==String(inviteUser.email||"").trim().toLowerCase()){show("O e-mail deve ser igual ao endereço do convite.");return;}
    if(senha.length<12){show("A palavra-passe deve ter pelo menos 12 caracteres.");return;}
    if(senha!==confirmacao){show("As duas palavras-passe não coincidem.");return;}
