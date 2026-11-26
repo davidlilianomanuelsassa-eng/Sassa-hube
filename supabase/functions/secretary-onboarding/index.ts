@@ -28,6 +28,41 @@ Deno.serve(async (req:Request) => {
   let body:Record<string,unknown>;
   try { body=await req.json(); } catch { return response(400,{error:"Pedido inválido."}); }
 
+  if(body.action==="invite_request"){
+    const token=(req.headers.get("Authorization")||"").replace(/^Bearer\s+/i,"");
+    if(!token) return response(401,{error:"Abre o convite recebido por e-mail e confirma a tua sessão."});
+    const authClient=createClient(url,anon,{auth:{persistSession:false,autoRefreshToken:false}});
+    const {data:{user},error:authError}=await authClient.auth.getUser(token);
+    if(authError||!user||!user.email) return response(401,{error:"A sessão do convite expirou. Pede ao proprietário um novo convite."});
+    const email=user.email.trim().toLowerCase();
+    const {data:member,error:memberError}=await admin.from("site_members").select("role,status").eq("user_id",user.id).maybeSingle();
+    if(memberError) return response(500,{error:"Não foi possível verificar o estado da conta."});
+    if(member?.role==="owner") return response(403,{error:"A conta do proprietário não pode solicitar acesso de secretária."});
+    if(member?.role==="assistant"&&member.status==="active") return response(409,{error:"Esta conta já tem acesso activo à Secretaria."});
+    const rawName=String(user.user_metadata?.full_name||user.user_metadata?.name||email.split("@")[0]).trim();
+    const fullName=rawName.replace(/[._-]+/g," ").replace(/\s+/g," ").slice(0,120)||email;
+    const {data:oldRequest,error:oldError}=await admin.from("secretary_signup_requests").select("id,status").eq("user_id",user.id).maybeSingle();
+    if(oldError) return response(500,{error:"Não foi possível consultar o pedido anterior."});
+    if(oldRequest?.status==="pending") return response(200,{success:true,already_pending:true,message:"O teu pedido já foi enviado. Aguarda a decisão do proprietário."});
+    if(oldRequest?.status==="approved") return response(409,{error:"O pedido já foi aprovado. Entra no painel com a tua palavra-passe."});
+    let savedError=null;
+    if(oldRequest?.status==="rejected"){
+      const {error}=await admin.from("secretary_signup_requests").update({full_name:fullName,email,status:"pending",reviewed_by:null,reviewed_at:null,review_note:null}).eq("id",oldRequest.id);
+      savedError=error;
+    }else{
+      const {error}=await admin.from("secretary_signup_requests").insert({user_id:user.id,full_name:fullName,email,status:"pending"});
+      savedError=error;
+    }
+    if(savedError) return response(500,{error:"Não foi possível registar o pedido. Contacta o proprietário."});
+    const {data:owners}=await admin.from("site_members").select("user_id").eq("role","owner").eq("status","active");
+    if(owners?.length) await admin.from("secretary_notifications").insert(owners.map(o=>({
+      recipient_id:o.user_id,notification_type:"secretary_signup",title:"Pedido de acesso à Secretaria",
+      body:fullName+" ("+email+") concluiu o convite e aguarda aprovação.",href:"admin.html"
+    })));
+    await admin.from("secretary_audit_logs").insert({actor_id:user.id,action:"secretary_invite_request_completed",target_type:"secretary_signup_request",target_id:user.id,details:{email}});
+    return response(201,{success:true,status:"pending",message:"Pedido enviado com sucesso. Aguarda a aprovação do proprietário; ainda não tens acesso ao painel."});
+  }
+
   if(body.action==="signup"){
     const fullName=String(body.full_name||"").trim();
     const email=String(body.email||"").trim().toLowerCase();
