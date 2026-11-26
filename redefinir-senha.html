@@ -1,83 +1,57 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Aceitar convite | Sassa Hube</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="config.js"></script>
-  <style>
-    body{margin:0;padding:25px;min-height:100vh;display:grid;place-items:center;background:#f1f5f9;font-family:Arial,sans-serif;color:#183047}
-    .painel{background:#fff;padding:30px;border-radius:14px;max-width:440px;width:100%;box-sizing:border-box;box-shadow:0 4px 18px #0002}
-    h1{color:#123d68}.subtitulo{color:#536579;line-height:1.55}
-    label{display:block;font-weight:600;margin-top:14px}
-    input{width:100%;padding:13px;margin:8px 0 14px;box-sizing:border-box;border:1px solid #ccd5df;border-radius:7px}
-    input[readonly]{background:#f4f7fa;color:#4b6074}
-    button{width:100%;padding:13px;border:0;border-radius:7px;background:#087e8b;color:#fff;font-weight:bold;cursor:pointer}
-    button:disabled{opacity:.65;cursor:wait}#mensagem{margin-top:18px;line-height:1.5}
-  </style>
-</head>
-<body>
-  <main class="painel">
-    <h1>Aceitar convite da Secretaria</h1>
-    <p class="subtitulo">O proprietário autorizou o teu acesso ao SASSA HUBE. Confirma o e-mail e cria a tua palavra-passe para entrar no painel individual da secretária.</p>
-    <form id="formulario" hidden>
-      <label for="email">E-mail convidado</label>
-      <input id="email" type="email" autocomplete="username" readonly required>
-      <label for="senha">Nova palavra-passe</label>
-      <input id="senha" type="password" minlength="12" autocomplete="new-password" required>
-      <label for="confirmacao">Confirmar palavra-passe</label>
-      <input id="confirmacao" type="password" minlength="12" autocomplete="new-password" required>
-      <button id="guardar" type="submit">Guardar e entrar no painel</button>
-    </form>
-    <p id="mensagem" role="status">A validar o convite...</p>
-    <p><a href="index.html">Voltar ao SASSA HUBE</a></p>
-  </main>
-  <script>
-  const mensagem=document.getElementById("mensagem");
-  const formulario=document.getElementById("formulario");
-  const guardar=document.getElementById("guardar");
-  let cliente=null;
-  try{
-    if(!window.supabase||!window.SUPABASE_URL||!window.SUPABASE_ANON_KEY) throw new Error("Configuração indisponível");
-    cliente=window.supabase.createClient(window.SUPABASE_URL,window.SUPABASE_ANON_KEY);
-  }catch(e){
-    mensagem.textContent="Não foi possível carregar o serviço de autenticação.";
-  }
-  async function iniciar(){
-    if(!cliente)return;
-    const {data:{session},error}=await cliente.auth.getSession();
-    if(error||!session){
-      mensagem.textContent="O convite não é válido ou já expirou. Pede ao proprietário para enviar um novo link.";
-      return;
-    }
-    const {data:{user},error:userError}=await cliente.auth.getUser();
-    if(userError||!user||!user.email){
-      mensagem.textContent="Não foi possível confirmar o e-mail do convite. Abre novamente o link recebido.";
-      return;
-    }
-    document.getElementById("email").value=user.email;
-    formulario.hidden=false;
-    mensagem.textContent="Convite confirmado. Define a tua palavra-passe para concluir o acesso.";
-  }
-  formulario.addEventListener("submit",async evento=>{
-    evento.preventDefault();
-    const senha=document.getElementById("senha").value;
-    const confirmacao=document.getElementById("confirmacao").value;
-    if(senha.length<12){mensagem.textContent="A palavra-passe deve ter pelo menos 12 caracteres.";return;}
-    if(senha!==confirmacao){mensagem.textContent="As palavras-passe não coincidem.";return;}
-    guardar.disabled=true;
-    mensagem.textContent="A guardar a palavra-passe...";
-    const {error}=await cliente.auth.updateUser({password:senha});
-    if(error){
-      guardar.disabled=false;
-      mensagem.textContent="Não foi possível guardar a palavra-passe. O link pode ter expirado; pede um novo convite.";
-      return;
-    }
-    mensagem.textContent="Palavra-passe guardada. A abrir o painel individual da secretária...";
-    window.location.replace("secretaria-painel.html");
-  });
-  iniciar();
-</script>
-</body>
-</html>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Concluir convite | Sassa Hube</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="config.js"></script>
+<style>
+body{margin:0;padding:24px;min-height:100vh;display:grid;place-items:center;background:#f1f5f9;font-family:Arial,sans-serif;color:#183047}
+.painel{background:#fff;padding:30px;border-radius:14px;max-width:460px;width:100%;box-sizing:border-box;box-shadow:0 4px 18px #0002}
+h1{color:#123d68}.subtitulo{color:#536579;line-height:1.55}label{display:block;font-weight:600;margin-top:14px}
+input{width:100%;padding:13px;margin:8px 0 14px;box-sizing:border-box;border:1px solid #ccd5df;border-radius:7px}
+button{width:100%;padding:13px;border:0;border-radius:7px;background:#087e8b;color:#fff;font-weight:bold;cursor:pointer}
+button:disabled{opacity:.65;cursor:wait}#mensagem{margin-top:18px;line-height:1.5}
+</style></head>
+<body><main class="painel">
+<h1>Solicitar acesso à Secretaria</h1>
+<p class="subtitulo">Introduz o e-mail do convite, cria uma palavra-passe e confirma-a. O pedido só será enviado para aprovação depois de concluíres estes passos.</p>
+<form id="formulario" hidden>
+<label for="email">E-mail do convite</label><input id="email" type="email" autocomplete="username" required>
+<label for="senha">Criar palavra-passe</label><input id="senha" type="password" minlength="12" autocomplete="new-password" required>
+<label for="confirmacao">Confirmar palavra-passe</label><input id="confirmacao" type="password" minlength="12" autocomplete="new-password" required>
+<button id="guardar" type="submit">Enviar pedido de acesso</button>
+</form>
+<p id="mensagem" role="status">A validar o convite...</p>
+<p><a href="index.html">Voltar à Sassa Hube</a></p>
+</main>
+<script>
+const mensagem=document.getElementById("mensagem"),formulario=document.getElementById("formulario"),guardar=document.getElementById("guardar"),emailInput=document.getElementById("email");
+let cliente=null,inviteUser=null;
+try{if(!window.supabase||!window.SUPABASE_URL||!window.SUPABASE_ANON_KEY)throw new Error();cliente=window.supabase.createClient(window.SUPABASE_URL,window.SUPABASE_ANON_KEY);}catch{mensagem.textContent="Não foi possível carregar a autenticação. Actualiza a página.";}
+async function iniciar(){
+ if(!cliente)return;
+ const {data:{session},error}=await cliente.auth.getSession();
+ if(error||!session){mensagem.textContent="O link do convite expirou ou já foi usado. Pede ao proprietário que envie um novo convite.";return;}
+ const {data:{user},error:userError}=await cliente.auth.getUser();
+ if(userError||!user||!user.email){mensagem.textContent="Não foi possível validar o e-mail do convite. Abre novamente o link recebido.";return;}
+ inviteUser=user;emailInput.value=user.email;formulario.hidden=false;
+ mensagem.textContent="Convite validado. Preenche o e-mail e define a tua palavra-passe.";
+}
+formulario.addEventListener("submit",async evento=>{
+ evento.preventDefault();
+ const email=emailInput.value.trim().toLowerCase(),senha=document.getElementById("senha").value,confirmacao=document.getElementById("confirmacao").value;
+ if(!inviteUser||email!==String(inviteUser.email||"").toLowerCase()){mensagem.textContent="O e-mail deve ser igual ao endereço para o qual o convite foi enviado.";return;}
+ if(senha.length<12){mensagem.textContent="A palavra-passe deve ter pelo menos 12 caracteres.";return;}
+ if(senha!==confirmacao){mensagem.textContent="As duas palavras-passe não coincidem.";return;}
+ guardar.disabled=true;mensagem.textContent="A guardar a palavra-passe e a enviar o pedido...";
+ const {error:passwordError}=await cliente.auth.updateUser({password:senha});
+ if(passwordError){guardar.disabled=false;mensagem.textContent="Não foi possível guardar a palavra-passe. O link pode ter expirado; pede um novo convite.";return;}
+ const {data:{session}}=await cliente.auth.getSession();
+ const {data,error}=await cliente.functions.invoke("secretary-onboarding",{body:{action:"invite_request"}});
+ if(error||!data?.success){guardar.disabled=false;mensagem.textContent=data?.error||"A palavra-passe foi guardada, mas o pedido não foi registado. Entra na página de pedido de acesso e tenta novamente.";return;}
+ await cliente.auth.signOut();
+ formulario.hidden=true;
+ mensagem.textContent=data.message||"Pedido enviado. Aguarda a aprovação do proprietário. Ainda não tens acesso ao painel.";
+});
+iniciar();
+</script></body></html>
