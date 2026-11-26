@@ -38,7 +38,7 @@ button:disabled{opacity:.65;cursor:wait}#mensagem{margin-top:18px;line-height:1.
    if(!window.supabase||!window.SUPABASE_URL||!window.SUPABASE_ANON_KEY){
      show("A autenticação não carregou. Verifica a ligação à internet e actualiza a página.");return false;
    }
-   try{cliente=window.supabase.createClient(window.SUPABASE_URL,window.SUPABASE_ANON_KEY);return true;}
+   try{cliente=window.supabase.createClient(window.SUPABASE_URL,window.SUPABASE_ANON_KEY,{auth:{storage:window.sessionStorage,storageKey:"sassa-hube-secretaria-invite-auth",persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,flowType:"implicit"}});return true;}
    catch(e){show("Não foi possível iniciar a autenticação. Actualiza a página.");return false;}
  }
  async function iniciar(){
