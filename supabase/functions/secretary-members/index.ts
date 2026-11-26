@@ -94,7 +94,7 @@ Deno.serve(async (req: Request) => {
     } catch {
       return response({ error: "O endereço oficial do site não é válido." }, 503);
     }
-    const redirectTo = redirectOrigin + "/redefinir-senha.html?next=secretaria-painel.html";
+    const redirectTo = redirectOrigin + "/redefinir-senha.html?flow=secretaria-invite";
 
     let target: any = null;
     for (let page = 1; page <= 10; page++) {
@@ -111,6 +111,9 @@ Deno.serve(async (req: Request) => {
     if (existingMemberResult.data?.role === "owner") {
       return response({ error: "Uma conta de proprietário não pode ser convertida em secretária." }, 409);
     }
+    if (existingMemberResult.data?.role === "assistant" && existingMemberResult.data?.status === "active") {
+      return response({ error: "Esta conta já tem acesso activo à Secretaria. Não é necessário enviar novo convite." }, 409);
+    }
 
     const linkType = target ? "magiclink" : "invite";
     const { data: linkData, error: linkError } = await admin.auth.admin.generateLink({
@@ -122,53 +125,19 @@ Deno.serve(async (req: Request) => {
       return response({ error: "Não foi possível gerar o link seguro. Confirma as configurações de Auth do Supabase." }, 502);
     }
     const targetId = linkData.user.id;
-    const previousMember = existingMemberResult.data;
-    const rollbackInvite = async () => {
-      if (!previousMember) {
-        await admin.from("site_member_permissions").delete().eq("user_id", targetId);
-        await admin.from("site_members").delete().eq("user_id", targetId);
-        if (!target) await admin.auth.admin.deleteUser(targetId);
-      } else {
-        await admin.from("site_members").update({ status: previousMember.status }).eq("user_id", targetId);
-      }
-    };
-    const { error: memberError } = await admin.from("site_members").upsert({
-      user_id: targetId, role: "assistant", status: "active", created_by: user.id,
-      updated_at: new Date().toISOString(),
-    });
-    if (memberError) return response({ error: "Não foi possível activar o perfil da secretária." }, 500);
-
-    const requested = Array.isArray(body.permissions) ? body.permissions : [];
-    const permissions = [...new Set(requested.filter(p => typeof p === "string" && allowed.has(p)))];
-    const { error: clearError } = await admin.from("site_member_permissions").delete().eq("user_id", targetId);
-    if (clearError) {
-      if (!previousMember) await admin.from("site_members").delete().eq("user_id", targetId);
-      else await admin.from("site_members").update({ status: previousMember.status }).eq("user_id", targetId);
-      return response({ error: "Não foi possível preparar as permissões da secretária." }, 500);
-    }
-    if (permissions.length) {
-      const rows = permissions.map(value => {
-        const [module, action] = value.split(":");
-        return { user_id: targetId, module, action, granted_by: user.id };
-      });
-      const { error } = await admin.from("site_member_permissions").insert(rows);
-      if (error) {
-        if (!previousMember) await admin.from("site_members").delete().eq("user_id", targetId);
-        else await admin.from("site_members").update({ status: previousMember.status }).eq("user_id", targetId);
-        return response({ error: "Não foi possível guardar as permissões." }, 500);
-      }
-    }
+    // Invitation is only an account-setup step. No member or permission is granted here.
+    const rollbackInvite = async () => { if (!target) await admin.auth.admin.deleteUser(targetId); };
 
     const safeEmail = email.replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]!));
     const safeActionLink = String(linkData.properties.action_link).replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]!));
     const html = `<!doctype html><html lang="pt"><body style="font-family:Arial,sans-serif;color:#173b2d;line-height:1.6">
       <div style="max-width:560px;margin:24px auto;padding:28px;border:1px solid #e2e9e3;border-radius:16px">
       <h2 style="color:#19583f">Convite para a Secretaria — SASSA HUBE</h2>
-      <p>O proprietário convidou este endereço para aceder ao painel individual da secretária:</p>
+      <p>O proprietário da Sassa Hube enviou-te um convite para solicitares acesso ao Campo da Secretaria:</p>
       <p><strong>${safeEmail}</strong></p>
-      <p>Este convite já foi autorizado pelo proprietário. Não é necessária outra aprovação.</p>
-      <p><a href="${safeActionLink}" style="display:inline-block;padding:13px 20px;background:#19583f;color:#fff;text-decoration:none;border-radius:8px">Aceitar convite e definir palavra-passe</a></p>
-      <p>Depois de abrir o link, confirma o e-mail e define uma nova palavra-passe. A página irá encaminhar-te para o painel da secretária.</p>
+      <p>Depois de enviares o pedido, o proprietário irá analisar e decidir se aprova o teu acesso.</p>
+      <p><a href="${safeActionLink}" style="display:inline-block;padding:13px 20px;background:#19583f;color:#fff;text-decoration:none;border-radius:8px">Preencher dados e solicitar acesso</a></p>
+      <p>Depois de abrir o link, confirma o e-mail e define uma nova palavra-passe. O acesso ao painel só será activado após aprovação do proprietário.</p>
       <p style="font-size:12px;color:#66786d">Se não esperavas este convite, ignora esta mensagem.</p>
       </div></body></html>`;
     const credentialResult = await admin.from("gmail_oauth_credentials")
@@ -205,7 +174,7 @@ Deno.serve(async (req: Request) => {
       await rollbackInvite();
       return response({ error: "A autorização Gmail expirou ou foi revogada. Liga novamente o Gmail no painel." }, 503);
     }
-    const subject = "Convite autorizado — Secretaria SASSA HUBE";
+    const subject = "Convite para solicitar acesso — Secretaria SASSA HUBE";
     const textBody = `Convite para a Secretaria — SASSA HUBE\\n\\nO proprietário convidou ${email} para aceder ao painel individual da secretária.\\nEste convite já foi autorizado pelo proprietário. Não é necessária outra aprovação.\\n\\nAceitar convite e definir palavra-passe: ${String(linkData.properties.action_link)}\\n\\nSe não esperavas este convite, ignora esta mensagem.`;
     const mime = [
       `From: Sassa Hube <${fromEmail}>`,
@@ -230,11 +199,11 @@ Deno.serve(async (req: Request) => {
     }
 
     await admin.from("secretary_audit_logs").insert({
-      actor_id: user.id, action: target ? "assistant_invite_resent" : "assistant_invited",
-      target_type: "site_member", target_id: targetId,
-      details: { email, permissions, auth_flow: linkType, email_provider: "gmail" },
+      actor_id: user.id, action: target ? "secretary_invite_resent" : "secretary_invite_sent",
+      target_type: "secretary_signup_request", target_id: targetId,
+      details: { email, auth_flow: linkType, email_provider: "gmail", approval_required: true },
     });
-    return response({ success: true, user_id: targetId, status: "active", existing_account: Boolean(target) }, 201);
+    return response({ success: true, user_id: targetId, status: "invited_pending_completion", existing_account: Boolean(target), approval_required: true }, 201);
   }
 
   if (body.action === "set_permissions") {
