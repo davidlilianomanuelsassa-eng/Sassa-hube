@@ -40,6 +40,24 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
+<script>
+/* Recover invitation callbacks if Supabase falls back to the site's default URL. */
+(function(){
+  try {
+    const hash=new URLSearchParams(window.location.hash.replace(/^#/,""));
+    const query=new URLSearchParams(window.location.search);
+    const authType=(hash.get("type")||query.get("type")||"").toLowerCase();
+    const inviteFlow=authType==="invite"||authType==="recovery"||query.get("flow")==="secretaria-invite";
+    const hasAuthToken=hash.has("access_token")||hash.has("token_hash")||query.has("token_hash");
+    if(inviteFlow||hasAuthToken){
+      const target=new URL("/redefinir-senha.html?flow=secretaria-invite",window.location.origin);
+      if(window.location.search) target.search+=window.location.search.replace(/^\?/,"&");
+      target.hash=window.location.hash;
+      window.location.replace(target.toString());
+    }
+  } catch(e) { console.warn("Não foi possível encaminhar o convite para o formulário.",e); }
+})();
+</script>
 </head>
 <body>
 <a class="skip-link" href="#conteudo-principal">Saltar para o conteúdo principal</a>
