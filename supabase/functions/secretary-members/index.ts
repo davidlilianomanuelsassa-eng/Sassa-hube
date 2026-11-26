@@ -46,13 +46,11 @@ Deno.serve(async (req: Request) => {
   const url = Deno.env.get("SUPABASE_URL");
   const anon = Deno.env.get("SUPABASE_ANON_KEY");
   const service = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-  const gmailClientId = Deno.env.get("GMAIL_CLIENT_ID");
-  const gmailClientSecret = Deno.env.get("GMAIL_CLIENT_SECRET");
-  const encryptionSecret = Deno.env.get("GMAIL_TOKEN_ENCRYPTION_KEY");
-  const fromEmail = Deno.env.get("GMAIL_FROM_EMAIL") || "davidlilianomanuelsassa@gmail.com";
+  const resendApiKey = Deno.env.get("RESEND_API_KEY");
+  const fromEmail = Deno.env.get("SECRETARIA_FROM_EMAIL") || Deno.env.get("RESEND_FROM_EMAIL");
   if (!url || !anon || !service) return response({ error: "Serviço de autenticação não configurado." }, 503);
-  if (!gmailClientId || !gmailClientSecret || !encryptionSecret) {
-    return response({ error: "O envio de convites pelo Gmail ainda não está configurado no Supabase." }, 503);
+  if (!resendApiKey || !fromEmail) {
+    return response({ error: "O envio de convites por e-mail ainda não está configurado. Define RESEND_API_KEY e SECRETARIA_FROM_EMAIL." }, 503);
   }
 
   const auth = createClient(url, anon);
@@ -140,68 +138,29 @@ Deno.serve(async (req: Request) => {
       <p>Depois de abrir o link, confirma o e-mail e define uma nova palavra-passe. O acesso ao painel só será activado após aprovação do proprietário.</p>
       <p style="font-size:12px;color:#66786d">Se não esperavas este convite, ignora esta mensagem.</p>
       </div></body></html>`;
-    const credentialResult = await admin.from("gmail_oauth_credentials")
-      .select("refresh_token_ciphertext,refresh_token_iv").eq("id", 1).maybeSingle();
-    if (credentialResult.error || !credentialResult.data) {
-      await rollbackInvite();
-      return response({ error: "A conta Gmail do administrador ainda não está ligada. Liga o Gmail no painel e tenta novamente." }, 503);
-    }
-    let keyBytes: Uint8Array;
-    let refreshToken: string;
-    try {
-      keyBytes = fromB64(encryptionSecret);
-      if (keyBytes.length !== 32) throw new Error("bad encryption key");
-      const key = await crypto.subtle.importKey("raw", keyBytes, "AES-GCM", false, ["decrypt"]);
-      const plain = await crypto.subtle.decrypt(
-        { name: "AES-GCM", iv: fromB64(credentialResult.data.refresh_token_iv) },
-        key, fromB64(credentialResult.data.refresh_token_ciphertext),
-      );
-      refreshToken = new TextDecoder().decode(plain);
-    } catch {
-      await rollbackInvite();
-      return response({ error: "Não foi possível ler a autorização Gmail guardada. Liga novamente a conta Gmail." }, 503);
-    }
-    const tokenResponse = await fetch("https://oauth2.googleapis.com/token", {
+    const subject = "Convite para solicitar acesso — Secretaria SASSA HUBE";
+    const resendResponse = await fetch("https://api.resend.com/emails", {
       method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({
-        client_id: gmailClientId, client_secret: gmailClientSecret,
-        refresh_token: refreshToken, grant_type: "refresh_token",
+      headers: { Authorization: `Bearer ${resendApiKey}`, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        from: fromEmail,
+        to: [email],
+        subject,
+        html,
+        text: `Convite para a Secretaria — SASSA HUBE\\n\\nO proprietário enviou-te um convite para criares a palavra-passe e solicitares acesso. O acesso só será activado após aprovação do proprietário.\\n\\nAbrir convite: ${String(linkData.properties.action_link)}\\n\\nSe não esperavas este convite, ignora esta mensagem.`,
       }),
     });
-    const tokenData = await tokenResponse.json();
-    if (!tokenResponse.ok || !tokenData.access_token) {
+    if (!resendResponse.ok) {
+      const detail = (await resendResponse.text()).slice(0, 350);
       await rollbackInvite();
-      return response({ error: "A autorização Gmail expirou ou foi revogada. Liga novamente o Gmail no painel." }, 503);
-    }
-    const subject = "Convite para solicitar acesso — Secretaria SASSA HUBE";
-    const textBody = `Convite para a Secretaria — SASSA HUBE\\n\\nO proprietário convidou ${email} para aceder ao painel individual da secretária.\\nEste convite já foi autorizado pelo proprietário. Não é necessária outra aprovação.\\n\\nAceitar convite e definir palavra-passe: ${String(linkData.properties.action_link)}\\n\\nSe não esperavas este convite, ignora esta mensagem.`;
-    const mime = [
-      `From: Sassa Hube <${fromEmail}>`,
-      `To: ${email}`,
-      `Subject: =?UTF-8?B?${base64Utf8(subject)}?=`,
-      "MIME-Version: 1.0",
-      'Content-Type: text/html; charset=UTF-8',
-      "Content-Transfer-Encoding: base64",
-      "",
-      base64Utf8(html),
-    ].join("\\r\\n");
-    const gmailResponse = await fetch("https://gmail.googleapis.com/gmail/v1/users/me/messages/send", {
-      method: "POST",
-      headers: { Authorization: `Bearer ${tokenData.access_token}`, "Content-Type": "application/json" },
-      body: JSON.stringify({ raw: toB64Url(new TextEncoder().encode(mime)) }),
-    });
-    if (!gmailResponse.ok) {
-      const detail = (await gmailResponse.text()).slice(0, 350);
-      await rollbackInvite();
-      console.error("Gmail secretary invitation failed:", detail);
-      return response({ error: "O Gmail não conseguiu enviar o convite. O perfil não foi autorizado por este envio; verifica a ligação Gmail e tenta novamente." }, 502);
+      console.error("Resend secretary invitation failed:", detail);
+      return response({ error: "O serviço de e-mail não conseguiu enviar o convite. Confirma o remetente autorizado no Resend e tenta novamente." }, 502);
     }
 
     await admin.from("secretary_audit_logs").insert({
       actor_id: user.id, action: target ? "secretary_invite_resent" : "secretary_invite_sent",
       target_type: "secretary_signup_request", target_id: targetId,
-      details: { email, auth_flow: linkType, email_provider: "gmail", approval_required: true },
+      details: { email, auth_flow: linkType, email_provider: "resend", approval_required: true },
     });
     return response({ success: true, user_id: targetId, status: "invited_pending_completion", existing_account: Boolean(target), approval_required: true }, 201);
   }
